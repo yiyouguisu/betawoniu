@@ -40,41 +40,8 @@
 <link href="/Public/Home/css/chosen.css" rel="stylesheet" />
 <script src="/Public/Home/js/jquery-ui.min.js"></script>
 <link href="/Public/Home/css/jquery-ui.min.css" rel="stylesheet" />
-<style>
-    .chosen-container {
-        margin-right: 12px;
-    }
-</style>
 <script>
     $(function () {
-        var min = 0;
-        var max = 5000;
-        var minmoney = "<?php echo ($_GET['minmoney']); ?>";
-        var maxmoney = "<?php echo ($_GET['maxmoney']); ?>";
-        if (minmoney != "") {
-            min = minmoney;
-        }
-        if (maxmoney != "") {
-            max = maxmoney;
-        }
-        $("#slider-range").slider({
-            range: true,
-            min: 0,
-            max: 5000,
-            step: 100,
-            values: [min, max],
-            slide: function (event, ui) {
-                $("#amount").val("￥" + ui.values[0] + " - ￥" + ui.values[1]);
-            },
-            change: function (event, ui) {
-                var minmoney = ui.values[0];
-                var maxmoney = ui.values[1];
-                var url = "<?php echo U('Home/Party/index',array('type'=>$_GET['type'],'catid'=>$_GET['catid'],'keyword'=>$_GET['keyword'],'partytype'=>$_GET['partytype'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>?minmoney=" + minmoney + "&maxmoney=" + maxmoney;
-                window.location.href = url;
-            }
-        });
-        $("#amount").val("￥" + $("#slider-range").slider("values", 0) + " - ￥" + $("#slider-range").slider("values", 1));
-
 
     });
 </script>
@@ -384,10 +351,8 @@
     <div class="activity_main">
         <a href="/">首页</a>
         <span>></span>
-        <a href="<?php echo U('Home/Party/index');?>">活动</a>
+        <a href="<?php echo U('Home/Note/index');?>">游记</a>
     </div>
-
-
     <div id="slideBox" class="activity_Box pr">
         <a class="prev" href="javascript:void(0)"></a>
         <a class="next" href="javascript:void(0)"></a>
@@ -412,211 +377,155 @@
 <div class="wrap">
     <div class="activity_main2 hidden">
         <div class="fl activity_main2_01">
-            <form action="<?php echo U('Home/Party/index');?>" method="get">
+            <form action="<?php echo U('Home/Note/index');?>" method="get">
                 <div class="activity_top1">
-                    <input type="text" name="keyword" value="<?php echo ($_GET['keyword']); ?>" class="activity_text1" placeholder="输入活动或关键词进行搜索..." />
+                    <input type="text" name="keyword" value="<?php echo ($_GET['keyword']); ?>" class="activity_text1" placeholder="输入游记或关键词进行搜索..." />
                     <input class="activity_sub" type="submit" value="搜索" />
                 </div>
             </form>
             <div class="activity_top2 hidden">
-                <span onclick="window.location.href='<?php echo U('Home/Party/index',array('type'=>1));?>'" <?php if(($_GET['type']) == "1"): ?>class="activity_span"<?php endif; ?>>热门活动</span>
-                <span onclick="window.location.href='<?php echo U('Home/Party/index',array('type'=>2));?>'" <?php if(!empty($_GET['type'])): if(($_GET['type']) == "2"): ?>class="activity_span"<?php endif; else: ?>class="activity_span"<?php endif; ?>>最新发布</span>
-                <a href="<?php echo U('Home/Party/add');?>">
+                <span onclick="window.location.href='<?php echo U('Home/Note/index',array('type'=>1));?>'" <?php if(($_GET['type']) == "1"): ?>class="activity_span"<?php endif; ?>>热门游记</span>
+                <span onclick="window.location.href='<?php echo U('Home/Note/index',array('type'=>2));?>'" <?php if(!empty($_GET['type'])): if(($_GET['type']) == "2"): ?>class="activity_span"<?php endif; else: ?>class="activity_span"<?php endif; ?>>最新发布</span>
+                <a href="<?php echo U('Home/Note/add');?>">
                     <img src="/Public/Home/images/Icon/img19.png" />
-                    发布活动
+                    发布游记
                 </a>
             </div>
-            <script type="text/javascript">
-                var areaurl = "<?php echo U('Home/Party/getchildren');?>";
-                $(function(){
-                    var province="<?php echo ($_GET['province']); ?>";
-                    var city="<?php echo ($_GET['city']); ?>";
-                    if(province!=''){
-                      load(province,'city',1);
-                    }
-                    if(city!=''){
-                      load(city,'town',1);
-                    }
-                })
-                function load(parentid, type ,isinit) {
-                    $.ajax({
-                        type: "GET",
-                        url: areaurl,
-                        data: { 'parentid': parentid },
-                        dataType: "json",
-                        success: function (data) {
-                            if (type == 'city') {
-                                $('#city').html('<option value="">选择市</option>');
-                                $('#town').html('<option value="">选择区</option>');
-                                if(data!=null){
-                                    $.each(data, function (no, items) {
-                                        if (items.id == "<?php echo ($_GET['city']); ?>") {
-                                            $('#city').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
-                                        } else {
-                                            $('#city').append('<option value="' + items.id + '">' + items.name + '</option>');
-                                        }
-                                    });
-                                }
-                                $('#city').trigger("chosen:updated");
-                                $('#town').trigger("chosen:updated");
-                            } else if (type == 'town') {
-                                $('#town').html('<option value="">选择区</option>');
-                                if(data!=null){
-                                    $.each(data, function (no, items) {
-                                        if (items.id == "<?php echo ($_GET['town']); ?>") {
-                                            $('#town').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
-                                        } else {
-                                            $('#town').append('<option value="' + items.id + '">' + items.name + '</option>');
-                                        }
-                                    });
-                                }
-                                
-                                $('#town').trigger("chosen:updated");
-                            }
-                            var province=$("#province option:selected").val();
-                            var city=$("#city option:selected").val();
-                            var town=$("#town option:selected").val();
-                            console.log(city)
-                            if(isinit==0){
-                                var url = "<?php echo U('Home/Party/index',array('type'=>$_GET['type'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'partytype'=>$_GET['partytype']));?>?province=" + province + "&city=" + city + "&town=" + town;
-                                window.location.href = url;
-                            }
-                            
-                            
-                        }
-                    });
-                }
-            </script>
-            </script>
-            <div class="activity_top3">
-                   <div class="activity_top3_01">
-                       <span>按位置 :</span>
-                       <div class="activity_top3_02" style="width:400px;">
-                           <select class="activity_top3_02 chosen-select-no-single" name="province" id="province"   onchange="load(this.value,'city',0)">
-                               <option value="">选择省</option>
-                                <?php if(is_array($province)): $i = 0; $__LIST__ = $province;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><option value="<?php echo ($vo["id"]); ?>" <?php if($vo['id'] == $_GET['province']): ?>selected<?php endif; ?>><?php echo ($vo["name"]); ?></option><?php endforeach; endif; else: echo "" ;endif; ?>
-                           </select>
-                           <select class="activity_top3_02 chosen-select-no-single" name="city" id="city"  onchange="load(this.value,'town',0)">
-                               <option value="">选择市</option>
-                           </select>
-
-                           <select class="activity_top3_02 chosen-select-no-single" name="town" id="town"  onchange="load(this.value,'distinct',0)">
-                               <option value="">选择区</option>
-                           </select>
+            <div class="travels_main4">
+                   <div class="travels_main4_1 hidden">
+                       <span class="f14 c333 middle fl">按时间 :</span>
+                       <ul class="hidden">
+                           <li <?php if(empty($_GET['month'])): ?>class="travels_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Note/index',array('type'=>$_GET['type'],'city'=>$_GET['city'],'keyword'=>$_GET['keyword']));?>'">不限</li>
+                           <?php
+ for ($i=1; $i <= 12; $i++) { if($_GET['month']!=$i){ echo "<li onclick=\"window.location.href='".U('Home/Note/index',array('type'=>$_GET['type'],'month'=>$i,'keyword'=>$_GET['keyword']))."'\">".$i."月</li>"; }else{ echo "<li class=\"travels_chang\" onclick=\"window.location.href='".U('Home/Note/index',array('type'=>$_GET['type'],'month'=>$i,'keyword'=>$_GET['keyword']))."'\">".$i."月</li>"; } } ?>
+                       </ul>
+                   </div>
+                   <div class="travels_main4_1 hidden">
+                       <span class=" fl f14 c333">热门城市 :</span>
+                       <div class="fl hidden travels_main4_2">
+                           <ul class="fl" id="menu_city">
+                               <li <?php if(empty($_GET['city'])): ?>class="travels_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Note/index',array('type'=>$_GET['type'],'month'=>$_GET['month'],'keyword'=>$_GET['keyword']));?>'">全国</li>
+                               <?php if(is_array($hotcity)): $i = 0; $__LIST__ = array_slice($hotcity,0,11,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li onclick="window.location.href='<?php echo U('Home/Note/index',array('type'=>$_GET['type'],'month'=>$_GET['month'],'keyword'=>$_GET['keyword'],'city'=>$vo['id']));?>'" <?php if($_GET['city'] == $vo['id']): ?>class="travels_chang"<?php endif; ?>><?php echo ($vo["name"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
+                           </ul>
+                           <label class="fr f12 c333 travels_main4_1_label ishidden">更多</label>
+                           <ul class="travels_main4_2_ul2 hide">
+                               <?php if(is_array($hotcity)): $i = 0; $__LIST__ = array_slice($hotcity,11,null,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li onclick="window.location.href='<?php echo U('Home/Note/index',array('type'=>$_GET['type'],'month'=>$_GET['month'],'keyword'=>$_GET['keyword'],'city'=>$vo['id']));?>'" <?php if($_GET['city'] == $vo['id']): ?>class="travels_chang"<?php endif; ?>><?php echo ($vo["name"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
+                           </ul>
                        </div>
                    </div>
-                <div class="travels_main4_1 hidden">
-                   <span class="f14 c333 middle fl">按特色 :</span>
-                    <ul class="hidden">
-                        <li <?php if(empty($_GET['catid'])): ?>class="travels_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Party/index',array('type'=>$_GET['type'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'partytype'=>$_GET['partytype'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
-                        <?php if(is_array($partycate)): $i = 0; $__LIST__ = $partycate;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li <?php if($_GET['catid'] == $vo['id']): ?>class="travels_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Party/index',array('type'=>$_GET['type'],'catid'=>$vo['id'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'keyword'=>$_GET['keyword'],'partytype'=>$_GET['partytype']));?>'"><?php echo ($vo["catname"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
-                   </ul>
                </div>
-                <div class="activity_top3_04">
-                       <span>按费用 :</span>
-                       <div id="slider-range" class="middle"></div>
-                       <input type="text" id="amount" class="middle f12" style="border:0; color:#000; font-weight:bold;">
-                   </div>
-                <div class="travels_main4_1 hidden">
-                    <span class="f14 c333 middle fl">按类型 :</span>
-                    <ul class="hidden">
-                        <li <?php if(empty($_GET['partytype'])): ?>class="travels_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Party/index',array('type'=>$_GET['type'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
-                        <li <?php if(($_GET['partytype']) == "1"): ?>class="travels_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Party/index',array('type'=>$_GET['type'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'partytype'=>1));?>'">亲子类</li>
-                        <li <?php if(($_GET['partytype']) == "2"): ?>class="travels_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Party/index',array('type'=>$_GET['type'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'partytype'=>2));?>'">情侣类</li>
-                        <li <?php if(($_GET['partytype']) == "3"): ?>class="travels_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Party/index',array('type'=>$_GET['type'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'partytype'=>3));?>'">家庭出游</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="activity_top4">
-                <div class="activity_chang">
-                    <ul class="activity_chang2_ul">
-                        <?php if(is_array($party)): $i = 0; $__LIST__ = $party;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
-                                <div class="hidden activity_chang2_list">
-                                    <div class="fl activity_chang2_list2 pr">
-                                        <a href="<?php echo U('Home/Party/show',array('id'=>$vo['id']));?>">
+            <div>
+                <div class="main5_top2">
+                    <ul class="main5_top2_ul">
+                        <?php if(is_array($note)): $i = 0; $__LIST__ = $note;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
+                                <div class="hidden main5_top2_list">
+                                    <div class="fl main5_top2_01 pr">
+                                        <a href="<?php echo U('Home/Note/show',array('id'=>$vo['id']));?>">
                                             <img class="pic" data-original="<?php echo ($vo["thumb"]); ?>" src="/Public/Home/images/default.jpg" />
                                         </a>
                                         <?php if(($vo['type']) == "1"): ?><div class="pa main4_bottom_list_x">
                                                 <img src="/Public/Home/images/Icon/jing.png" style="width: 53px;height: 53px;"/>
                                             </div><?php endif; ?>
                                     </div>
-                                    <div class="fl activity_chang2_list3">
-                                        <div class="activity_chang2_list3_top">
-                                            <a href="<?php echo U('Home/Party/show',array('id'=>$vo['id']));?>"><?php echo str_cut($vo['title'],25);?></a>
+                                    <div class="fl main5_top2_02">
+                                        <div class="main5_list1">
+                                            <a href="<?php echo U('Home/Note/show',array('id'=>$vo['id']));?>"><?php echo str_cut($vo['title'],25);?></a>
                                         </div>
-                                        <div class="activity_chang2_list3_center">
-                                            <p>时间 :<em><?php echo (date("Y-m-d",$vo["starttime"])); ?> - <?php echo (date("Y-m-d",$vo["endtime"])); ?></em></p>
-                                            <p>地点 :<em><?php echo ($vo["address"]); ?> </em></p>
+                                        <div class="main5_list2">
+                                            <span><?php echo (date("Y-m-d",$vo["inputtime"])); ?></span>
+                                            <p><?php echo str_cut($vo['description'],200);?></p>
                                         </div>
-                                        <div class="hmain5_r5_list2_2 hidden">
-                                            <div class="fl">
-                                                <span class="middle">已参与 :</span>
-                                                <?php if(is_array($vo['joinlist'])): $i = 0; $__LIST__ = $vo['joinlist'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$v): $mod = ($i % 2 );++$i;?><a href="<?php echo U('Home/Member/detail',array('uid'=>$v['id']));?>" class="middle">
-                                                        <img src="<?php echo ($v["head"]); ?>" width="30px" height="30px" style="border-radius: 50%;" />
-                                                    </a><?php endforeach; endif; else: echo "" ;endif; ?>
-                                                <span>( <?php echo ((isset($vo["joinnum"]) && ($vo["joinnum"] !== ""))?($vo["joinnum"]):"0"); ?>人 )</span>
+                                        <div class="main5_list3 hidden">
+                                            <div class="fl main5_list3_01">
+                                                <a href="<?php echo U('Home/Member/detail',array('uid'=>$vo['uid']));?>">
+                                                    <i>by</i>
+                                                    <img src="<?php echo ($vo["head"]); ?>" width="16px" height="16px" style="border-radius: 50%;" />
+                                                    <span><?php echo ($vo["nickname"]); ?></span>
+                                                </a>
                                             </div>
-                                            <div class="fr hidden hmain5_r5_list2_3">
-                                                <div class="fl hmain5_r5_list2_3_01">
-                                                    <img style="margin-right: 3px;" src="/Public/Home/images/Icon/img10.png" /><i><?php echo ((isset($vo["reviewnum"]) && ($vo["reviewnum"] !== ""))?($vo["reviewnum"]):"0"); ?></i><label>条点评</label>
+                                            <div class="fr main5_list3_02">
+                                                <div class="main5_list3_03">
+                                                    <img src="/Public/Home/images/Icon/img10.png" />
+                                                    <span><em><?php echo ((isset($vo["reviewnum"]) && ($vo["reviewnum"] !== ""))?($vo["reviewnum"]):"0"); ?></em>条点评</span>
                                                 </div>
-                                                <div class="fl hmain5_r5_list2_3_03">
-                                                    <?php if(($vo['ishit']) == "1"): ?><img src="/Public/Home/images/dianzan.png" style="margin-left: 20px; margin-right: 3px;"  class="zanbg1" data-id="<?php echo ($vo["id"]); ?>"/>
+                                                <a href="javascript:;" class="main5_list3_04">
+                                                    <?php if(($vo['ishit']) == "1"): ?><img src="/Public/Home/images/dianzan.png" class="zanbg1" data-id="<?php echo ($vo["id"]); ?>"/>
                                                         <?php else: ?>
-                                                        <img src="/Public/Home/images/Icon/img9.png" style="margin-left: 20px; margin-right: 3px;"  class="zanbg1" data-id="<?php echo ($vo["id"]); ?>"/><?php endif; ?>
-                                                    <label  class="zannum"><?php echo ((isset($vo["hit"]) && ($vo["hit"] !== ""))?($vo["hit"]):"0"); ?></label>
-                                                </div>
+                                                        <img src="/Public/Home/images/Icon/img9.png" class="zanbg1" data-id="<?php echo ($vo["id"]); ?>"/><?php endif; ?>
+                                                    <i class="zannum"><?php echo ((isset($vo["hit"]) && ($vo["hit"] !== ""))?($vo["hit"]):"0"); ?></i>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </li><?php endforeach; endif; else: echo "" ;endif; ?>
                     </ul>
+                    <div class="travels_main3"></div>
                     <div class="activity_chang4">
                         <?php echo ($Page); ?>
                     </div>
                     <div class="" style="width: 2px; height: 80px;"></div>
                 </div>
             </div>
+
         </div>
         <div class="fr activity_main2_02">
             <div class="activity_main2_02-1">
                 <div class="activity_main2_02-1_top">
-                    <span>热门游记</span>
+                    <span>热门活动</span>
                 </div>
                 <ul class="activity_main2_02-1_ul">
-                    <?php if(is_array($hotnote)): $i = 0; $__LIST__ = $hotnote;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
-                            <div class="activity_main2_02-1_list">
+                    <?php if(is_array($hotparty)): $i = 0; $__LIST__ = $hotparty;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
+                            <div class="travels_main pr">
                                 <div class="travels_main_x pr">
-                                   <img src="<?php echo ($vo["thumb"]); ?>" style="width:339px;height:213px" onclick="window.location.href='<?php echo U('Home/Party/show',array('id'=>$vo['id']));?>'" />
-                                   <div class="travels_main2_img">
+                                    <img src="<?php echo ($vo["thumb"]); ?>" style="width:339px;height:213px" onclick="window.location.href='<?php echo U('Home/Party/show',array('id'=>$vo['id']));?>'" />
+                                     <div class="travels_main2_img" >
                                         <a href="<?php echo U('Home/Member/detail',array('uid'=>$vo['uid']));?>">
                                             <img src="<?php echo ($vo["head"]); ?>"  width="55px" height="55px" />
                                         </a>
                                     </div>
                                 </div>
-                                <span><?php echo str_cut($vo['title'],12);?></span>
-                                <i><?php echo (date("Y-m-d",$vo["inputtime"])); ?></i>
-                                <p><?php echo str_cut($vo['description'],40);?></p>
+                                
+                                <div class="travels_main2">
+                                    <p><?php echo ($vo["title"]); ?></p>
+                                    <div>
+                                        <i>时间 :</i><span class="c666 f12"><?php echo (date("Y-m-d",$vo["starttime"])); ?> - <?php echo (date("Y-m-d",$vo["endtime"])); ?></span>
+                                    </div>
+                                    <div>
+                                        <i>地点 :</i><span class="c666 f14"><?php echo ($vo["address"]); ?> </span>
+                                    </div>
+                                </div>
                             </div>
                         </li><?php endforeach; endif; else: echo "" ;endif; ?>
                 </ul>
             </div>
-            <a href="<?php echo U('Home/Note/index',array('type'=>1));?>">点击查看更多游记...</a>
+            <a href="<?php echo U('Home/Party/index');?>">点击查看更多活动...</a>
         </div>
     </div>
 </div>
 <script type="text/javascript">
     $(function () {
         $(".chosen-select-no-single").chosen();
+        $(".travels_main4_1 i").click(function () {
+            $(this).addClass("travels_chang").siblings().removeClass("travels_chang");
+        })
+        $(".travels_main4_1_label").click(function () {
+                var $labale = $(this).html();
+                if ($labale == "更多") {
+                    $(this).html("收起");
+                    $(".travels_main4_2_ul2").show();
+                } else {
+                    $(this).html("更多");
+                    $(".travels_main4_2_ul2").hide();
+                }
+            })
         $(".zanbg1").live("click",function(){
             var obj=$(this);
             var uid='<?php echo ($user["id"]); ?>';
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Party/index.html";
+                p['url']="/index.php/Home/Note/index.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -625,11 +534,11 @@
               return false;
             }
             var hitnum=$(this).siblings(".zannum");
-            var aid=$(this).data("id");
+            var nid=$(this).data("id");
             $.ajax({
                  type: "POST",
-                 url: "<?php echo U('Home/Party/ajax_hit');?>",
-                 data: {'aid':aid},
+                 url: "<?php echo U('Home/Note/ajax_hit');?>",
+                 data: {'nid':nid},
                  dataType: "json",
                  success: function(data){
                             if(data.status==1){

@@ -69,7 +69,9 @@
                                       <i>{$vo.inputtime|date="Y-m-d",###}</i>
                                       <p>{:str_cut($vo['description'],40)}</p>
                                       <div class="activity_main2_02-1_list_img">
-                                          <img src="{$vo.head}"  width="55px" height="55px" />
+                                          <a href="{:U('Home/Member/detail',array('uid'=>$vo['uid']))}">
+                                            <img src="{$vo.head}"  width="55px" height="55px" />
+                                          </a>
                                       </div>
                                   </div>
                               </li>

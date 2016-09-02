@@ -43,7 +43,7 @@
         <div class="fl activity_main2_01">
             <form action="{:U('Home/Note/index')}" method="get">
                 <div class="activity_top1">
-                    <input type="text" name="keyword" value="{$_GET['keyword']}" class="activity_text1" placeholder="输入活动或关键词进行搜索..." />
+                    <input type="text" name="keyword" value="{$_GET['keyword']}" class="activity_text1" placeholder="输入游记或关键词进行搜索..." />
                     <input class="activity_sub" type="submit" value="搜索" />
                 </div>
             </form>
@@ -162,9 +162,11 @@
                         <li>
                             <div class="travels_main pr">
                                 <div class="travels_main_x pr">
-                                    <img class="pic" data-original="{$vo.thumb}" src="__IMG__/default.jpg" style="width:339px;height:213px" onclick="window.location.href='{:U('Home/Party/show',array('id'=>$vo['id']))}'" />
+                                    <img src="{$vo.thumb}" style="width:339px;height:213px" onclick="window.location.href='{:U('Home/Party/show',array('id'=>$vo['id']))}'" />
                                      <div class="travels_main2_img" >
-                                        <img src="{$vo.head}"  width="55px" height="55px" />
+                                        <a href="{:U('Home/Member/detail',array('uid'=>$vo['uid']))}">
+                                            <img src="{$vo.head}"  width="55px" height="55px" />
+                                        </a>
                                     </div>
                                 </div>
                                 

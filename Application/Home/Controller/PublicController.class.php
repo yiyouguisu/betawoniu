@@ -4,30 +4,31 @@ use Think\Controller;
 @ini_set('upload_max_filesize', '50M');
 class PublicController extends Controller {
 
-    private $thumb;//ÊÇ·ñ¿ªÆôËõÂÔÍ¼
-    private $water; //ÊÇ·ñ¼ÓË®Ó¡(0:ÎŞË®Ó¡,1:Ë®Ó¡ÎÄ×Ö,2Ë®Ó¡Í¼Æ¬)
-    private $waterText;//Ë®Ó¡ÎÄ×Ö
-    private $waterTextColor;//Ë®Ó¡ÎÄ×ÖÑÕÉ«
-    private $waterTextFontsize;//Ë®Ó¡ÎÄ×Ö´óĞ¡
-    private $thumbType;//ËõÂÔÍ¼ÀàĞÍ
-    private $waterPosition;//Ë®Ó¡Î»ÖÃ
-    private $savePath; //±£´æÎ»ÖÃ
-    private $userid; //²Ù×÷ÓÃ»§Ãû
+   private $thumb;//æ˜¯å¦å¼€å¯ç¼©ç•¥å›¾
+    private $water; //æ˜¯å¦åŠ æ°´å°(0:æ— æ°´å°,1:æ°´å°æ–‡å­—,2æ°´å°å›¾ç‰‡)
+    private $waterText;//æ°´å°æ–‡å­—
+    private $waterTextColor;//æ°´å°æ–‡å­—é¢œè‰²
+    private $waterTextFontsize;//æ°´å°æ–‡å­—å¤§å°
+    private $thumbType;//ç¼©ç•¥å›¾ç±»å‹
+    private $waterPosition;//æ°´å°ä½ç½®
+    private $savePath; //ä¿å­˜ä½ç½®
+    private $userid; //æ“ä½œç”¨æˆ·å
     private $upload_file_type=1;
-    var $config;
+
     public function _initialize(){
         set_time_limit(0);
+       $this->Configobj = D("Config");
         $ConfigData=F("web_config");
         if(!$ConfigData){
-            $ConfigData=M('config')->order(array('id'=>'desc'))->select();
-            F("web_config",$web_config);
+            $ConfigData=$this->Configobj->order(array('id'=>'desc'))->select();
+            F("web_config",$ConfigData);
         }
         foreach ($ConfigData as $key => $r) {
             if($r['groupid'] == 4){
                 $this->config[$r['varname']] = $r['value'];
             }
         }
-        $this->userid=empty($_SESSION['Home_uid'])? $_GET['uid'] : $_SESSION['Home_uid'];
+        $this->userid=empty($_SESSION['userid'])? $_GET['userid'] : $_SESSION['userid'];
         if(empty($this->userid)){
             $this->userid= '1';
         }
@@ -53,75 +54,32 @@ class PublicController extends Controller {
         //$this->autologin();
     }
     public function _empty(){      
-        $this->error("·ÃÎÊ³ö´í","/index.php");
+        $this->error("ï¿½ï¿½ï¿½Ê³ï¿½ï¿½ï¿½","/index.php");
     }
-    /**
-     * ÑéÖ¤Âë
-     * @author oydm<389602549@qq.com>  time|20140421
-     */
+    public function check_verify() {
+        $verify = new \Think\Verify();
+        $code = $_POST['verify'];
+        $verifyok = $verify->check($code, $id = '');
+        if (!$verifyok) {
+            echo "éªŒè¯ç é”™è¯¯";
+        } else {
+            echo "";
+        }
+    }
+
     public function verify() {
         $verify = new \Think\Verify();
-        ob_end_clean();
+         ob_end_clean();
         $verify->expire = 300;
-        $verify->fontSize = 15;
+        $verify->fontSize = 16;
         $verify->length = 4;
-        $verify->imageW = 100;
+        $verify->imageW = 110;
         $verify->imageH = 40;
         $verify->useNoise = false;
         $verify->useCurve = false;
         $verify->bg = array(255, 255, 255);
         $verify->entry();
     }
-    /**
-     * ¼ì²âÑéÖ¤Âë
-     * @author oydm<389602549@qq.com>  time|20140421
-     */
-    public function check_verify() {
-        $verify = new \Think\Verify();
-        $code = $_POST['verify'];
-        $verifyok = $verify->check($code, $id = '');
-        if (!$verifyok) {
-            echo "ÑéÖ¤Âë´íÎó";
-        } else {
-            echo "";
-        }
-    }
-    /**
-     * ¼ì²âÓÃ»§Ãû
-     * @author oydm<389602549@qq.com>  time|20140421
-     */
-    public function check_username() {
-        $username = $_POST['username'];
-        $result = M("Member")->where("username='".$username."'")->find();
-        if($result){
-            echo "ÓÃ»§ÃûÒÑ´æÔÚ£¡ÇëÖØĞÂÌîĞ´";
-        }else{
-            echo "";
-        }
-    }
-    public function check_username2() {
-        $username = $_POST['username'];
-        $result = M("Member")->where("username='".$username."'")->find();
-        if($result){
-            echo "";
-        }else{
-            echo "ÓÃ»§Ãû²»´æÔÚ£¡ÇëÖØĞÂÌîĞ´";
-        }
-    }
-    /**
-     * ¼ì²âÓÊÏä
-     * @author oydm<389602549@qq.com>  time|20140421
-     */
-    public function check_email() {
-        $email = $_POST['email'];
-        $result = M("Member")->where("email='" . $email."'")->find();
-        if($result){
-            echo "ÓÊÏäÒÑ´æÔÚ£¡ÇëÖØĞÂÌîĞ´";
-        }else{
-            echo "";
-        }
-    }
-
     public function https_request($url, $data_string) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -144,7 +102,7 @@ class PublicController extends Controller {
             "7", "8", "9"
         );
         $charsLen = count($chars) - 1;
-        shuffle($chars);    // ½«Êı×é´òÂÒ 
+        shuffle($chars); 
         $output = "";
         for ($i = 0; $i < $len; $i++) {
             $output .= $chars[mt_rand(0, $charsLen)];
@@ -166,7 +124,7 @@ class PublicController extends Controller {
         if($phone==''){
             exit(json_encode(array('code'=>-200,'msg'=>"Request parameter is null!")));
         }elseif(!isMobile($phone)){
-            exit(json_encode(array('code'=>-200,'msg'=>"ÊÖ»úºÅÂë¸ñÊ½´íÎó")));
+            exit(json_encode(array('code'=>-200,'msg'=>"æ‰‹æœºå·ç æ ¼å¼é”™è¯¯")));
         }else{
             $code=\Api\Common\CommonController::checknum(6);
             $verify=M('verify')->where(array('phone'=>$phone))->find();
@@ -192,28 +150,28 @@ class PublicController extends Controller {
             $statuscode=$Ymsms->sendsmsapi($data);
             if($statuscode!=0){
                 $data=array('statuscode'=>$statuscode);
-                exit(json_encode(array('code'=>-200,'msg'=>"·¢ËÍÊ§°Ü",'data' => $data)));
+                exit(json_encode(array('code'=>-200,'msg'=>"å‘é€å¤±è´¥",'data' => $data)));
             }else{
                 $data=array('code'=>$code);
-                exit(json_encode(array('code'=>200,'msg'=>"·¢ËÍ³É¹¦",'data' => $data)));
+                exit(json_encode(array('code'=>200,'msg'=>"å‘é€æˆåŠŸ",'data' => $data)));
             }
         }
     }
     public function upload() {
         if (!empty($_FILES)) {
-            //Èç¹ûÓĞÎÄ¼şÉÏ´« ÉÏ´«¸½¼ş
+            //å¦‚æœæœ‰æ–‡ä»¶ä¸Šä¼  ä¸Šä¼ é™„ä»¶
             $this->Fupload();
         }
     }
     public function uploadone() {
         if (!empty($_FILES)) {
-            //Èç¹ûÓĞÎÄ¼şÉÏ´« ÉÏ´«¸½¼ş
+            //å¦‚æœæœ‰æ–‡ä»¶ä¸Šä¼  ä¸Šä¼ é™„ä»¶
             $this->Fuploadone();
         }
     }
     
     /**
-     * ¶àÍ¼Æ¬ÉÏ´«
+     * å¤šå›¾ç‰‡ä¸Šä¼ 
      */
     protected function Fupload() {
         $upload = new \Think\Upload();
@@ -234,20 +192,19 @@ class PublicController extends Controller {
         }
     }
     /**
-     * µ¥Í¼Æ¬ÉÏ´«
+     * å•å›¾ç‰‡ä¸Šä¼ 
      */
     public function FuploadOne() {
         $upload = new \Think\Upload();
-        $upload->maxSize = $this->config['uploadHSize'];
-        $upload->exts= explode("|",$this->config['uploadHType']);// ÉèÖÃ¸½¼şÉÏ´«ÀàĞÍ
+        $upload->maxSize = $this->config['uploadASize'];
+        $upload->exts= explode("|",$this->config['uploadAType']);// è®¾ç½®é™„ä»¶ä¸Šä¼ ç±»å‹
         $upload->savePath = $this->imagessavePath;
         $upload->autoSub= $this->autoSub;
         $upload->saveName = $this->saveRule;
         $upload->subName  = $this->subNameRule;
         $info=$upload->uploadOne($_FILES['Filedata']);
         if (!$info) {
-            $error=$upload->getError();
-            echo json_encode(array('status'=>0,'msg'=>$error));
+            echo ($upload->getError());
         } else {
             $fname=$info['savepath'].$info['savename'];
             $imagearr = explode(',', 'jpg,gif,png,jpeg,bmp,ttf,tif'); 
@@ -281,12 +238,9 @@ class PublicController extends Controller {
                     }
                 }   
             }
-            echo json_encode(array('status'=>1,'msg'=>$fname));
+            echo $fname;
         }
     }
-     /*
-     * ajax»ñÈ¡×ÓµØÇøÁĞ±í
-     */
 
     public function getareachildren() {
         $parentid = $_GET['id'];

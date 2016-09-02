@@ -110,7 +110,7 @@
                     <a href="{:U('Home/Woniu/index')}">蜗牛</a>
                 </li>
                 <li class="fl">|</li>
-                <li <eq name="controller_url" value="Home/About">class="fl main_top3_chang2" <else />class="fl" </eq>>
+                <li <eq name="current_url" value="Home/About/app">class="fl main_top3_chang2" <else />class="fl" </eq>>
                     <a href="{:U('Home/About/app')}">APP下载</a>
                 </li>
             </ul>

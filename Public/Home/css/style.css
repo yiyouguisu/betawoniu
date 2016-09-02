@@ -2627,7 +2627,9 @@ Top_contacts.html
 .About_us_right { width: 1010px; min-height: 580px; margin-bottom: 40px; }
 .About_us_right_top span { display: block; font-size: 26px; color: #21a7bb; border-bottom: 1px solid #e5e5e5; line-height: 50px; }
 .About_us_right_head p { font-size: 14px; color: #666666; line-height: 31px; margin-bottom: 35px; }
-
+.About_us_right_head img {
+	width: 100%
+}
 /*9-2添加*/
 .Common_problem_main span { display: block; font-size: 18px; color: #333333; border-bottom: 1px solid #e5e5e5; line-height: 31px; margin-top: 12px; padding-bottom: 8px; }
 .Common_problem_main p { font-size: 14px; color: #666666; line-height: 28px; margin-bottom: 5px; margin-top: 5px; }

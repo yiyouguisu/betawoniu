@@ -57,11 +57,11 @@
                     <div class="foot1_li3_01">
                         <img src="__IMG__/logo2.png"  />
                         <i>snailinns</i>
-                        <a href="" class="foot_a">
+                        <a href="{:U('Home/About/app')}" class="foot_a">
                             <img src="__IMG__/Icon/img12.png" />
                             IOS
                         </a>
-                        <a href="">
+                        <a href="{:U('Home/About/app')}">
                             <img src="__IMG__/Icon/img13.png" />
                             安卓
                         </a>

@@ -152,7 +152,7 @@
                     <a href="<?php echo U('Home/Woniu/index');?>">蜗牛</a>
                 </li>
                 <li class="fl">|</li>
-                <li <?php if(($controller_url) == "Home/About"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
+                <li <?php if(($current_url) == "Home/About/app"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
                     <a href="<?php echo U('Home/About/app');?>">APP下载</a>
                 </li>
             </ul>
@@ -342,17 +342,63 @@
             }
         </script>
 
-    <div class="wrap">
+<div class="wrap">
         <div class="activity_main">
             <a href="/">首页</a>
             <span>></span>
-            <a href="<?php echo U('Home/About/app');?>">APP下载</a>
+            <a href="<?php echo U('Home/About/index');?>">关于我们</a>
         </div>
     </div>
 
     <div class="wrap">
-        <div class="APP">
-            <?php echo ($data["content"]); ?>
+        <div class="About_us hidden">
+            <div class="fl About_us_left">
+                <ul class="About_us_ul">
+                    <li <?php if(($current_url) == "Home/About/index"): ?>class="About_us_list"<?php endif; ?>>
+                        <a href="<?php echo U('Home/About/index');?>">
+                            关于我们
+                        </a>
+                    </li>
+                    <li <?php if(($current_url) == "Home/About/question"): ?>class="About_us_list"<?php endif; ?>>
+                        <a href="<?php echo U('Home/About/question');?>">
+                            常见问题
+                        </a>
+                    </li>
+                    <li <?php if(($current_url) == "Home/About/contact"): ?>class="About_us_list"<?php endif; ?>>
+                        <a href="<?php echo U('Home/About/contact');?>">
+                            联系我们
+                        </a>
+                    </li>
+                    <li <?php if(($current_url) == "Home/About/privacy"): ?>class="About_us_list"<?php endif; ?>>
+                        <a href="<?php echo U('Home/About/privacy');?>">
+                            隐私政策
+                        </a>
+                    </li>
+                    <li <?php if(($current_url) == "Home/About/service"): ?>class="About_us_list"<?php endif; ?>>
+                        <a href="<?php echo U('Home/About/service');?>">
+                            服务条款
+                        </a>
+                    </li>
+                    <li <?php if(($current_url) == "Home/About/feedback"): ?>class="About_us_list"<?php endif; ?>>
+                        <a href="<?php echo U('Home/About/feedback');?>">
+                            投诉建议
+                        </a>
+                    </li>
+                    <li <?php if(($current_url) == "Home/About/app"): ?>class="About_us_list"<?php endif; ?>>
+                        <a href="<?php echo U('Home/About/app');?>">
+                            APP下载
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="fl About_us_right">
+                <div class="About_us_right_top">
+                    <span>APP下载</span>
+                </div>
+                <div class="About_us_right_head">
+                    <p><?php echo ($data["content"]); ?></p>
+                </div>
+            </div>
         </div>
     </div>
 <div class="foot">
@@ -414,11 +460,11 @@
                     <div class="foot1_li3_01">
                         <img src="/Public/Home/images/logo2.png"  />
                         <i>snailinns</i>
-                        <a href="" class="foot_a">
+                        <a href="<?php echo U('Home/About/app');?>" class="foot_a">
                             <img src="/Public/Home/images/Icon/img12.png" />
                             IOS
                         </a>
-                        <a href="">
+                        <a href="<?php echo U('Home/About/app');?>">
                             <img src="/Public/Home/images/Icon/img13.png" />
                             安卓
                         </a>

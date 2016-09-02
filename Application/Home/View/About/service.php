@@ -46,6 +46,11 @@
                             投诉建议
                         </a>
                     </li>
+                    <li <eq name="current_url" value="Home/About/app">class="About_us_list"</eq>>
+                        <a href="{:U('Home/About/app')}">
+                            APP下载
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="fl About_us_right">

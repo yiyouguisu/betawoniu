@@ -39,7 +39,7 @@
                 </li>
                 <li class="fl foot1_li2">
                     <p>帮助中心</p>
-                    <a href="{:U('Home/About/quesion')}">常见问题</a>
+                    <a href="{:U('Home/About/question')}">常见问题</a>
                     <a href="{:U('Home/About/privacy')}">隐私政策</a>
                     <a href="{:U('Home/About/service')}">服务条款</a>
                     <a href="{:U('Home/Member/index')}">个人中心</a>
@@ -53,10 +53,10 @@
                 </li>
                 <li class="fl foot1_li3">
                     <p>APP下载</p>
-                    <img src="__IMG__/img26.png" />
+                    <img src="__IMG__/qrcode.jpg" style="width:105px;height:105px" />
                     <div class="foot1_li3_01">
-                        <img src="__IMG__/logo2.png" />
-                        <i>woniuke</i>
+                        <img src="__IMG__/logo2.png"  />
+                        <i>snailinns</i>
                         <a href="" class="foot_a">
                             <img src="__IMG__/Icon/img12.png" />
                             IOS

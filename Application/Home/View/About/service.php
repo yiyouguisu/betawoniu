@@ -49,8 +49,12 @@
                 </ul>
             </div>
             <div class="fl About_us_right">
-                <span>服务条款</span>
-                <p>{$data.content}</p>
+                <div class="About_us_right_top">
+                    <span>服务条款</span>
+                </div>
+                <div class="About_us_right_head">
+                    <p>{$data.content}</p>
+                </div>
             </div>
         </div>
     </div>

@@ -103,7 +103,7 @@
                         <div class="center2">
                             <span>房间面积：<em>{$data.area|default="0.0"}m2 </em></span>
                             <span>床型信息：<em>{$data.bedtype}</em></span>
-                            <span>房间数：<em>{$data.mannum|default="0"}人</em></span>
+                            <span>房间数：<em>{$data.mannum|default="0"}间</em></span>
                         </div>
                     </div>
                     <div class="middle Inn_introduction_main_bottom3">
@@ -369,7 +369,7 @@
                 <form id="bookform" action="{:U('Home/Order/bookroom')}" method="post">
                     <div class="Hotel_Details_b">
                         <span class="middle">
-                            离住
+                            住离
                         </span>
                         <div class="pr middle">
                             <input type="text" class="J_date starttime" name="starttime" value="" />
@@ -393,19 +393,19 @@
                         <div class="Hotel_Details_c2">
                             <i class="middle">入住人数 :</i>
                             <div class="Hotel_Details_c3 middle">
-                                <span class="prev2 f18 mannum" onselectstart="return false;">+</span>
+                                <span class="next2 f24 mannum" onselectstart="return false;">-</span>
                                 <i id="mannum">0</i>
                                 <input type="hidden" name="mannum" value="0">
-                                <span class="next2 f24 mannum" onselectstart="return false;">-</span>
+                                <span class="prev2 f18 mannum" onselectstart="return false;">+</span>
                             </div>
                         </div>
                         <div class="Hotel_Details_c2">
                             <i class="middle">入住间数 :</i>
                             <div class="Hotel_Details_c3 middle">
-                                <span class="prev2 f18 roomnum" onselectstart="return false;">+</span>
+                                <span class="next2 f24 roomnum" onselectstart="return false;">-</span>
                                 <i id="roomnum">0</i>
                                 <input type="hidden" name="roomnum" value="0">
-                                <span class="next2 f24 roomnum" onselectstart="return false;">-</span>
+                                <span class="prev2 f18 roomnum" onselectstart="return false;">+</span>
                             </div>
                         </div>
                     </div>

@@ -30,7 +30,7 @@
                 <li class="current"><a href="javascript:;;">注册协议</a></li>
                 <li class=""><a href="javascript:;;">蜗牛客平台使用协议</a></li>
                 <li class=""><a href="javascript:;;">软件使用说明</a></li>
-                <li class=""><a href="javascript:;;">关于我们</a></li>
+                <!-- <li class=""><a href="javascript:;;">关于我们</a></li> -->
                 <li class=""><a href="javascript:;;">提现规则</a></li>
                 <li class=""><a href="javascript:;;">行程使用说明</a></li>
             </ul>
@@ -53,11 +53,11 @@
                         <textarea name="instruction" id="instruction">{$Site.instruction}</textarea>
                     </div>
                 </div>
-                <div class="tba">
+                <!-- <div class="tba">
                     <div class="table_full">
                         <textarea name="about_us" id="about_us">{$Site.about_us}</textarea>
                     </div>
-                </div>
+                </div> -->
                 <div class="tba">
                     <div class="table_full">
                         <textarea name="withdrawrule" id="withdrawrule">{$Site.withdrawrule}</textarea>
@@ -82,7 +82,7 @@
         CKEDITOR.replace('reg_service', { toolbar: 'Full' });
         CKEDITOR.replace('use_service', { toolbar: 'Full' });
         CKEDITOR.replace('instruction', { toolbar: 'Full' });
-        CKEDITOR.replace('about_us', { toolbar: 'Full' }); 
+        // CKEDITOR.replace('about_us', { toolbar: 'Full' }); 
         CKEDITOR.replace('withdrawrule', { toolbar: 'Full' }); 
         CKEDITOR.replace('tripinfo', { toolbar: 'Full' }); 
     </script>

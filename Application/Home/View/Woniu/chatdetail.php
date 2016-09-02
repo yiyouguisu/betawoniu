@@ -34,7 +34,7 @@
                         <span>联系人</span>
                     </div>
                     <div class="Chat_details_main1_bottom3">
-                        <ul class="Chat_details_main1_bottom3_ul">
+                        <ul class="Chat_details_main1_bottom3_ul" style="overflow-y: scroll;height: 520px;">
                             
                         </ul>
                     </div>
@@ -50,6 +50,11 @@
                 <div class="Chat_details_mian4 pr">
                     <textarea class="content"></textarea>
                     <input type="button" class="bjy-cbh-send" value="发送" />
+                    <div class="Chat_details_mian5">
+                        <img src="__IMG__/Icon/img32.png" />
+                        <img src="__IMG__/Icon/img31.png" />
+                    </div>
+                    <!-- <div id="emoj"></div> -->
                 </div>
             </div>
         </div>
@@ -61,6 +66,7 @@
     </script>
 <include file="public:foot" />
 <script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
+<script src="http://cdn.ronghub.com/RongEmoji-2.2.2.min.js"></script>
     <!-- <script src="assets/js/RongIMLib-2.1.3.js"></script> -->
     
 
@@ -72,6 +78,13 @@
         };
 
         RongIMClient.init("cpj2xarljz3ln");
+        RongIMLib.RongIMEmoji.init();
+
+        var emojis = RongIMLib.RongIMEmoji.emojis;
+        for (var i = 0;i <= emojis.length - 1;  i++) {
+            $("#emoj").append(emojis[i])
+        };
+
         var token = "{$user.rongyun_token}";
 
     RongIMClient.connect(token, {
@@ -271,6 +284,8 @@
                       break;
                   case RongIMClient.MessageType.ImageMessage:
                       // do something...
+                      // message.content.content => 图片缩略图 base64。
+                      // message.content.imageUri => 原图 URL。
                       break;
                   case RongIMClient.MessageType.DiscussionNotificationMessage:
                       // do something...
@@ -371,7 +386,7 @@
             return str;
         }
         /**
-         * 发送消息
+         * 发送文字消息
          * @param  {integer} uid  用户id
          * @param  {string}  word 发送的消息
          */
@@ -417,7 +432,56 @@
              
                
         }
+        /**
+         * 发送图片消息
+         * @param  {integer} uid  用户id
+         * @param  {string}  word 发送的消息
+         */
+        function rongSendImageMessage(uid,base64Str,url){
+             var base64Str = base64Str;// 图片转为可以使用 HTML5 的 FileReader 或者 canvas 也可以上传到后台进行转换。
+             var imageUri = url; // 上传到自己服务器的 URL。
+             var msg = new RongIMLib.ImageMessage({content:base64Str,imageUri:imageUri});
+             var conversationtype = RongIMLib.ConversationType.PRIVATE; // 私聊,其他会话选择相应的消息类型即可。
+             var targetId = uid; // 目标 Id
 
+
+             RongIMClient.getInstance().sendMessage(conversationtype, targetId, msg, {
+                // 发送消息成功
+                onSuccess: function (message) {
+                    //message 为发送的消息对象并且包含服务器返回的消息唯一Id和发送消息时间戳
+                    console.log("Send successfully");
+                },
+                onError: function (errorCode,message) {
+                    var info = '';
+                    switch (errorCode) {
+                        case RongIMLib.ErrorCode.TIMEOUT:
+                            info = '超时';
+                            break;
+                        case RongIMLib.ErrorCode.UNKNOWN_ERROR:
+                            info = '未知错误';
+                            break;
+                        case RongIMLib.ErrorCode.REJECTED_BY_BLACKLIST:
+                            info = '在黑名单中，无法向对方发送消息';
+                            break;
+                        case RongIMLib.ErrorCode.NOT_IN_DISCUSSION:
+                            info = '不在讨论组中';
+                            break;
+                        case RongIMLib.ErrorCode.NOT_IN_GROUP:
+                            info = '不在群组中';
+                            break;
+                        case RongIMLib.ErrorCode.NOT_IN_CHATROOM:
+                            info = '不在聊天室中';
+                            break;
+                        default :
+                            info = x;
+                            break;
+                    }
+                    console.log('发送失败:' + info);
+                }
+            });
+             
+               
+        }
         /**
          * 调整对话框滚动轴位置
          * @param  {integer} num 滚动轴位置

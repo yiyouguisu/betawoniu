@@ -347,7 +347,12 @@ class PublicController extends CommonController {
         if($type==''){
             exit(json_encode(array('code'=>-200,'msg'=>"Request parameter is null!")));
         }else{
-            $data = M("config")->where(array('groupid'=>6,'varname'=>$type))->getField("value");
+            if($type=="about_us"){
+                $data = M('page')->where(array('catid'=>8))->getField("content");
+            }else{
+                $data = M("config")->where(array('groupid'=>6,'varname'=>$type))->getField("value");
+            }
+            
             if($data){
                 exit(json_encode(array('code'=>200,'msg'=>"获取数据成功",'data' => $data)));
             }else{
@@ -437,7 +442,7 @@ class PublicController extends CommonController {
         if($p==''||$num==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }else{
-            $data=M("question")->order(array('id'=>"desc"))->field('id,title,content,inputtime')->page($p,$num)->select();
+            $data=M("question")->where(array('status'=>1))->order(array('id'=>"desc"))->field('id,title,content,inputtime')->page($p,$num)->select();
             if($data){
                 exit(json_encode(array('code'=>200,'msg'=>"加载成功",'data'=>$data)));
             }else{

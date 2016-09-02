@@ -49,8 +49,12 @@
                 </ul>
             </div>
             <div class="fl About_us_right">
-                <span>关于我们</span>
-                <p>{$data.content}</p>
+                <div class="About_us_right_top">
+                    <span>关于我们</span>
+                </div>
+                <div class="About_us_right_head">
+                    <p>{$data.content}</p>
+                </div>
             </div>
         </div>
     </div>

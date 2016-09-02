@@ -49,8 +49,15 @@
                 </ul>
             </div>
             <div class="fl About_us_right">
-                <span>常见问题</span>
-                <p>{$data.content}</p>
+                <div class="About_us_right_top">
+                    <span>常见问题</span>
+                </div>
+                <volist name="data" id="vo">
+                    <div class="Common_problem_main">
+                        <span>{$vo.title}</span>
+                        <p>{$vo.content}</p>
+                    </div>
+                </volist>
             </div>
         </div>
     </div>

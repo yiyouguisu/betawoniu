@@ -626,12 +626,18 @@ class OrderController extends CommonController {
         }elseif(!empty($refund_apply)){
             exit(json_encode(array('code'=>-200,'msg'=>"该订单已经申请退订")));
         }else{
+            $refundorderid=date("YmdHis", time()) . rand(100, 999);
             $id=M('refund_apply')->add(array(
                     'uid'=>$uid,
                     'orderid'=>$orderid,
+                    'refundorderid'=>$refundorderid,
+                    'transaction_id'=>$order['trade_no'],
                     'content'=>$content,
+                    'total'=>$order['money'],
+                    'channel'=>$order['channel'],
                     'money'=>0.00,
                     'status'=>1,
+                    'refund_status'=>0,
                     'inputtime'=>time()
                 ));
             if($id){

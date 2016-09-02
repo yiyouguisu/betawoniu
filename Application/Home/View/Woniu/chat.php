@@ -34,7 +34,7 @@
             </div>
             <div class="fl Snail_home_mr">
                 <div class="Are_chatting_main">
-                    <ul class="Are_chatting_main_ul">
+                    <ul class="Are_chatting_main_ul"  style="overflow-y: scroll;height: 520px;margin-bottom: 100px;">
                         
                     </ul>
                 </div>

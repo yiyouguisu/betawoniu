@@ -7,6 +7,11 @@ use Api\Common\CommonController;
 class IndexController extends CommonController {
     
     public function index() {
+
+        $Refund=A("Api/Refund");
+        $paycharge=$Refund->refund("201608200901564913838","0.01","0.01","20160902153942167","unionpay");
+        dump($paycharge);die;
+        
         $data['phone'] = '15225071509';
         $data['password']='123456';
 

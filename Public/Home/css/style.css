@@ -159,7 +159,7 @@
 .foot1_li3 { width: 310px; }
 .foot1_li3 p { font-size: 16px; color: #fff; border-bottom: 1px solid #5c5c5c; padding-bottom: 16px; margin-bottom: 17px; }
 .foot1_li3_01 { display: inline-block; *display: inline; *zoom: 1; text-align: center; margin-left: 17px; }
-.foot1_li3_01 i { letter-spacing: 13px; display: block; color: #868686; font-size: 23px; text-align: center; }
+.foot1_li3_01 i { letter-spacing: 10px; display: block; color: #868686; font-size: 23px; text-align: center; }
 .foot1_li3_01 a { display: inline-block; *display: inline; *zoom: 1; width: 80px; border: 1px solid #999999; color: #adadad; font-size: 16px; text-align: center; line-height: 30px; height: 30px; border-radius: 1px; margin-top: 3px; }
 .foot1_li3_01 a img { margin-top: -4px; }
 .foot1_li3 > img { margin-top: -78px; }
@@ -1786,7 +1786,7 @@
 .Chat_details_mian1_top2 { width: 80px; height: 80px; border-radius: 50%; border: 6px solid #fff; box-sizing: border-box; overflow: hidden; box-shadow: 0 0 10px #ccc; display: inline-block; margin-left: 30px; }
 .Chat_details_mian1_top2 img { width: 100%; }
 .Chat_details_mian1_bottom2 span { font-size: 16px; color: #000; display: block; text-align: center; line-height: 40px; height: 40px; }
-.Chat_details_main1_bottom3_ul { /*border-bottom: 1px solid #d9d9d9;*/ margin-bottom: 137px; }
+.Chat_details_main1_bottom3_ul { /*border-bottom: 1px solid #d9d9d9;*/ /*margin-bottom: 137px; */}
 .Chat_details_main1_bottom3_ul li:nth-of-type(1) { border-bottom: 1px solid #dcdcdc; border-top: 1px solid #dcdcdc; box-sizing: border-box; }
 .Chat_details_main1_bottom3_ul li { box-sizing: border-box; padding: 20px; border-bottom: 1px solid #dcdcdc; }
 .Chat_details_main1_bottom3_ul li:hover { cursor: pointer; }
@@ -1820,8 +1820,18 @@
 .Chat_details_m2_center3_3 span { font-size: 14px; color: #333333; display: block; }
 .Chat_details_m2_center3_3 i { font-size: 12px; display: block; color: #a3a3a3; margin-top: 5px; }
 .Chat_details_mian4 textarea { width: 932px; height: 50px; box-sizing: border-box; resize: vertical; height: 74px; margin: 10px; padding-right: 114px; border: 0px; font-size: 16px; color: #333; }
-.Chat_details_mian4 input { font-size: 14px; color: #6bb3fc; width: 70px; height: 34px; box-sizing: border-box; border: 1px solid #6bb3fc; background: #fff; position: absolute; top: 28px; right: 44px; }
+
+/*8-3修改*/
+.Chat_details_mian4 input { font-size: 14px; color: #6bb3fc; width: 70px; height: 34px; box-sizing: border-box; border: 1px solid #6bb3fc; background: #fff; position: absolute; bottom: 31px; right: 125px; }
 .Chat_details_mian4 input:hover { cursor: pointer; }
+/*结束*/
+
+/*8-3添加*/
+.Chat_details_mian5 { position: absolute; bottom: 38px; right: 0px; }
+.Chat_details_mian5 img { float: left; margin-right: 28px; }
+.Chat_details_mian5 img:hover { cursor: pointer; }
+/*结束*/
+
 .Open_stroke_a { width: 857px; }
 .Open_stroke_main > a { display: block; width: 338px; height: 52px; border: 1px solid #e0e0e0; color: #999999; font-size: 16px; text-align: center; line-height: 52px; margin-bottom: 20px; }
 .Open_stroke_l_top img { width: 100%; margin-bottom: 12px; }
@@ -2612,3 +2622,12 @@ Top_contacts.html
 /*8-31修改*/
 .foot1_li1 span { font-size: 14px; color: #fff; display: block; margin-bottom: 3px; }
 .foot1_li1 i { display: block; font-size: 14px; color: #fff; margin-bottom:4px; }
+
+/*9-2修改*/
+.About_us_right { width: 1010px; min-height: 580px; margin-bottom: 40px; }
+.About_us_right_top span { display: block; font-size: 26px; color: #21a7bb; border-bottom: 1px solid #e5e5e5; line-height: 50px; }
+.About_us_right_head p { font-size: 14px; color: #666666; line-height: 31px; margin-bottom: 35px; }
+
+/*9-2添加*/
+.Common_problem_main span { display: block; font-size: 18px; color: #333333; border-bottom: 1px solid #e5e5e5; line-height: 31px; margin-top: 12px; padding-bottom: 8px; }
+.Common_problem_main p { font-size: 14px; color: #666666; line-height: 28px; margin-bottom: 5px; margin-top: 5px; }

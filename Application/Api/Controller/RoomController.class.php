@@ -631,6 +631,7 @@ class RoomController extends CommonController {
             }
         }
     }
+    
     public function del_linkman(){
         $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
         $ret=json_decode($ret,true);
@@ -647,6 +648,61 @@ class RoomController extends CommonController {
             exit(json_encode(array('code'=>-200,'msg'=>"联系人不存在")));
         }else{
             $id=M('linkman')->where(array('id'=>$lmid))->delete();
+            if($id){
+                exit(json_encode(array('code'=>200,'msg'=>"提交成功")));
+            }else{
+                exit(json_encode(array('code'=>-202,'msg'=>"提交失败")));
+            }
+        }
+    }
+    public function bookask(){
+        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=json_decode($ret,true);
+        $uid=intval(trim($ret['uid']));
+        $tuid=intval(trim($ret['tuid']));
+        
+        $fuser=M('Member')->where(array('id'=>$uid))->find();
+        $tuser= M('Member')->where(array('id'=>$tuid))->find();
+        if($uid==''||$tuid==''){
+            exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
+        }elseif(empty($fuser)){
+            exit(json_encode(array('code'=>-200,'msg'=>"用户不存在")));
+        }elseif(empty($tuser)){
+            exit(json_encode(array('code'=>-200,'msg'=>"房东不存在")));
+        }else{
+            $id=M('bookask')->add(array(
+                'uid'=>$uid,
+                'tuid'=>$tuid,
+                'status'=>0,
+                'inputtime'=>time(),
+                'updatetime'=>time()
+                ));
+            if($id){
+                exit(json_encode(array('code'=>200,'msg'=>"提交成功")));
+            }else{
+                exit(json_encode(array('code'=>-202,'msg'=>"提交失败")));
+            }
+        }
+    }
+    public function update_bookask_status(){
+        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=json_decode($ret,true);
+        $uid=intval(trim($ret['uid']));
+        $tuid=intval(trim($ret['tuid']));
+        
+        $fuser=M('Member')->where(array('id'=>$uid))->find();
+        $tuser= M('Member')->where(array('id'=>$tuid))->find();
+        if($uid==''||$tuid==''){
+            exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
+        }elseif(empty($fuser)){
+            exit(json_encode(array('code'=>-200,'msg'=>"用户不存在")));
+        }elseif(empty($tuser)){
+            exit(json_encode(array('code'=>-200,'msg'=>"咨询者不存在")));
+        }else{
+            $id=M('bookask')->where(array('tuid'=>$uid,'uid'=>$tuid))->save(array(
+                'status'=>1,
+                'updatetime'=>time()
+                ));
             if($id){
                 exit(json_encode(array('code'=>200,'msg'=>"提交成功")));
             }else{

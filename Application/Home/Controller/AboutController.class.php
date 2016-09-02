@@ -25,7 +25,7 @@ class AboutController extends CommonController {
         $this->display();
     }
     public function question() {
-    	$data=M('page')->where(array('catid'=>9))->find();
+    	$data=M("question")->where(array('status'=>1))->order(array('id'=>"asc"))->field('id,title,content,inputtime')->select();
     	$this->assign('data',$data);
         $this->display();
     }

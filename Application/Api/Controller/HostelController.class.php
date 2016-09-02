@@ -1036,16 +1036,18 @@ class HostelController extends CommonController {
                 ->select();
             $data['hostel']=!empty($hostel)?$hostel:null;
             
-            $onlinereply=0.00;
-            $data['onlinereply']=!empty($onlinereply)?$onlinereply:0.00;
+            $replyasknum=M('bookask')->where(array('tuid'=>$hosteluid,'status'=>1))->count();
+            $totalasknum=M('bookask')->where(array('tuid'=>$hosteluid))->count();
+            $onlinereply=($replyasknum/$totalasknum)*100;
+            $data['onlinereply']=!empty($onlinereply)?sprintf("%.2f",$onlinereply):"100.00";
 
             $evaluationconfirm=M()->query("SELECT AVG(b.sufftime) FROM(SELECT(b.review_time - b.inputtime) / 60 AS sufftime FROM zz_book_room a LEFT JOIN zz_order_time b ON a.orderid = b.orderid LEFT JOIN zz_hostel c ON a.hid = c.id WHERE(b.status = 4)AND (b.review_status > 0)AND (c.uid = ".$hosteluid.")) b");
-            $data['evaluationconfirm']=!empty($evaluationconfirm)?sprintf("%.2f",$evaluationconfirm):0.0;
+            $data['evaluationconfirm']=!empty($evaluationconfirm)?sprintf("%.2f",$evaluationconfirm):"0.0";
 
             $successordernum=M('book_room a')->join("left join zz_order_time b on a.orderid=b.orderid")->join("left join zz_hostel c on a.hid=c.id")->where(array('c.uid'=>$hosteluid,'b.review_status'=>1,'b.status'=>array('not in','1,5')))->count();
             $totalordernum=M('book_room a')->join("left join zz_order_time b on a.orderid=b.orderid")->join("left join zz_hostel c on a.hid=c.id")->where(array('c.uid'=>$hosteluid))->count();
             $orderconfirm=($successordernum/$totalordernum)*100;
-            $data['orderconfirm']=!empty($orderconfirm)?sprintf("%.2f",$orderconfirm):100.00;
+            $data['orderconfirm']=!empty($orderconfirm)?sprintf("%.2f",$orderconfirm):"100.00";
             if($data){
                 exit(json_encode(array('code' => 200, 'msg' => "获取数据成功", 'data' =>$data)));
             }else{

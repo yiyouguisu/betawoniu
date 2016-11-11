@@ -42,6 +42,8 @@ class RefundController extends CommonController {
              'APPID' => 'wxea98c16a0c02eefa',
              'MCHID' => '1354896002'
             );
+        $money="0.01";
+        $total="0.01";
         $input = new \WxPayRefund();
         $input->SetAppid($WxPayConfig['APPID']);
         $input->SetMch_id($WxPayConfig['MCHID']);
@@ -87,6 +89,8 @@ class RefundController extends CommonController {
              'BACK_NOTIFY_URL'=>'http://' . $_SERVER['HTTP_HOST'] .U('Api/Refund/unionnotify'),
              'SDK_BACK_TRANS_URL'=>'https://gateway.95516.com/gateway/api/backTransReq.do'
              );
+        $money="0.01";
+        $total="0.01";
         $total_fee = $money*100; 
         $params = array(
                 'version' => '5.0.0',       //版本号
@@ -165,7 +169,8 @@ class RefundController extends CommonController {
             'partner' => '2088221764898885',
             'seller_email'=>'3221586551@qq.com'
         );
-
+        $money="0.01";
+        $total="0.01";
         $notify_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Api/Refund/alipaynotify');
         $seller_email = $AliPayConfig['seller_email'];
         $refund_date = date("Y-m-d H:i:s", time());

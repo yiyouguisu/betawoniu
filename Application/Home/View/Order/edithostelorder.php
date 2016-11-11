@@ -21,14 +21,21 @@
                     onHide:function(){
                         var starttime=$(".starttime").val();
                         var endtime=$(".endtime").val();
+                        var roomnum=$("input[name='roomnum']").val();
+                        var nowdate="{:date('Y-m-d')}";
+                        if(Date.parse(starttime)-Date.parse(nowdate)<0){
+                            alert("请填写正确日期");
+                            $(".starttime").val();
+                            return false;
+                        }
                         if(starttime!=''&&endtime!=''){
-                            if(Date.parse(endtime) - Date.parse(starttime)==0){
+                            if(Date.parse(endtime) - Date.parse(starttime)<=0){
                                 alert("请填写正确日期");
                                 $(".endtime").val();
                                 return false;
                             }else{
                                 var rid="{$data.productinfo.rid}";
-                                $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime},function(d){
+                                $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
                                     if(d.code==200){
                                         var days=DateDiff(starttime,endtime);
                                         console.log(days)
@@ -88,7 +95,34 @@
             </div>
         </div>
         <div class="wrap">
-        	<form action="{:U('Home/Order/editorder_hostel')}" method="post">
+        	<form action="{:U('Home/Order/editorder_hostel')}" method="post" onsubmit="return checkform();">
+                <script>
+                    function checkform(){
+                        var mannum=$("ul.linkmanlist li.Fill_in_order2_a_bottom_list").length;
+                        var defaultmannum=$("input[name='num']").val();
+                        var realname=$("input[name='realname']").val();
+                        var idcard=$("input[name='idcard']").val();
+                        var phone=$("input[name='phone']").val();
+                        if(realname==''){
+                            alert("请填写姓名");
+                            $("input[name='realname']").focus();
+                            return false;
+                        }else if(idcard==''){
+                            alert("请填写身份证号码");
+                            $("input[name='idcard']").focus();
+                            return false;
+                        }else if(phone==''){
+                            alert("请填写手机号码");
+                            $("input[name='phone']").focus();
+                            return false;
+                        }else if(mannum!=parseInt(defaultmannum)-1){
+                            alert("入住人数信息不相符");
+                            return false;
+                        }else{
+                            return true;
+                        }
+                    }
+                </script>
 	            <div class="Fill_in_order2_main1">
 	                <span>入住信息 :</span>
 	                <div class="Fill_in_order2_div_public Fill_in_order2_main1_1">
@@ -117,21 +151,22 @@
 	                    <div>
 	                        <span>入住人数 ：</span>
 	                        <div class="Hotel_Details_c3 middle">
-                                <span class="prev2 f18 mannum" onselectstart="return false;">+</span>
+                                <span class="next2 f24 mannum" onselectstart="return false;">-</span>
                                 <i id="mannum">{$data.productinfo.num|default="0"}</i>
                                 <input type="hidden" name="num" value="{$data.productinfo.num|default="0"}">
-                                <span class="next2 f24 mannum" onselectstart="return false;">-</span>
+                                <span class="prev2 f18 mannum" onselectstart="return false;">+</span>
                             </div>
 	                    </div>
                         <div>
                             <span>入住间数 ：</span>
                             <div class="Hotel_Details_c3 middle">
-                                <span class="prev2 f18 roomnum" onselectstart="return false;">+</span>
+                                <span class="next2 f24 roomnum" onselectstart="return false;">-</span>
                                 <i id="roomnum">{$data.productinfo.roomnum|default="0"}</i>
                                 <input type="hidden" name="roomnum" value="{$data.productinfo.roomnum|default="0"}">
-                                <span class="next2 f24 roomnum" onselectstart="return false;">-</span>
+                                <span class="prev2 f18 roomnum" onselectstart="return false;">+</span>
                             </div>
                         </div>
+                        
 	                </div>
 	                <span>入住人信息 :</span>
 	                <div class="Fill_in_order2_main2 Fill_in_order2_div_public">
@@ -145,6 +180,20 @@
                                 </tr>
                             </thead>
                             <tbody id="joinlist">
+                                <tr>
+                                    <td>
+                                        <input type="text" name="realname" value="{$data.productinfo.realname}" required/>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="idcard" value="{$data.productinfo.idcard}" required />
+                                    </td>
+                                    <td>
+                                        <input type="text" name="phone" value="{$data.productinfo.phone}" required/>
+                                    </td>
+                                    <td>
+                                        
+                                    </td>
+                                </tr>
                                 <volist name="data['productinfo']['book_member']" id="vo">
                                     <tr>
                                         <td>
@@ -158,7 +207,7 @@
                                             <input type="tel" value="{$vo.phone}" />
                                         </td>
                                         <td>
-                                            
+                                            <a href="javascript:;" class='delmebmer' data-id="{$vo.linkmanid}">删除</a>
                                         </td>
                                     </tr>
                                 </volist>
@@ -220,7 +269,7 @@
                         <div class="payment_main4 hidden">
                             <div class="fl payment_main4_1">
                                 <span>￥<em id="totalmoney">{$data.totalmoney|default="0.00"}</em></span>
-                                <i>（房费 x <i id="roomnum">{$data.productinfo.roomnum|default="0"}</i>间）</i>
+                                <i>（房费 x <i id="roomnum_1">{$data.productinfo.roomnum|default="0"}</i>间）</i>
                                 <label>—</label>
                                 <span>￥<em id="discount">{$data.discount|default="0.00"}</em></span>
                                 <i>（优惠券）</i>
@@ -258,7 +307,8 @@
         <div class="Fill_in_order2_a_bottom">
             <ul class="Fill_in_order2_a_bottom_ul linkmanlist">
                 <volist name="linkman" id="vo">
-                    <li <in name="vo['id']" value="$data.productinfo.memberids">class="linkman Fill_in_order2_a_bottom_list" <else />class="linkman" </in> data-id="{$vo.id}" id="linkman_{$vo.id}">
+                    <li <in name="vo['id']" value="$data.productinfo.memberids">class="linkman Fill_in_order2_a_bottom_list" <else />class="linkman" </in> data-id="{$vo.id}"  data-idcard="{$vo.idcard}" id="linkman_{$vo.id}">
+                        <input type="hidden" class="idcard" value="{$vo.idcard}">
                         <span class="f16 realname">{$vo.realname}</span>
                         <i class="fr phone">{$vo.phone}</i>
                     </li>
@@ -346,6 +396,7 @@
                         $("#last").before(str);
 
                         var str="<li class=\"linkman Fill_in_order2_a_bottom_list\" data-id='"+linkmanid+"' id=\"linkman_"+linkmanid+"\" data-idcard='"+idcard+"''>";
+                            str+="<input type=\"hidden\" class=\"idcard\" value=\""+idcard+"\">";
                             str+="<span class=\"f16 realname\">"+realname+"</span>";
                             str+="<i class=\"fr phone\">"+phone+"</i></li>";
                         $(".linkmanlist").append(str);
@@ -372,7 +423,8 @@
                     var linkmanid=$(this).data("id");
                     var realname=$(this).find(".realname").text();
                     var phone=$(this).find(".phone").text();
-                    str+="<tr><td><input type=\"text\" value=\""+realname+"\" /></td><td><input type=\"text\" value=\""+phone+"\" /></td><td><a href=\"javascript:;\" class='delmebmer' data-id="+linkmanid+">删除</a></td></tr>";
+                    var idcard=$(this).find(".idcard").val();
+                    str+="<tr><td><input type=\"text\" value=\""+realname+"\" /></td><td><input type=\"text\" value=\""+idcard+"\" /></td><td><input type=\"text\" value=\""+phone+"\" /></td><td><a href=\"javascript:;\" class='delmebmer' data-id="+linkmanid+">删除</a></td></tr>";
                 })
                 var mannum=$("ul.linkmanlist li.Fill_in_order2_a_bottom_list").length;
                 if(mannum>parseInt(numlimit)){
@@ -380,7 +432,9 @@
                     return false;
                 }
                 
-                $("#joinlist").html(str);
+                var headstr=$("#joinlist tr:eq(0)").html();
+                var footstr=$("#joinlist tr:last").html();
+                $("#joinlist").html("<tr>"+headstr+"</tr>"+str+"<tr>"+footstr+"</tr>");
                 $(".Fill_in_order2_a").hide();
                 $(".mask").hide();
                 aa();
@@ -439,6 +493,26 @@
                 }else if($(this).hasClass("roomnum")){
                     $("input[name='roomnum']").val(i);
                     $("#roomnum").text(i);
+                    $("#roomnum_1").text(i);
+                    var starttime=$(".starttime").val();
+                    var endtime=$(".endtime").val();
+                    var roomnum=i;
+                    if(starttime!=''&&endtime!=''){
+                        if(Date.parse(endtime) - Date.parse(starttime)==0){
+                            alert("请填写正确日期");
+                            $(".endtime").val();
+                            return false;
+                        }else{
+                            var rid="{$data.productinfo.rid}";
+                            $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
+                                if(d.code==200){
+                                    $("#totalmoney").text(d.totalmoney);
+                                    $("input[name='totalmoney']").val(d.totalmoney);
+                                }
+                            });
+                        }
+
+                    }
                 }
                 aa();
             })
@@ -455,6 +529,26 @@
                     }else if($(this).hasClass("roomnum")){
                         $("input[name='roomnum']").val(i);
                         $("#roomnum").text(i);
+                        $("#roomnum_1").text(i);
+                        var starttime=$(".starttime").val();
+                        var endtime=$(".endtime").val();
+                        var roomnum=i;
+                        if(starttime!=''&&endtime!=''){
+                            if(Date.parse(endtime) - Date.parse(starttime)==0){
+                                alert("请填写正确日期");
+                                $(".endtime").val();
+                                return false;
+                            }else{
+                                var rid="{$data.productinfo.rid}";
+                                $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
+                                    if(d.code==200){
+                                        $("#totalmoney").text(d.totalmoney);
+                                        $("input[name='totalmoney']").val(d.totalmoney);
+                                    }
+                                });
+                            }
+
+                        }
                     }
                 }
                 aa();

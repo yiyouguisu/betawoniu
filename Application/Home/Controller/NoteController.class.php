@@ -41,6 +41,7 @@ class NoteController extends CommonController {
         }
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
 
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $count = M("Note a")
@@ -90,6 +91,7 @@ class NoteController extends CommonController {
         $where=array();
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $hotparty=M("activity a")
         		->join("left join zz_member b on a.uid=b.id")
         		->where($where)
@@ -279,6 +281,11 @@ class NoteController extends CommonController {
                     }
                 }
                 $this->assign('hostel',$hostel);
+                $this->assign('notehostelnum',count($hidbox));
+                if(count($hidbox)==1){
+                    $notehosteltitle=M('Hostel')->where(array('id'=>$data['hid']))->getField("title");
+                    $this->assign('notehosteltitle',$notehosteltitle);
+                }
                 $this->display();
             }
         }
@@ -316,6 +323,7 @@ class NoteController extends CommonController {
         $where['a.status']=2;
         $where['a.type']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
 
         $recoords=getcoords($data['lat'],$data['lng'],2);
         $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -358,6 +366,7 @@ class NoteController extends CommonController {
         $where['a.status']=2;
         $where['a.type']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
 
         $recoords=getcoords($data['lat'],$data['lng'],2);
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'hostel'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
@@ -395,6 +404,7 @@ class NoteController extends CommonController {
         $where=array();
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $where['a.noteman']=$data['noteman'];
         $where['a.notestyle']=$data['notestyle'];
         $where['a.id']=array('neq',$id);

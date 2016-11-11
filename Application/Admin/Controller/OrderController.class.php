@@ -189,22 +189,92 @@ class OrderController extends CommonController {
         if (empty($orderid)) {
             $this->error("订单号参数错误");
         }
-        $data = M("order a")
-            ->join("left join zz_order_time b on a.orderid=b.orderid")
-            ->where(array('a.orderid'=>$orderid))
-            ->find();
-        if(!empty($data['error_thumb'])){
-            $data['error_thumb']=explode("|",$data['error_thumb']);
-        }
-        
-        $data['productinfo']= M('order_productinfo a')->join("zz_product b on a.pid=b.id")->field("a.*,b.title,b.unit,b.standard")->where(array('a.orderid'=>$orderid))->select();
-        $feedback=M('order_feedback')->where(array('orderid'=>$data['orderid']))->find();
-        if($feedback){
-            $data['isfeedback']=1;
+        $ordertype=M('order')->where(array('orderid'=>$orderid))->getField("ordertype");
+        if(!empty($ordertype)){
+            switch ($ordertype) {
+                case '1':
+                    # code...
+                    $url=U('Admin/Order/hostelshow',array('orderid'=>$orderid));
+                    break;
+                case '2':
+                    # code...
+                    $url=U('Admin/Order/partyshow',array('orderid'=>$orderid));
+                    break;
+            }
         }else{
-            $data['isfeedback']=0;
+            $this->error("订单类型参数错误");
         }
-        $this->assign("data", $data);
+        header("location: " . $url);
+    }
+    public function hostelshow(){
+        $orderid=I('orderid');
+        $field=array('a.uid,a.orderid,a.discount,a.couponsid,a.money,a.total,a.inputtime,a.paytype,c.*,a.ordertype');
+        $data=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")->where(array('a.orderid'=>$orderid))->field($field)->find();
+        $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'room'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
+        $productinfo=M('book_room a')
+            ->join("left join zz_room c on a.rid=c.id")
+            ->join("left join zz_hostel b on c.hid=b.id")
+            ->join("left join zz_member d on a.uid=d.id")
+            ->join("left join {$sqlI} e on c.id=e.value")
+            ->where(array('a.orderid'=>$data['orderid']))
+            ->field("a.rid,a.uid,c.title,c.score as evaluation,c.scorepercent as evaluationpercent,b.id as hid,b.thumb,b.title as hostel,b.area,b.address,b.content,c.nomal_money,c.week_money,c.holiday_money,a.money,a.realname,a.idcard,a.phone,a.num,a.roomnum,a.days,a.discount,a.couponsid,a.starttime,a.endtime,a.paystatus,d.nickname,d.head,d.realname_status,d.houseowner_status,e.reviewnum,b.uid as houseownerid")
+            ->find();
+        $data['refundmoney']=M('refund_apply')->where(array('orderid'=>$data['orderid']))->getField("money");
+        $book_member=M('book_member')->where(array('orderid'=>$data['orderid']))->order(array('id'=>'desc'))->select();
+        $productinfo['book_member']=!empty($book_member)?$book_member:null;
+        $data['couponstitle']=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$data['couponsid']))->getField("b.title");
+        $data['productinfo']=$productinfo;
+        $totalmoney=$money=0.00;
+        $starttime=$data['productinfo']['starttime'];
+        $endtime=$data['productinfo']['endtime'];
+        while ( $starttime < $endtime) {
+            # code...
+            $money=$data['productinfo']['nomal_money'];
+            $week=date("w",$value['value']);
+            if(in_array($week, array(0,6))) {
+                $money=$data['productinfo']['week_money'];
+            }
+            $holiday=M('holiday')->where(array('status'=>1,'_string'=>$starttime." <= enddate and ".$starttime." >= startdate"))->field("id,name,days")->find();
+            if(!empty($holiday)){
+                $money=$data['productinfo']['holiday_money'];
+            }
+            $totalmoney+=$money;
+            $starttime=strtotime("+1 days",$starttime);
+        }
+        $data['totalmoney']=$totalmoney;
+        $this->assign("data",$data);
+
+        $houseowner=M('member')->where(array('id'=>$productinfo['houseownerid']))->field("id,head,nickname")->find();
+        $this->assign("houseowner",$houseowner);
+        $this->display();
+    }
+    public function partyshow(){
+        $orderid=I('orderid');
+        $field=array('a.uid,a.orderid,a.discount,a.couponsid,a.money,a.total,a.inputtime,a.paytype,c.*,a.ordertype');
+        $data=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")->where(array('a.orderid'=>$orderid))->field($field)->find();
+        $productinfo=M('activity_apply a')
+            ->join("left join zz_activity b on a.aid=b.id")
+            ->join("left join zz_member c on a.uid=c.id")
+            ->where(array('a.orderid'=>$data['orderid']))
+            ->field("a.aid,a.uid,b.thumb,b.title,b.catid,b.money,b.isfree,b.area,b.address,b.starttime,b.endtime,b.start_numlimit,b.end_numlimit,b.cancelrule,a.realname,a.phone,a.idcard,a.num,a.paystatus,b.uid as houseownerid,c.nickname,c.head,c.realname_status,c.houseowner_status")
+            ->find();
+        $data['refundmoney']=M('refund_apply')->where(array('orderid'=>$data['orderid']))->getField("money");
+        $productinfo['catname']=M('partycate')->where(array('id'=>$productinfo['catid']))->getField("catname");  
+        $joinnum=M('activity_apply')->where(array('aid'=>$productinfo['aid'],'paystatus'=>1))->sum("num");
+        $productinfo['joinnum']=!empty($joinnum)?$joinnum:0;
+        $joinlist=M('activity_apply a')->join("left join zz_member b on a.uid=b.id")->where(array('a.aid'=>$productinfo['aid'],'a.paystatus'=>1))->field("b.id,b.nickname,b.head,b.rongyun_token")->limit(6)->select();
+        $productinfo['joinlist']=!empty($joinlist)?$joinlist:null;
+        $book_member=M('activity_member')->where(array('orderid'=>$data['orderid']))->order(array('id'=>'desc'))->select();
+        $productinfo['book_member']=!empty($book_member)?$book_member:null;
+        $data['couponstitle']=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$data['couponsid']))->getField("b.title");
+        $data['productinfo']=$productinfo;
+        $this->assign("data",$data);
+
+        $houseowner=M('member')->where(array('id'=>$productinfo['houseownerid']))->field("id,head,nickname")->find();
+        $this->assign("houseowner",$houseowner);
+
+        $ownid=session("uid");
+        $this->assign("ownid",$ownid);
         $this->display();
     }
     public function delete() {
@@ -538,6 +608,55 @@ class OrderController extends CommonController {
         $page->setConfig("first","第一页");
         $page->setConfig("last","最后一页");
         $data = D("order a")->join("left join zz_order_time b on a.orderid=b.orderid")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("a.id" => "desc"))->select();
+        $show = $page->show();
+        $this->assign("data", $data);
+        $this->assign("Page", $show);
+        $this->display();
+    }
+    public function backorder(){
+        $search = I('get.search');
+        $where = array();
+        $where['c.status']=2;
+        $where['c.refund_status']=1;
+        if (!empty($search)) {
+            //添加开始时间
+            $start_time = I('get.start_time');
+            if (!empty($start_timgete)) {
+                $start_time = strtotime($start_time);
+                $where["c.verify_time"] = array("EGT", $start_time);
+            }
+            //添加结束时间
+            $end_time = I('get.end_time');
+            if (!empty($end_time)) {
+                $end_time = strtotime($end_time);
+                $where["c.verify_time"] = array("ELT", $end_time);
+            }
+            if ($end_time > 0 && $start_time > 0) {
+                $where['c.verify_time'] = array(array('EGT', $start_time), array('ELT', $end_time));
+            }
+            $ordertype = I('get.ordertype');
+            if ($ordertype != "" && $ordertype != null) {
+                if($ordertype==4){
+                    $where['a.iscontainsweigh']=1;
+                    $where['a.ordertype']=1;
+                }else{
+                    $where['a.ordertype']=$ordertype;
+                }
+            }
+            $keyword = I('get.keyword');
+            if (!empty($keyword)) {
+                $where["a.orderid"] = array("LIKE", "%{$keyword}%");
+            }
+        }
+
+        $count = D("refund_apply c")->join("left join zz_order a on c.orderid=a.orderid")->join("left join zz_order_time b on a.orderid=b.orderid")->where($where)->count();
+        $page = new \Think\Page($count, 12);
+        $page->setConfig("theme","<span class=\"rows\">当前%NOW_PAGE%/%TOTAL_PAGE%页</span>%FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END%<span class=\"rows\">共 %TOTAL_ROW% 条记录</span>");
+        $page->setConfig("prev","上一页");
+        $page->setConfig("next","下一页");
+        $page->setConfig("first","第一页");
+        $page->setConfig("last","最后一页");
+        $data = D("refund_apply c")->join("left join zz_order a on c.orderid=a.orderid")->join("left join zz_order_time b on a.orderid=b.orderid")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("a.id" => "desc"))->field("a.*,b.*,c.money as backmoney")->select();
         $show = $page->show();
         $this->assign("data", $data);
         $this->assign("Page", $show);

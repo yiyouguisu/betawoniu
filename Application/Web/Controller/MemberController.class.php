@@ -5,10 +5,6 @@ namespace Web\Controller;
 use Web\Common\CommonController;
 
 class MemberController extends CommonController {
-	public function _initialize() {
-        parent::_initialize();
-        $this->cart_total_num();
-    }
 	//首页
 	public function index(){
 		if (!session('uid')) {
@@ -20,30 +16,6 @@ class MemberController extends CommonController {
             $this->assign('data',$data['data']);
             $this->assign('follow',$data['follow']);
             $this->assign('fans',$data['fans']);
-			// $data=D("member")->where("id=".$uid)->find();
-   //          $data['level'] = getlevel($data['id']);
-			// $this->assign("data",$data);
-			
-   //          $integral = M('integral')->where(array("uid"=>$uid))->find();
-   //          if(empty($integral['useintegral'])){
-   //              $this->assign('integral_total',"0");
-   //          }else{
-   //              $this->assign('integral_total',$integral['useintegral']);
-   //          }
-
-   //          $account = M('account')->where(array("uid"=>$uid))->find();
-   //          if(empty($account['usemoney'])){
-   //              $this->assign('account_total',"0.00");
-   //          }else{
-   //              $this->assign('account_total',$account['usemoney']);
-   //          }
-
-   //          $coupons = M('coupons_order a')->join("left join zz_coupons b on a.catid=b.id")->where(array('a.uid'=>$uid,'a.status'=>0,'b.status'=>1,'b.validity_endtime'=>array('GT',time())))->count();
-   //          $this->assign('coupons_total',$coupons);
-
-   //          //判定是否有新消息
-   //          $messagecount = M('message')->where(array('tuid'=>$uid,'varname'=>array('in','system,hot,hotproduct'),'isdel'=>'0','status'=>'0'))->order(array('inputtime'=>"desc"))->select();
-   //          $this->assign('wordcount',count($messagecount));
             $this->display();
 		}
 		
@@ -69,14 +41,14 @@ class MemberController extends CommonController {
         $this->display();
     }
 
-    public function regajax(){
+    public function ajax_reg(){
         $telverify = trim($_POST['telverify']);
         $password = trim($_POST['password']);
         $phone = trim($_POST['phone']);
 
+        $resdata=array();
         $verifyset = M('verify')->where('phone=' . $phone)->find();
         $time = time() - $verifyset['expiretime'];
-        $resdata=array('code'=>200,'msg'=>'');
         if ($time > 0) {
             $verify = "";
             M('verify')->where('phone=' . $phone)->save(array(
@@ -89,16 +61,13 @@ class MemberController extends CommonController {
             ));
         }
         if(empty($password)||empty($telverify)||empty($phone)){
-            // $this->error('请将信息填写完整');
-            $resdata['code']=500;
+            $resdata['code']=-200;
             $resdata['msg']='请将信息填写完整';
         }elseif (strtolower($telverify) != strtolower($verify)) {
-            // $this->error('验证码错误');
-            $resdata['code']=500;
+            $resdata['code']=-200;
             $resdata['msg']='验证码错误';
         }elseif(!check_phone($phone)){
-            // $this->error('手机号已被注册');
-            $resdata['code']=500;
+            $resdata['code']=-200;
             $resdata['msg']='手机号已被注册';
         }else{
             $data=$_POST;
@@ -115,13 +84,10 @@ class MemberController extends CommonController {
                 cookie("userid",$id);
                 cookie("groupid",$data['group_id']);
                 cookie("tuijiancode",$data['tuijiancode']);
-                // session('uid',$id);
-                // $this->success('注册成功',U('Web/Member/index'));
                 $resdata=array('code'=>200,'msg'=>'注册成功');
             } else {
-                $resdata['code']=500;
+                $resdata['code']=-200;
                 $resdata['msg']='注册失败';
-                // $this->error(D("member")->getError());
             }
         }
         $this->ajaxReturn($resdata,'json');
@@ -167,13 +133,11 @@ class MemberController extends CommonController {
         if (session('uid')) {
             $this->redirect('Web/Member/index');
         } else {
-            $returnurl=$_GET['returnurl'];
-            $this->assign("returnurl",$returnurl);
             $this->display();
         }
     }
 
-    public function ajaxlogin(){
+    public function ajax_login(){
         $username = $_POST['username'];
         $password = $_POST['password'];
         $autotype = 1;
@@ -182,15 +146,12 @@ class MemberController extends CommonController {
         if ($status==2) {
             $data['code']=200;
             $data['msg']='登入成功';
-            // $this->redirect('Web/Member/index');
         }elseif($status==0) {
-            $data['code']=500;
+            $data['code']=-200;
             $data['msg']='登录失败';
-            // $this->error('登录失败');
         }elseif($status==1) {
-            $data['code']=500;
+            $data['code']=-200;
             $data['msg']='帐号被禁用,请联系管理员';
-            // $this->error('帐号被禁用,请联系管理员');
         }
         $this->ajaxReturn($data,'json');
     }
@@ -464,26 +425,7 @@ class MemberController extends CommonController {
         }
 	}
 
-    public function feedback(){
-		$uid=session('uid');
-        if (IS_POST) {
-                    // print_r($_POST);
-        // die;
-            if (D("feedback")->create()) {
-                D("feedback")->inputtime = time();
-                D("feedback")->uid =$uid;
-                $id = D("feedback")->add();
-                if (!empty($id)) {
-                    $this->success("留言成功",U('Web/Member/index'));
-                } else {
-                    $this->error("留言失败");
-                }
-            } else {
-                $this->error(D("feedback")->getError());
-            }
-        }
-        $this->display();
-    }
+    
 
     public function mylove(){
         $uid = session('uid');
@@ -1180,7 +1122,7 @@ class MemberController extends CommonController {
 
 
     // 实名认证
-    public function certification(){
+    public function realname(){
         $uid=$this->getSessionId();
         $mdata=M('member')->where(array('id'=>$uid))->find();
         if(IS_POST){
@@ -1250,57 +1192,7 @@ class MemberController extends CommonController {
         }
         $this->display();
     }
-    // 发布游记
-    public function publicnote(){
-        $uid=$this->getSessionId();
-        $nickname=M('member')->where(array('id'=>$uid))->getField('nickname');
-        if(IS_POST){            
-            $data['uid']=$uid;
-            $data['title']=$_POST['title'];
-            $data['begintime']=strtotime($_POST['begintime']);
-            $data['endtime']=strtotime($_POST['endtime']);
-            $data['address']=$_POST['address'];
-            $data['description']=$_POST['description'];
-            $data['days']=$_POST['days'];
-            $data['fee']=$_POST['fee'];
-            $data['man']=$_POST['noteman'];
-            $data['style']=$_POST['notestyle'];
-            $data['imglist']=json_encode($_POST['content']);
-            $data['inputtime']=time();
-            $data['updatetime']=time();
-            $data['username']=$nickname;
-            $data['notetype']=1;
-            $thumb=json_decode($_POST['content']);
-            $thumb=$thumb[0]->thumb;
-            $data['thumb']=$thumb;
-            $data['lat']=(cookie('longitude')) ? cookie('longitude') : '';
-            $data['lng']=(cookie('latitude')) ? cookie('latitude') : '';
-            $data['imglist']=$_POST['content'];
-            if($_POST['city']==$_POST['county']){
-                $county=$_POST['city'];
-            }
-            else{
-                $county=$_POST['city'].','.$_POST['county'];
-            }
-            $data['area']=$_POST['area'].','.$county;
-            $data['city']=$_POST['county'];
-            $id=M("Note")->add($data);
-            if(!empty($id)){
-                $this->success("新增游记成功！",U("Web/Member/index"));
-            }
-            else{
-                $this->error("新增游记失败！");
-            }
-        }
-        // 省份
-        $province=M('area')->where(array('parentid'=>0))->select();
-        $this->assign('province',$province);
-        $notestyle=M("notestyle")->order(array('listorder'=>'desc','id'=>'asc'))->select();
-        $this->assign("notestyle",$notestyle);
-        $noteman=M("noteman")->order(array('listorder'=>'desc','id'=>'asc'))->select();
-        $this->assign("noteman",$noteman);
-        $this->display();
-    }
+    
     public function getSessionId(){
         $uid=session('uid');
         if(!session('uid')){

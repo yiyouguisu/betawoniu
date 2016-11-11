@@ -10,9 +10,21 @@ class HostelController extends CommonController {
         $hidbox=array();
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $keyword=I('keyword');
         if(!empty($keyword)){
             $where['a.title|a.description']=array('like',"%".$keyword."%");
+        }
+        $starttime = I('get.starttime');
+        if (!empty($starttime)) {
+            $starttime = strtotime($starttime);
+            $where["a.starttime"] = array("EGT", $starttime);
+        }
+        //添加结束时间
+        $endtime = I('get.endtime');
+        if (!empty($endtime)) {
+            $endtime = strtotime($endtime);
+            $where["a.endtime"] = array("ELT", $endtime);
         }
         $catid=I('catid');
         if(!empty($catid)){
@@ -34,6 +46,16 @@ class HostelController extends CommonController {
                 $where['a.area']=array('like',$_GET['province'] . ','."%");
             }
             
+        }else if(!empty($_GET['area'])){
+            $where['a.area']=array('like',$_GET['area'] . ','."%");
+            $locationset=explode(",", $_GET['area']);
+            if(in_array($locationset[0],array(2,3,4,5))){
+                $city=$locationset[0];
+            }else{
+                $city=$locationset[1]; 
+            }
+            $cityname=M('area')->where(array('id'=>$city))->getField("name");
+            $this->assign("cityname",$cityname);
         }
         if(!empty($area)){
             $where['a.area']=$area;
@@ -76,8 +98,6 @@ class HostelController extends CommonController {
         if(!empty($city)){
             $where['a.city'] =$city;
         }
-        $where['a.status']=2;
-        $where['a.isdel']=0;
 
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'hostel'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $sqlII=M('book_room')->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))->group("hid")->field("hid,sum(num) as booknum")->buildSql();
@@ -171,6 +191,7 @@ class HostelController extends CommonController {
         $hidbox=array();
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $keyword=I('keyword');
         if(!empty($keyword)){
             $where['a.title|a.description']=array('like',"%".$keyword."%");
@@ -222,8 +243,6 @@ class HostelController extends CommonController {
         if(!empty($bedtype)){
             $where['a.bedtype']=array('like',"%,".$bedtype.",%");
         }
-        $where['a.status']=2;
-        $where['a.isdel']=0;
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'hostel'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $count = M("Hostel a")
                 ->join("left join zz_member b on a.uid=b.id")
@@ -291,6 +310,11 @@ class HostelController extends CommonController {
         if ($_POST) {
             $uid=session("uid");
             $member=M('Member')->where(array('id'=>$uid))->find();
+            $cachefile="roomtemplate_".$uid;
+            $room=S($cachefile);
+            if(empty($room)){
+                $this->error("请先添加房间！");
+            }
             $Map=A("Api/Map");
             $area="";
             if(!empty($_POST['town'])){
@@ -316,9 +340,6 @@ class HostelController extends CommonController {
                 D("Hostel")->username = !empty($member['nickname'])?$member['nickname']:$member['username'];
                 $hid = D("Hostel")->add();
                 if($hid){
-                    $uid=session("uid");
-                    $cachefile="roomtemplate_".$uid;
-                    $room=S($cachefile);
                     foreach ($room as $value) {
                         # code...
                         $roomdata=array();
@@ -334,6 +355,7 @@ class HostelController extends CommonController {
                         $roomdata['content']=$value['content'];
                         $roomdata['imglist'] = $value['imglist'];
                         $roomdata['support'] = $value['support'];
+                        $roomdata['hotsupport'] = $value['hotsupport'];
                         $roomdata['money']=$value['money'];
                         $roomdata['wait_num'] = $value['mannum'];
                         $roomdata['conveniences']=$value['conveniences'];
@@ -348,13 +370,13 @@ class HostelController extends CommonController {
                         M("Room")->add($roomdata);
                     }
 
-                    $money=M('room')->where(array('hid'=>$hid))->min("money");
-                    $area=M('room')->where(array('hid'=>$hid))->max("area");
-                    $support=M('room')->where(array('hid'=>$hid))->group("hid")->field("hid,group_concat(support) as newsupport")->select();
+                    $money=M('room')->where(array('hid'=>$hid,'isdel'=>0))->min("money");
+                    $area=M('room')->where(array('hid'=>$hid,'isdel'=>0))->max("area");
+                    $support=M('room')->where(array('hid'=>$hid,'isdel'=>0))->group("hid")->field("hid,group_concat(support) as newsupport")->select();
                     $supportbox=explode(",", $support[0]['newsupport']);
                     $supportbox=array_unique($supportbox);
 
-                    $bedtype=M('room')->where(array('hid'=>$hid))->group("hid")->field("hid,group_concat(roomtype) as newbedtype")->select();
+                    $bedtype=M('room')->where(array('hid'=>$hid,'isdel'=>0))->group("hid")->field("hid,group_concat(roomtype) as newbedtype")->select();
                     $bedtypebox=explode(",", $bedtype[0]['newbedtype']);
                     $bedtypebox=array_unique($bedtypebox);
 
@@ -371,7 +393,7 @@ class HostelController extends CommonController {
                     if(empty($tags_content)){
                         M('tags_content')->add(array('contentid'=>$hid,'title'=>$title,'varname'=>'hostel','type'=>'hostel','hid'=>$hid,'hostel'=>$title,'place'=>$place,'updatetime'=>time()));
                     }
-                    $this->success("发布美宿成功，等待管理员审核！", U("Home/Hostel/index"));
+                    $this->success("发布美宿成功，等待管理员审核！", U("Home/Member/myrelease"));
                 } else {
                     $this->error("发布游美宿失败！");
                 }
@@ -408,6 +430,11 @@ class HostelController extends CommonController {
         if ($_POST) {
             $uid=session("uid");
             $member=M('Member')->where(array('id'=>$uid))->find();
+            $cachefile="roomtemplate_".$uid;
+            $room=S($cachefile);
+            if(empty($room)){
+                $this->error("请先添加房间！");
+            }
             $Map=A("Api/Map");
             $area="";
             if(!empty($_POST['town'])){
@@ -437,13 +464,10 @@ class HostelController extends CommonController {
                 $hid = D("Hostel")->save();
                 if($hid){
                     M("Room")->where(array('hid'=>$_POST['id']))->delete();
-                    $uid=session("uid");
-                    $cachefile="roomtemplate_".$uid;
-                    $room=S($cachefile);
                     foreach ($room as $value) {
                         # code...
                         $roomdata=array();
-                        $roomdata['hid']=$hid;
+                        $roomdata['hid']=$_POST['id'];
                         $roomdata['title']=$value['title'];
                         $roomdata['thumb']=$value['thumb'];
                         $roomdata['mannum']=$value['mannum'];
@@ -455,6 +479,7 @@ class HostelController extends CommonController {
                         $roomdata['content']=$value['content'];
                         $roomdata['imglist'] = $value['imglist'];
                         $roomdata['support'] = $value['support'];
+                        $roomdata['hotsupport'] = $value['hotsupport'];
                         $roomdata['money']=$value['money'];
                         $roomdata['wait_num'] = $value['mannum'];
                         $roomdata['conveniences']=$value['conveniences'];
@@ -469,18 +494,18 @@ class HostelController extends CommonController {
                         M("Room")->add($roomdata);
                     }
 
-                    $money=M('room')->where(array('hid'=>$hid))->min("money");
-                    $area=M('room')->where(array('hid'=>$hid))->max("area");
-                    $support=M('room')->where(array('hid'=>$hid))->group("hid")->field("hid,group_concat(support) as newsupport")->select();
+                    $money=M('room')->where(array('hid'=>$_POST['id'],'isdel'=>0))->min("money");
+                    $area=M('room')->where(array('hid'=>$_POST['id'],'isdel'=>0))->max("area");
+                    $support=M('room')->where(array('hid'=>$_POST['id'],'isdel'=>0))->group("hid")->field("hid,group_concat(support) as newsupport")->select();
                     $supportbox=explode(",", $support[0]['newsupport']);
                     $supportbox=array_unique($supportbox);
 
-                    $bedtype=M('room')->where(array('hid'=>$hid))->group("hid")->field("hid,group_concat(roomtype) as newbedtype")->select();
+                    $bedtype=M('room')->where(array('hid'=>$_POST['id'],'isdel'=>0))->group("hid")->field("hid,group_concat(roomtype) as newbedtype")->select();
                     $bedtypebox=explode(",", $bedtype[0]['newbedtype']);
                     $bedtypebox=array_unique($bedtypebox);
 
 
-                    M('hostel')->where(array('id'=>$hid))->save(array(
+                    M('hostel')->where(array('id'=>$_POST['id']))->save(array(
                         'money'=>$money,
                         'acreage'=>$area,
                         'support'=>",".implode(",", $supportbox).",",
@@ -493,7 +518,7 @@ class HostelController extends CommonController {
                     if(empty($tags_content)){
                         M('tags_content')->add(array('contentid'=>$hid,'title'=>$title,'varname'=>'hostel','type'=>'hostel','hid'=>$hid,'hostel'=>$title,'place'=>$place,'updatetime'=>time()));
                     }
-                    $this->success("修改美宿成功，等待管理员审核！", U("Home/Hostel/index"));
+                    $this->success("修改美宿成功，等待管理员审核！", U("Home/Member/myrelease"));
                 } else {
                     $this->error("修改游美宿失败！");
                 }
@@ -518,12 +543,17 @@ class HostelController extends CommonController {
                 $data['province']=$area[0];
                 $data['city']=$area[1];
                 $data['town']=$area[2];
-                $room=M('room')->where(array('hid'=>$data['id']))->order(array('id'=>'desc'))->select();
+                $room=M('room')->where(array('hid'=>$data['id'],'isdel'=>0))->order(array('id'=>'desc'))->select();
                 foreach ($room as $key => $value) {
                     # code...
                     $room[$key]['rid']=$key;
                     $room[$key]['bedtype']=M('bedcate')->where(array('id'=>$value['roomtype']))->getField("catname");
-                    $room[$key]['support']=M("roomcate")->where(array('ishot'=>1,'id'=>array('in',$value['support'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
+                }
+                $cachefile="roomtemplate_".$uid;
+                S($cachefile,$room);
+                foreach ($room as $key => $value) {
+                    # code...
+                    $room[$key]['support']=M("roomcate")->where(array('id'=>array('in',$value['hotsupport'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
                     $imglist=explode("|", $value['imglist']);
                     $room[$key]['imglist']=$imglist;
                 }
@@ -532,10 +562,10 @@ class HostelController extends CommonController {
 
                 $roomnum=count($room);
                 $this->assign("roomnum", $roomnum);
+
                 $imglist=json_decode($data['imglist'],true);
                 $this->assign("imglist", $imglist);
-                $cachefile="roomtemplate_".$uid;
-                S($cachefile,$room);
+                
                 $province = M('area')->where(array('parentid'=>0,'status'=>1))->select();
                 $this->assign('province',$province);
                 $hostelcate=M("hostelcate")->order(array('listorder'=>'desc','id'=>'asc'))->select();
@@ -563,7 +593,7 @@ class HostelController extends CommonController {
         $data['wait_num'] = $_POST['mannum'];
         $data['bedtype']=M('bedcate')->where(array('id'=>$data['roomtype']))->getField("catname");
         $this->assign("data",$data);
-        $support=M("roomcate")->where(array('ishot'=>1,'id'=>array('in',$data['support'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
+        $support=M("roomcate")->where(array('id'=>array('in',$data['hotsupport'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
         $this->assign("support", $support);
         if(!empty($data)){
             $room[]=$data;
@@ -580,8 +610,13 @@ class HostelController extends CommonController {
         $cachefile="roomtemplate_".$uid;
         $room=S($cachefile);
         if($room[$_POST['rid']]){
-
-            $this->ajaxReturn(array('code'=>200,'data'=>$room[$_POST['rid']]));
+            $room[$_POST['rid']]['imglist']=explode("|", $room[$_POST['rid']]['imglist']);
+            $room[$_POST['rid']]['support']=explode(",", $room[$_POST['rid']]['support']);
+            $room[$_POST['rid']]['hotsupport']=explode(",", $room[$_POST['rid']]['hotsupport']);
+            $data=$room[$_POST['rid']];
+            unset($room[$_POST['rid']]);
+            S($cachefile,$room);
+            $this->ajaxReturn(array('code'=>200,'data'=>$data));
         }else{
             $this->ajaxReturn(array('code'=>-200,'msg'=>"数据错误"));
         }
@@ -635,10 +670,10 @@ class HostelController extends CommonController {
         $room=M('room a')->join("left join {$sqlI} c on a.id=c.value")->join("left join zz_bedcate b on a.roomtype=b.id")->where(array('a.hid'=>$data['id'],'a.isdel'=>0,))->order(array('a.id'=>'desc'))->field("a.id as rid,a.title,a.thumb,a.area,a.money,a.roomtype,a.support,a.mannum,c.reviewnum,b.catname as bedtype,a.score as evaluation,a.scorepercent as evaluationpercent")->limit(2)->select();
         foreach ($room as $key => $value) {
             # code...
-            $room[$key]['support']=M("roomcate")->where(array('ishot'=>1,'id'=>array('in',$value['support'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
+            $room[$key]['support']=M("roomcate")->where(array('id'=>array('in',$value['hotsupport'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
         }
         $data['room']=!empty($room)?$room:null;
-        $roomnum=M('room')->where(array('hid'=>$data['id']))->count();
+        $roomnum=M('room')->where(array('hid'=>$data['id'],'isdel'=>0))->count();
         $data['roomnum']=!empty($roomnum)?$roomnum:0;
 
         $replyasknum=M('bookask')->where(array('tuid'=>$data['uid'],'status'=>1))->count();
@@ -658,6 +693,7 @@ class HostelController extends CommonController {
         $where['a.status']=2;
         $where['a.uid']=$data['uid'];
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $house_owner_activity=M("activity a")
             ->join("left join zz_member b on a.uid=b.id")
             ->where($where)->order(array('id'=>"desc"))
@@ -688,6 +724,7 @@ class HostelController extends CommonController {
         $where['a.status']=2;
         $where['a.type']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
 
         $recoords=getcoords($data['lat'],$data['lng'],2);
         $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -724,6 +761,7 @@ class HostelController extends CommonController {
         $where['a.status']=2;
         $where['a.type']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
 
         $recoords=getcoords($data['lat'],$data['lng'],2);
         $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -770,7 +808,7 @@ class HostelController extends CommonController {
             $list=M('room a')->join("left join {$sqlI} c on a.id=c.value")->join("left join zz_bedcate b on a.roomtype=b.id")->where(array('a.hid'=>$hid,'a.isdel'=>0))->order(array('a.id'=>'desc'))->field("a.id as rid,a.title,a.thumb,a.area,a.money,a.roomtype,a.support,a.mannum,c.reviewnum,b.catname as bedtype")->page($p,$num)->select();
             foreach ($list as $key => $value) {
                 # code...
-                $list[$key]['support']=M("roomcate")->where(array('ishot'=>1,'id'=>array('in',$value['support'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
+                $list[$key]['support']=M("roomcate")->where(array('id'=>array('in',$value['hotsupport'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
             }
             $data['room']=$list;
             $this->assign("data", $data);

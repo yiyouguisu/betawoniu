@@ -41,10 +41,10 @@
                 <span>常用联系人</span>
             </a>
         </li>
-        <li <eq name="current_url" value="Home/Member/help">class="pd_main2_li pd_b6" <else />class="pd_b6" </eq>>
+        <!-- <li <eq name="current_url" value="Home/Member/help">class="pd_main2_li pd_b6" <else />class="pd_b6" </eq>>
             <a href="{:U('Home/Member/help')}">
                 <span>帮助手册</span>
             </a>
-        </li>
+        </li> -->
     </ul>
 </div>

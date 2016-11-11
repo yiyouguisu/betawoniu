@@ -260,7 +260,7 @@
                 <div class="Event_details5_2_01">
                     <span>活动发起人</span>
                     <div class="Event_details5_2_05">
-                        <a href="">
+                        <a href="{:U('Home/Member/detail',array('uid'=>$data['uid']))}">
                             <div class="Event_details5_2_02">
                                 <img src="{$data.head}" width="104px" height="104px"/>
                             </div>
@@ -293,11 +293,13 @@
                         <a class="a1" href="javascript:;">已过期</a>
                     <elseif condition="$data['end_numlimit'] elt $data['joinnum']" />
                         <a class="a1" href="javascript:;">报名人数已满</a>
+                    <elseif condition="$data['isjoin'] eq 1" />
+                        <a class="a1" href="javascript:;">已报名</a>
                     <else />
                         <a class="a1" href="{:U('Home/Order/joinparty',array('aid'=>$data['id']))}">我要报名</a>
                     </if>
                     
-                    <a class="a2" href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid']))}">在线咨询</a>
+                    <a class="a2" href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid'],'type'=>'party'))}">在线咨询</a>
                 </div>
             </div>
         </div>

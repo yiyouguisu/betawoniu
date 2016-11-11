@@ -68,6 +68,7 @@ class PartyController extends CommonController {
         }
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
 
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'party'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $count = M("Activity a")
@@ -129,6 +130,7 @@ class PartyController extends CommonController {
         $where=array();
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $hotnote=M("note a")
         		->join("left join zz_member b on a.uid=b.id")
         		->where($where)
@@ -299,7 +301,7 @@ class PartyController extends CommonController {
         $data['joinnum']=!empty($joinnum)?$joinnum:0;
         $joinlist=M('activity_apply a')->join("left join zz_member b on a.uid=b.id")->where(array('a.aid'=>$data['id'],'a.paystatus'=>1))->field("b.id,b.nickname,b.head,b.rongyun_token")->select();
         $data['joinlist']=!empty($joinlist)?$joinlist:null;
-        $joinstatus=M('activity_apply')->where(array('aid'=>$data['id'],'uid'=>$uid))->find();
+        $joinstatus= M('activity_apply a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.aid'=>$data['id'],'a.uid'=>$uid,'b.status'=>array('in','2,4')))->find();
         if(!empty($joinstatus)){
             $data['isjoin']=1;
         }else{
@@ -328,6 +330,7 @@ class PartyController extends CommonController {
         $where['a.status']=2;
         $where['a.type']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
 
         $recoords=getcoords($data['lat'],$data['lng'],2);
         $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -370,6 +373,7 @@ class PartyController extends CommonController {
         $where['a.status']=2;
         $where['a.type']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
 
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'hostel'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $recoords=getcoords($data['lat'],$data['lng'],2);
@@ -411,6 +415,7 @@ class PartyController extends CommonController {
         $where=array();
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
 
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'hostel'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $recoords=getcoords($data['lat'],$data['lng'],2);

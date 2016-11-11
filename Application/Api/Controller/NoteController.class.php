@@ -73,6 +73,7 @@ class NoteController extends CommonController {
                 $order=array('a.id'=>'desc');
             }
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $where['a.status']=2;
             $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
             $data=M("Note a")
@@ -124,6 +125,7 @@ class NoteController extends CommonController {
         $where['a.status']=2;
         $where['a.index']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $sqlI=M('review')->where(array('isdel'=>0))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $data=M("Note a")
             ->join("left join zz_member b on a.uid=b.id")
@@ -174,6 +176,7 @@ class NoteController extends CommonController {
             $where['a.uid']=$uid;
             $where['a.status']=2;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
             $count=M("Note a")
                 ->join("left join zz_member b on a.uid=b.id")
@@ -217,6 +220,7 @@ class NoteController extends CommonController {
             $order=array('a.id'=>'desc');
             $where['a.uid']=$uid;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
             $count=M("Note a")
                 ->join("left join zz_member b on a.uid=b.id")
@@ -283,6 +287,7 @@ class NoteController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($data['lat'],$data['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -313,6 +318,7 @@ class NoteController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($data['lat'],$data['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -758,6 +764,7 @@ class NoteController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($noteset[$nid]['lat'],$noteset[$nid]['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -813,6 +820,7 @@ class NoteController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($noteset[$nid]['lat'],$noteset[$nid]['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -861,7 +869,7 @@ class NoteController extends CommonController {
         }else{
             $data=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$uid,'b.status'=>2,'b.isdel'=>0,'a.paystatus'=>1))->order(array('b.listorder'=>'desc','b.id'=>'desc'))->group("a.hid")->field("b.id,b.title")->select();
             if(empty($data)){
-                $data=M('Hostel')->where(array('status'=>2,'isdel'=>0,'type'=>'1'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
+                $data=M('Hostel')->where(array('status'=>2,'isdel'=>0,'isoff'=>0,'type'=>'1'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
             }
             if($data){
                 exit(json_encode(array('code'=>200,'msg'=>"加载成功",'data'=>$data)));

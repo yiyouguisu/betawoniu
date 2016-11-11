@@ -59,7 +59,8 @@
                                     <if condition="$vo.status eq 1"> <span style="color: gray">[待审核]</span></if>
                                     <if condition="$vo.status eq 2"> <span style="color: green">[审核成功]</span></if>
                                     <if condition="$vo.status eq 3"> <span style="color: red">[审核失败]</span></if>
-                                    <if condition="$vo.type eq 1"> <span style="color: red">[推]</span></if>
+                                    <if condition="$vo.type eq 1"> <span style="color: red">[精品]</span></if>
+                                    <if condition="$vo.isindex eq 1"> <span style="color: red">[推]</span></if>
                                     <span title="{$vo.title}">{$vo.sortitle}</span>
                                 </td>
                                 <!-- <td align="center">{$vo.votenum|default="0"}</td> -->
@@ -79,6 +80,19 @@
                                         <else />
                                         <font color="#cccccc">管理房间</font>
                                     </if>
+                                    <eq name="vo['isoff']" value="0">
+                                         <if condition="authcheck('Admin/Hostel/setoff')">
+                                            <a href="{:U('Admin/Hostel/setoff',array('id'=>$vo['id'],'isoff'=>1))}" >下架 </a>
+                                            <else/>
+                                            <font color="#cccccc">下架</font>
+                                        </if>  
+                                    <else/>
+                                        <if condition="authcheck('Admin/Hostel/setoff')">
+                                            <a href="{:U('Admin/Hostel/setoff',array('id'=>$vo['id'],'isoff'=>0))}" >启用 </a>
+                                            <else/>
+                                            <font color="#cccccc">启用</font>
+                                        </if>  
+                                    </eq>
                                     <if condition="authcheck('Admin/Hostel/edit')">
                                         <a href="{:U('Admin/Hostel/edit',array('id'=>$vo['id']))}">修改</a>
                                         <else />
@@ -107,6 +121,12 @@
                     <if condition="authcheck('Admin/Hostel/listorder')">
                         <button class="btn btn_submit mr10 " type="submit" name="submit" value="listorder">排序</button>
                     </if>
+                    <if condition="authcheck('Admin/Hostel/jinpins')">
+                             <button class="btn btn_submit mr10 " type="submit" name="submit" value="jinpins">精品</button>
+                        </if>
+                      <if condition="authcheck('Admin/Hostel/unjinpins')">
+                             <button class="btn btn_submit mr10 " type="submit" name="submit" value="unjinpins">取消精品</button>
+                        </if>
                     <if condition="authcheck('Admin/Hostel/pushs')">
                         <button class="btn btn_submit mr10 " type="submit" name="submit" value="pushs">推荐</button>
                     </if>

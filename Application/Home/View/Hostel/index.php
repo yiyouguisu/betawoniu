@@ -252,7 +252,7 @@
                     <volist name="data" id="vo">
                         <li>
                             <div class="main4_bottom_list pr">
-                                <a href="javascript:;">
+                                <a href="{:U('Home/Hostel/show',array('id'=>$vo['id']))}">
                                     <img class="pic" data-original="{$vo.thumb}" src="__IMG__/default.jpg" style="width:399px;height:250px"  onclick="window.location.href='{:U('Home/Hostel/show',array('id'=>$vo['id']))}'"/>
                                     <div class="pa main4_bottom_list1"></div>
                                 </a>
@@ -276,7 +276,7 @@
                             </div>
                             <div class="main_bottom_text">
                                 <div class="main_bottom_textl">
-                                    <span>{:str_cut($vo['title'],15)}</span>
+                                    <span style="cursor: pointer;" onclick="window.location.href='{:U('Home/Hostel/show',array('id'=>$vo['id']))}'">{:str_cut($vo['title'],15)}</span>
                                     <div class="fr main_bottom_textl1">
                                         <eq name="vo['ishit']" value="1">
                                             <img src="__IMG__/dianzan.png" class="zanbg1" data-id="{$vo.id}"/>

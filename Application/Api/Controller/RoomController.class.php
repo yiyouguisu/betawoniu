@@ -78,7 +78,7 @@ class RoomController extends CommonController {
             ->join("left join {$sqlI} c on a.id=c.value")
             ->join("left join zz_hostel b on a.hid=b.id")
             ->where(array('a.id'=>$id))
-            ->field('a.id as rid,a.hid,a.title,a.thumb,a.hit,a.area,a.nomal_money,a.week_money,a.holiday_money,a.money,a.mannum,a.support,a.conveniences,a.bathroom,a.media,a.food,a.mannum,a.content,a.inputtime,a.score as evaluation,a.scorepercent as evaluationpercent,c.reviewnum,b.title as hostel,b.area as hostelarea,b.address as hosteladdress,b.lat,b.lng')
+            ->field('a.id as rid,a.hid,a.title,a.thumb,a.hit,a.area,a.nomal_money,a.week_money,a.holiday_money,a.money,a.mannum,a.support,a.conveniences,a.bathroom,a.media,a.food,a.mannum,a.imglist,a.content,a.inputtime,a.score as evaluation,a.scorepercent as evaluationpercent,c.reviewnum,b.title as hostel,b.area as hostelarea,b.address as hosteladdress,b.lat,b.lng')
             ->find();
             if(empty($data['reviewnum'])) $data['reviewnum']=0;
             //$data['hostel']=M('hostel')->where(array('id'=>$data['hid']))->getField("title");
@@ -86,6 +86,9 @@ class RoomController extends CommonController {
             // $data['evaluation']=!empty($evaluation['evaluation'])?$evaluation['evaluation']:0.0;
             // $data['evaluationpercent']=!empty($evaluation['percent'])?$evaluation['percent']:0.00;
             $data['evaluationset']=$evaluation;
+
+            $data['imglist']=explode("|", $data['imglist']);
+            
             $collectstatus=M('collect')->where(array('uid'=>$uid,'varname'=>"room",'value'=>$data['rid']))->find();
             if(!empty($collectstatus)){
                 $data['iscollect']=1;
@@ -130,7 +133,7 @@ class RoomController extends CommonController {
                     $bookdate[$key]['isgone']=0;
                     $bookdate[$key]['wait_num']=$data['mannum']-$booknum;
                 }
-                $book_status=M('book_room')->where(array('_string'=>$value['value']." <= endtime and ".$value['value']." >= starttime",'uid'=>$uid,'rid'=>$id))->find();
+                $book_status=M('book_room a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('_string'=>$value['value']." <= a.endtime and ".$value['value']." >= a.starttime",'a.uid'=>$uid,'a.rid'=>$id,'b.status'=>4))->find();
                 if(!empty($book_status)){
                     $bookdate[$key]['isbook']=1;
                 }else{
@@ -542,9 +545,9 @@ class RoomController extends CommonController {
                 'couponsid'=>$couponsid,
                 'discount'=>$discount
                 ));
-            M('vouchers_order')->where(array('id'=>$couponsid))->setField('status',1);
+           // M('vouchers_order')->where(array('id'=>$couponsid))->setField('status',1);
             $title="预定房间";
-            $body="预定".$room['title']."支付".$money;
+            $body="预定".$room['title'];
             $Pay=A("Api/Pay");
             $paycharge=$Pay->pay($orderid,$title,$body,$money,$channel);
             exit($paycharge);
@@ -581,12 +584,18 @@ class RoomController extends CommonController {
         $phone=trim($ret['phone']);
         $user=M('Member')->where(array('id'=>$uid))->find();
         $linkman= M('linkman')->where(array('realname'=>$realname,'idcard'=>$idcard,'phone'=>$phone))->find();
+        $linkman_idcard=M('linkman')->where(array('idcard'=>$idcard))->find();
+        $linkman_phone=M('linkman')->where(array('phone'=>$phone))->find();
         if($uid==''||$realname==''||$idcard==''||$phone==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }elseif(empty($user)){
             exit(json_encode(array('code'=>-200,'msg'=>"用户不存在")));
         }elseif(!empty($linkman)){
             exit(json_encode(array('code'=>-200,'msg'=>"联系人已经存在")));
+        }elseif(!empty($linkman_idcard)){
+            exit(json_encode(array('code'=>-200,'msg'=>"身份证号已经存在")));
+        }elseif(!empty($linkman_phone)){
+            exit(json_encode(array('code'=>-200,'msg'=>"手机号码已经存在")));
         }else{
             $data['uid']=$uid;
             $data['realname']=$realname;
@@ -611,12 +620,18 @@ class RoomController extends CommonController {
         $phone=trim($ret['phone']);
         $user=M('Member')->where(array('id'=>$uid))->find();
         $linkman= M('linkman')->where(array('id'=>$lmid))->find();
+        $linkman_idcard=M('linkman')->where(array('idcard'=>$idcard))->find();
+        $linkman_phone=M('linkman')->where(array('phone'=>$phone))->find();
         if($uid==''||$lmid==''||$realname==''||$idcard==''||$phone==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }elseif(empty($user)){
             exit(json_encode(array('code'=>-200,'msg'=>"用户不存在")));
         }elseif(empty($linkman)){
             exit(json_encode(array('code'=>-200,'msg'=>"联系人不存在")));
+        }elseif(!empty($linkman_idcard)){
+            exit(json_encode(array('code'=>-200,'msg'=>"身份证号已经存在")));
+        }elseif(!empty($linkman_phone)){
+            exit(json_encode(array('code'=>-200,'msg'=>"手机号码已经存在")));
         }else{
             $data['uid']=$uid;
             $data['realname']=$realname;

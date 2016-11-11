@@ -116,8 +116,8 @@
                         </div>
                     </div>
                     <span>参与者信息 :</span>
-                    <div class="Fill_in_order2_div_public Fill_in_order2_main4">
-                        <table class="Fill_in_order2_main4_tab">
+                    <div class="Fill_in_order2_main2 Fill_in_order2_div_public">
+                        <table class="Fill_in_order2_main2_tab">
                             <thead>
                                 <tr>
                                     <td>姓名</td>
@@ -127,6 +127,19 @@
                                 </tr>
                             </thead>
                             <tbody id="joinlist">
+                                <tr>
+                                    <td>
+                                        <input type="text" name="realname" value="{$data.productinfo.realname}" required/>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="idcard" value="{$data.productinfo.idcard}" required />
+                                    </td>
+                                    <td>
+                                        <input type="text" name="phone" value="{$data.productinfo.phone}" required/>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
                                 <volist name="data['productinfo']['book_member']" id="vo">
                                     <tr>
                                         <td>
@@ -140,7 +153,7 @@
                                             <input type="tel" value="{$vo.phone}" />
                                         </td>
                                         <td>
-                                            
+                                            <a href="javascript:;" class='delmebmer' data-id="{$vo.linkmanid}">删除</a>
                                         </td>
                                     </tr>
                                 </volist>
@@ -240,6 +253,7 @@
             <ul class="Fill_in_order2_a_bottom_ul linkmanlist">
                 <volist name="linkman" id="vo">
                     <li <in name="vo['id']" value="$data.productinfo.memberids">class="linkman Fill_in_order2_a_bottom_list" <else />class="linkman" </in> data-id="{$vo.id}" id="linkman_{$vo.id}">
+                        <input type="hidden" class="idcard" value="{$vo.idcard}">
                         <span class="f16 realname">{$vo.realname}</span>
                         <i class="fr phone">{$vo.phone}</i>
                     </li>
@@ -327,6 +341,7 @@
                         $("#last").before(str);
 
                         var str="<li class=\"linkman Fill_in_order2_a_bottom_list\" data-id='"+linkmanid+"' id=\"linkman_"+linkmanid+"\" data-idcard='"+idcard+"''>";
+                            str+="<input type=\"hidden\" class=\"idcard\" value=\""+idcard+"\">";
                             str+="<span class=\"f16 realname\">"+realname+"</span>";
                             str+="<i class=\"fr phone\">"+phone+"</i></li>";
                         $(".linkmanlist").append(str);
@@ -353,15 +368,18 @@
                     var linkmanid=$(this).data("id");
                     var realname=$(this).find(".realname").text();
                     var phone=$(this).find(".phone").text();
-                    str+="<tr><td><input type=\"text\" value=\""+realname+"\" /></td><td><input type=\"text\" value=\""+phone+"\" /></td><td><a href=\"javascript:;\" class='delmebmer' data-id="+linkmanid+">删除</a></td></tr>";
+                    var idcard=$(this).find(".idcard").val();
+                    str+="<tr><td><input type=\"text\" value=\""+realname+"\" /></td><td><input type=\"text\" value=\""+idcard+"\" /></td><td><input type=\"text\" value=\""+phone+"\" /></td><td><a href=\"javascript:;\" class='delmebmer' data-id="+linkmanid+">删除</a></td></tr>";
                 })
                 var mannum=$("ul.linkmanlist li.Fill_in_order2_a_bottom_list").length;
                 if(mannum>parseInt(end_numlimit)){
                     alert("人数超过限制");
                     return false;
                 }
-                $("#mannum").text(mannum);
-                $("#joinlist").html(str);
+                $("#mannum").text(mannum+1);
+                var headstr=$("#joinlist tr:eq(0)").html();
+                var footstr=$("#joinlist tr:last").html();
+                $("#joinlist").html("<tr>"+headstr+"</tr>"+str+"<tr>"+footstr+"</tr>");
                 $(".Fill_in_order2_a").hide();
                 $(".mask").hide();
                 aa();
@@ -386,11 +404,12 @@
             })
         })
         function aa(){
-            var money="{$data.money}";
+            var money="{$data.productinfo.money}";
             var mannum=$("ul.linkmanlist li.Fill_in_order2_a_bottom_list").length;
-            $("input[name='num']").val(mannum);
+            $("input[name='num']").val(mannum+1);
+            $("#mannum").text(mannum+1);
             var discount=$("input[name='discount']").val();
-            var total=parseFloat(parseFloat(money)*parseInt(mannum)-parseFloat(discount)).toFixed(2);
+            var total=parseFloat(parseFloat(money)*parseInt(mannum+1)-parseFloat(discount)).toFixed(2);
             $("#total").text(total);
             $(".total").text(total);    
             $("input[name='money']").val(total);

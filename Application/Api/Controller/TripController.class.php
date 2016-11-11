@@ -14,7 +14,6 @@ class TripController extends CommonController {
         $uid=intval(trim($ret['uid']));
         $p=intval(trim($ret['p']));
         $num=intval(trim($ret['num']));
-
         if($p==''||$num==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }else{
@@ -115,6 +114,13 @@ class TripController extends CommonController {
                 ->where(array('a.id'=>$id))
                 ->field('a.id,a.title,a.description,a.starttime,a.endtime,a.days,a.ispublic,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,c.reviewnum')
                 ->find();
+            $event=M('tripinfo')->where(array('tid'=>$id))->order(array('day'=>'asc','city'=>'asc','listorder'=>'asc'))->find();
+            if($event['varname']=='hostel'){
+                $data['thumb']=M('hostel')->where(array('id'=>$event['eventid']))->getField("thumb");
+            }elseif($event['varname']=='party'){
+                $data['thumb']=M('activity')->where(array('id'=>$event['eventid']))->getField("thumb");
+            }
+            
             $tripinfo=M('tripinfo')->where(array('tid'=>$id))->group("day")->order(array('day'=>'asc'))->field("day,date,money")->select();
             foreach ($tripinfo as $key => $value) {
             	# code..

@@ -2,7 +2,7 @@
 namespace Web\Controller;
 use Web\Common\CommonController;
 class AjaxapiController extends CommonController {
-	// 收藏
+	
 	public function collection(){
 		$uid=$this->getuid();
 		if($uid){

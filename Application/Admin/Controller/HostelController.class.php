@@ -148,6 +148,7 @@ class HostelController extends CommonController {
                 D("Hostel")->lat = $location['lat'];
                 D("Hostel")->city = $city;
                 D("Hostel")->imglist = $imglist;
+                D('Hostel')->bookremark = htmlspecialchars_decode($_POST['bookremark']);//退订信息
                 D("Hostel")->inputtime = time();
                 D("Hostel")->updatetime = time();
                 D("Hostel")->username=M('Member')->where(array('id'=>$_POST['uid']))->getField("nickname");
@@ -194,6 +195,10 @@ class HostelController extends CommonController {
             $this->pushs();
         } elseif ($submit == "unpushs") {
             $this->unpushs();
+        } elseif ($submit == "jinpins") {
+            $this->jinpins();
+        } elseif ($submit == "unjinpins") {
+            $this->unjinpins();
         }
     }
 
@@ -227,7 +232,20 @@ class HostelController extends CommonController {
             $this->error("删除失败！");
         }
     }
-
+    /**
+     *  下架
+     */
+    public function setoff() {
+        $id = $_GET['id'];
+        $offtime=time();
+        $did=M()->execute("update zz_hostel set isoff={$_GET['isoff']} ,offtime={$offtime} where id={$id}");
+        //$did=M("Hostel")->where(array('id'=>$id))->save(array('isoff'=>$_GET['isoff'],'offtime'=>time()));
+        if ($did) {
+            $this->success("更新状态成功！");
+        } else {
+            $this->error("更新状态失败！");
+        }
+    }
     /*
      * 美宿审核
      */
@@ -319,6 +337,39 @@ class HostelController extends CommonController {
             $this->success("排序更新成功！");
         } else {
             $this->error("排序更新失败！");
+        }
+    }
+    public function jinpins() {
+        $data['type'] = 1;
+        if (IS_POST) {
+            if (empty($_POST['ids'])) {
+                $this->error("没有信息被选中！");
+            }
+            foreach ($_POST['ids'] as $id) {
+                M("Hostel")->where(array("id" => $id))->save($data);
+            }
+            $this->success("设置精品成功！");
+        } else {
+            $this->error("设置精品成功！");
+        }
+    }
+
+    /*
+     * 游记推荐
+     */
+
+    public function unjinpins() {
+        $data['type'] = 0;
+        if (IS_POST) {
+            if (empty($_POST['ids'])) {
+                $this->error("没有信息被选中！");
+            }
+            foreach ($_POST['ids'] as $id) {
+                M("Hostel")->where(array("id" => $id))->save($data);
+            }
+            $this->success("取消设置精品成功！");
+        } else {
+            $this->error("取消设置精品失败！");
         }
     }
 }

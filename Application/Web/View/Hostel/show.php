@@ -3,14 +3,14 @@
 <div class="container padding_0">
    <div class="land">
                 <div class="act_g pr">
-                    <div class="act_g1"><img src="{$data.thumb}"></div>
+                    <div class="act_g1"><img src="{$data.thumb}"  style="width: 100%;height: 60vw;"></div>
                     <div class="history pa"><a href="" onclick="history.go(-1)"><img src="__IMG__/go.png"></a><span>&nbsp;</span></div>
                     <div class="recom_c pa"><div class="recom_gg collect <if condition='$data.iscollect eq 1'>recom_c_cut</if> "  data-id="{$data.id}"></div>
                                             <span><a href=""><img src="__IMG__/share.png"></a></span>
                                             <span><a href=""><img src="__IMG__/recom_a3.png"></a></span>
                     </div>
                     <div class="act_g2 f16 center pa">
-                            <em>￥</em><span>{$data.money}</span><em>起</em>
+                            <em>￥</em><span>{$data.money|default="0.00"}</span><em>起</em>
                     </div>
                </div>  
 
@@ -24,13 +24,13 @@
                                 <else/>
                                   <img src="__IMG__/poin.png">
                                 </if>
-                                {$data.hit}
+                                {$data.hit|default="0"}
                             </div>
                        </div>
                        
                        <div class="edg">
                            <div class="edg_a fl">
-                                      <div class="edg_b">{$data.evaluation}<span>分</span></div>
+                                      <div class="edg_b">{$data.evaluation|default="10.0"}<span>分</span></div>
                                       <div class="edg_c">
                                           <span><img src="__IMG__/star.png"></span>
                                           <span><img src="__IMG__/star.png"></span>
@@ -40,13 +40,13 @@
                                       </div>
                            </div>
                            <a href="homestay-2.html"><div class="edg_d fr">
-                               <img src="__IMG__/edg_a1.jpg"> {$data.reviewnum}条评论 <span><img src="__IMG__/arrow.jpg"></span>
+                               <img src="__IMG__/edg_a1.jpg"> {$data.reviewnum|default="0"}条评论 <span><img src="__IMG__/arrow.jpg"></span>
                            </div></a>
                        </div>
                        
                        <div class="vb_a">
                             <div class="land_font pr">
-                                <span>地址:</span> {$data.address}
+                                <span>地址:</span> {:getarea($data['area'])}{$data.address}
                                 <div class="vb_a1 pa">
                                       <img src="__IMG__/add_e.png">距你  5.6km
                                 </div>        
@@ -61,7 +61,7 @@
                <div class="snake">
                     <div class="vb_c1 snake_a center">我们的房间</div>
                         <volist name='data["room"]' id='vo'>
-                            <a href="{:U('Web/Hostel/room',array('id'=>$vo['rid']))}">
+                            <a href="{:U('Web/Room/show',array('id'=>$vo['rid']))}">
                                 <div class="snake_list f14">
                                        <div class="land_d pr f0">
                                             <div class="land_e vertical"><img src="{$vo.thumb}"></div>

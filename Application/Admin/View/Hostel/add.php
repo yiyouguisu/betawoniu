@@ -261,6 +261,25 @@
                                     </ul>
                                 </td>
                             </tr>
+                            <tr>
+                                <th>精品</th>
+                                <td>
+                                    <ul class="switch_list cc ">
+                                        <li>
+                                            <label>
+                                                <input type='radio' name='type' value='1'>
+                                                <span>是</span>
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type='radio' name='type' value='0' checked>
+                                                <span>否</span>
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

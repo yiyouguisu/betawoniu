@@ -151,7 +151,6 @@
                     });
                 }
             </script>
-            </script>
             <div class="activity_top3">
                    <div class="activity_top3_01">
                        <span>按位置 :</span>
@@ -218,7 +217,7 @@
                                         </div>
                                         <div class="activity_chang2_list3_center">
                                             <p>时间 :<em>{$vo.starttime|date="Y-m-d",###} - {$vo.endtime|date="Y-m-d",###}</em></p>
-                                            <p>地点 :<em>{$vo.address} </em></p>
+                                            <p>地点 :<em>{:getarea($vo['area'])}{$vo.address} </em></p>
                                         </div>
                                         <div class="hmain5_r5_list2_2 hidden">
                                             <div class="fl">
@@ -266,7 +265,7 @@
                         <li>
                             <div class="activity_main2_02-1_list">
                                 <div class="travels_main_x pr">
-                                   <img src="{$vo.thumb}" style="width:339px;height:213px" onclick="window.location.href='{:U('Home/Party/show',array('id'=>$vo['id']))}'" />
+                                   <img src="{$vo.thumb}" style="width:339px;height:213px" onclick="window.location.href='{:U('Home/Note/show',array('id'=>$vo['id']))}'" />
                                    <div class="travels_main2_img">
                                         <a href="{:U('Home/Member/detail',array('uid'=>$vo['uid']))}">
                                             <img src="{$vo.head}"  width="55px" height="55px" />

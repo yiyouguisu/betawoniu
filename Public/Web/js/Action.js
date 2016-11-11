@@ -2,9 +2,6 @@
 	
 	$(function(){
 	     $(".recom").last().css("border","0")//去边框
-	     $(".recom_gg").click(function(){ //收藏效果切换
-		    $(this).toggleClass("recom_c_cut")	 
-		 })
 	})
 
 //搜索结果
@@ -138,31 +135,4 @@ $(function(){
 	})
 })
 
-//7.22新增
-
-//活动报名人数点击
-// $(function(){
-//    $(".add").click(function(){
-// 	  var textVal=$(this).parent(".we_b1").siblings(".we_b2").find(".we_text")
-// 	  var num=$(this).parent(".we_b1").siblings(".we_b2").find(".we_text").val();
-// 	  num++ ;
-// 	  textVal.val(num)
-      
-   
-//    })
-   
-//    $(".reduce").click(function(){
-// 	  var textVal=$(this).parent(".we_b1").siblings(".we_b2").find(".we_text")
-// 	  var num=$(this).parent(".we_b1").siblings(".we_b2").find(".we_text").val();
-	 
-// 	  if(num>1){
-// 	      num-- ;
-// 		  textVal.val(num) 
-// 	  }
-	  
-   
-//    })
-   
-  
-// })
 

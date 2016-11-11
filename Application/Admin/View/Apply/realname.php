@@ -39,8 +39,9 @@
                             <td><label><input type="checkbox" class="J_check_all" data-direction="x" data-checklist="J_check_x"></label></td>
                             <td width="5%" align="center" >ID</td>
                             <td width="10%" align="center" >用户名</td>
-                            <td width="15%" align="center" >真实姓名</td>
-                            <td width="18%" align="center" >身份证号码</td>
+                            <td width="10%" align="center" >真实姓名</td>
+                            <td width="10%" align="center" >支付宝账号</td>
+                            <td width="12%" align="center" >身份证号码</td>
                             <td width="10%" align="center" >前身份证照</td>
                             <td width="10%" align="center" >后身份证照</td>
                             <td width="10%" align="center" >状态</td>
@@ -55,6 +56,7 @@
                             <td align="center" >{$vo.id}</td>
                             <td align="center" >{:getuserinfo($vo['uid'])}</td>
                             <td align="center" >{$vo.realname}</td>
+                            <td align="center" >{$vo.alipayaccount}</td>
                             <td align="center" >{$vo.idcard}</td>
                             <td align="center" ><img src="{$vo.idcard_front}" ondblclick='image_priview(this.src);' width="80px" height="80px" ></td>
                             <td align="center" ><img src="{$vo.idcard_back}" ondblclick='image_priview(this.src);' width="80px" height="80px" ></td>

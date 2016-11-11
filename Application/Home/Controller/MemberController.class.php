@@ -64,7 +64,7 @@ class MemberController extends CommonController {
                 ->field('a.id,a.title,a.thumb,a.money,a.address,a.status,a.uid,a.starttime,a.endtime,a.inputtime')->limit(2)->select();
             foreach ($myparty as $key => $value) {
               # code...
-                if($value['starttime']<=time()&&$value['endtime']>=time()){
+                if($value['endtime']>=time()){
                   $myparty[$key]['donestatus']=0;
                 }else{
                   $myparty[$key]['donestatus']=1;
@@ -111,12 +111,14 @@ class MemberController extends CommonController {
             }
             $this->assign('mynote',$mynote);
 
-            $where=array('a.uid|e.uid'=>$uid,'c.cancel_status'=>0,'a.ordertype'=>1);
+
+            $where=array('a.uid|e.uid'=>$uid,'a.ordertype'=>1);
             $order=array('a.inputtime'=>'desc');
-            $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime,c.review_remark');
+            $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,c.refund_status,a.ordertype,c.donetime,c.review_remark,d.endtime,f.remark as refundreview_remark');
             $hostelorder=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")
                 ->join("left join zz_book_room d on a.orderid=d.orderid")
                 ->join("left join zz_hostel e on d.hid=e.id")
+                ->join("left join zz_refund_apply f on a.orderid=f.orderid")
                 ->where($where)
                 ->order($order)
                 ->field($field)
@@ -134,10 +136,14 @@ class MemberController extends CommonController {
             }
             $this->assign('hostelorder',$hostelorder);
 
-            $where=array('a.uid'=>$uid,'c.cancel_status'=>0,'a.ordertype'=>2);
+            $where=array('a.uid|e.uid'=>$uid,'a.ordertype'=>2);
             $order=array('a.inputtime'=>'desc');
-            $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
-            $partyorder=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")
+            $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,c.refund_status,a.ordertype,c.donetime,e.endtime,f.remark as refundreview_remark');
+            $partyorder=M('order a')
+                ->join("left join zz_order_time c on a.orderid=c.orderid")
+                ->join("left join zz_activity_apply d on a.orderid=d.orderid")
+                ->join("left join zz_activity e on d.aid=e.id")
+                ->join("left join zz_refund_apply f on a.orderid=f.orderid")
                 ->where($where)
                 ->order($order)
                 ->field($field)
@@ -291,17 +297,31 @@ class MemberController extends CommonController {
      */
     public function reg() {
         if(IS_POST){
-            $verify = new \Think\Verify();
-            $code = $_POST['verify'];
-            $verifyok = $verify->check($code, $id = '');
-            if (!$verifyok) {
-                $this->error('图片验证码错误，请重新输入');
+            $phone=$_POST['phone'];
+            // $verify = new \Think\Verify();
+            // $code = $_POST['verify'];
+            // $verifyok = $verify->check($code, $id = '');
+            // if (!$verifyok) {
+            //     $this->error('图片验证码错误，请重新输入');
+            // }
+            $verifyset=M('verify')->where('phone=' . $phone)->find();
+            $time=time()-$verifyset['expiretime'];
+            if($time>0){
+                $verify="";
+                M('verify')->where('phone=' . $phone)->save(array(
+                'status'=>1
+                ));
+            }else{
+                $verify=$verifyset['verify'];
+                M('verify')->where('phone=' . $phone)->save(array(
+                'status'=>1
+                ));
             }
             $telverify= $_POST['telverify'];
-            if(strtolower($telverify)!=strtolower(session('code'))){
+            if(strtolower($telverify)!=strtolower($verify)){
                 $this->error('请输入您手机接收到的正确验证码');
             }
-            $phone=$_POST['phone'];
+            
             $password=$_POST['password'];
             $pwdconfirm=$_POST['pwdconfirm'];
             if(empty($password)||empty($pwdconfirm)||empty($phone)){
@@ -310,11 +330,19 @@ class MemberController extends CommonController {
             if(!check_phone($phone)){
                 $this->error('手机号已被注册');
             }
+            $invite_code = $_POST['invite_code'];
+            $tuijianuser=M('member')->where(array('tuijiancode'=>$invite_code))->find();
+            if (!$tuijianuser&&!empty($invite_code)) {
+                $this->error('推荐用户不存在');
+            } 
             $data=$_POST;
             $data['group_id']=1;
             $data['username']=$_POST['phone'];
             $data['phone_status'] = 1;
             $data['head']="/default_head.png";
+            if($tuijianuser&&!empty($invite_code)){
+                $data['groupid_id'] = $tuijianuser['id'];
+            }
             $id = D("member")->addUser($data);
             if ($id) {
                 $Rongrun=A("Api/Rongyun");
@@ -328,6 +356,62 @@ class MemberController extends CommonController {
                   'value'=>$id,
                   'inputtime'=>time()
                 ));
+                if($tuijianuser&&!empty($invite_code)){
+                    $Vouchers= M("Vouchers")->where(array('id'=>1))->find();
+                    $vouchers_order_id=M("Vouchers_order")->add(array(
+                        'catid'=>1,
+                        'uid'=>$id,
+                        'num'=>1,
+                        'price'=>$Vouchers['price'],
+                        'hid'=>$Vouchers['hid'],
+                        'aid'=>$Vouchers['aid'],
+                        'status'=>0,   
+                        'inputtime'=>time(),
+                        'updatetime'=>time()
+                        ));
+                    if($vouchers_order_id){
+                        \Api\Controller\UtilController::addmessage($order['uid'],"会员首次注册获取优惠券","会员首次注册获取优惠券","会员首次注册获取优惠券","getcoupons",$vouchers_order_id);
+                    }
+                    M('invite')->add(array(
+                        'uid'=>$tuijianuser['id'],
+                        'tuid'=>$id,
+                        'tuijiancode'=>$invite_code,
+                        'status'=>2,
+                        'inputtime'=>time()
+                        ));
+                    $Vouchers= M("Vouchers")->where(array('id'=>2))->find();
+                    $vouchers_order_id=M("Vouchers_order")->add(array(
+                        'catid'=>2,
+                        'uid'=>$tuijianuser['id'],
+                        'num'=>1,
+                        'price'=>$Vouchers['price'],
+                        'hid'=>$Vouchers['hid'],
+                        'aid'=>$Vouchers['aid'],
+                        'status'=>0,   
+                        'inputtime'=>time(),
+                        'updatetime'=>time()
+                        ));
+                    if($vouchers_order_id){
+                        \Api\Controller\UtilController::addmessage($order['uid'],"分享APP邀请好友注册","分享APP邀请好友注册赠送20元","分享APP邀请好友注册赠送20元","getcoupons",$vouchers_order_id);
+                    }
+                }else{
+                    $Vouchers= M("Vouchers")->where(array('id'=>1))->find();
+                    $vouchers_order_id=M("Vouchers_order")->add(array(
+                        'catid'=>1,
+                        'uid'=>$id,
+                        'num'=>1,
+                        'price'=>$Vouchers['price'],
+                        'hid'=>$Vouchers['hid'],
+                        'aid'=>$Vouchers['aid'],
+                        'status'=>0,   
+                        'inputtime'=>time(),
+                        'updatetime'=>time()
+                        ));
+                    if($vouchers_order_id){
+                        \Api\Controller\UtilController::addmessage($order['uid'],"会员首次注册获取优惠券","会员首次注册获取优惠券","会员首次注册获取优惠券","getcoupons",$vouchers_order_id);
+                    }
+
+                }
                 $this->loginHome($_POST["phone"], $_POST["password"]);
                 $this->redirect('Home/Member/addinfo');
             } else {
@@ -546,6 +630,50 @@ class MemberController extends CommonController {
         ));
     }
     /**
+     *修改密码
+     */
+    public function dochangepassword(){
+      $ret=$_POST;
+      $telverify=trim($ret['telverify']);
+      $new_password=trim($ret['new_password']);
+      $phone=trim($ret['phone']);
+      $uid = session("uid");
+
+      $where['id']=$uid;
+      $user=M('Member')->where($where)->find();
+
+      $verifyset=M('verify')->where('phone=' . $phone)->find();
+      $time=time()-$verifyset['expiretime'];
+      if($time>0){
+        $verify="";
+        M('verify')->where('phone=' . $phone)->save(array(
+          'status'=>1
+        ));
+      }else{
+        $verify=$verifyset['verify'];
+        M('verify')->where('phone=' . $phone)->save(array(
+          'status'=>1
+        ));
+      }
+      if($uid==''||$telverify==''||$new_password==''){
+        exit(json_encode(array('code'=>-200,'msg'=>"Request parameter is null!")));
+      }elseif(strtolower($telverify)!=strtolower($verify)){
+        exit(json_encode(array('code'=>-200,'msg'=>"验证码错误")));
+      }elseif(empty($user)){
+        exit(json_encode(array('code'=>-200,'msg'=>"The User is not exist!")));
+      }else{
+        $verify = CommonController::genRandomString(6);
+        $data['verify'] = $verify;
+        $data['password'] = D("Member")->encryption($user['username'], $new_password, $verify);
+        $id=M('Member')->where($where)->save($data);
+        if($id){
+          exit(json_encode(array('code'=>200,'msg'=>"修改成功")));
+        }else{
+          exit(json_encode(array('code'=>-202,'msg'=>"修改失败")));
+        }
+      }
+    }
+    /**
      * 会员忘记密码
      * @return void
      * @author yiyouguisu<741459065@qq.com> time|20151219
@@ -578,7 +706,7 @@ class MemberController extends CommonController {
       if($phone==''||$new_password==''||$telverify==''){
         exit(json_encode(array('code'=>-200,'msg'=>"Request parameter is null!")));
       }elseif(strtolower($telverify)!=strtolower($verify)){
-              exit(json_encode(array('code'=>-200,'msg'=>"验证码错误")));
+        exit(json_encode(array('code'=>-200,'msg'=>"验证码错误")));
       }elseif(!$user){
         exit(json_encode(array('code'=>-200,'msg'=>"The User is not exist!")));
       }else{
@@ -590,6 +718,47 @@ class MemberController extends CommonController {
           exit(json_encode(array('code'=>200,'msg'=>"重置密码成功")));
         }else{
           exit(json_encode(array('code'=>-202,'msg'=>"重置密码失败")));
+        }
+      }
+    }
+    public function dochangephone(){
+      $ret=$_POST;
+      $uid=session("uid");
+      $phone=trim($ret['phone']);
+      $telverify = trim($ret['telverify']);
+
+      $verifyset = M('verify')->where('phone=' . $phone)->find();
+      $time = time() - $verifyset['expiretime'];
+      if ($time > 0) {
+          $verify = "";
+          M('verify')->where('phone=' . $phone)->save(array(
+          'status' => 1
+          ));
+      } else {
+          $verify = $verifyset['verify'];
+          M('verify')->where('phone=' . $phone)->save(array(
+          'status' => 1
+          ));
+      }
+
+      $where['id']=$uid;
+      $user=M('Member')->where($where)->find();
+
+      if($phone==''||$uid==''||$telverify==''){
+        exit(json_encode(array('code'=>-200,'msg'=>"Request parameter is null!")));
+      }elseif (strtolower($telverify) != strtolower($verify)) {
+          exit(json_encode(array('code' => -200, 'msg' => "验证码错误")));
+      }elseif(!$user){
+        exit(json_encode(array('code'=>-200,'msg'=>"The User is not exist!")));
+      }elseif(!check_phone($phone)){
+        exit(json_encode(array('code'=>-200,'msg'=>"手机号已经被使用!")));
+      }else{
+        $data['phone']=$phone;
+        $id=M('Member')->where("id=" . $user['id'])->save($data);
+        if($id){
+          exit(json_encode(array('code'=>200,'msg'=>"提交成功")));
+        }else{
+          exit(json_encode(array('code'=>-202,'msg'=>"提交失败")));
         }
       }
     }
@@ -692,8 +861,21 @@ class MemberController extends CommonController {
                     $this->error('图像不能为空！');
                 }
                 $imgshot = new Imgshot();
-                $imgshot->initialize(substr($_POST['background'], 1), $_POST['x'], $_POST['y'], $_POST['w'], $_POST['h'],1920,200);
+
+                $image = new \Think\Image(); 
+                $image->open('.'.$_POST['background']);
+                $width = $image->width(); // 返回图片的宽度
+                $height = $image->height(); // 返回图片的高度
+                $ratio = 956/$width;
+                $w = (int)round( $_POST['w'] / $ratio);
+                $h = (int)round( $_POST['h'] / $ratio);
+                $x = (int)round( $_POST['x'] / $ratio);
+                $y = (int)round( $_POST['y'] / $ratio);
+                $imgshot->initialize(substr($_POST['background'], 1), $x, $y, $w, $h,1920,200);
                 $filename=$imgshot->generate_shot();
+
+                // $imgshot->initialize(substr($_POST['background'], 1), $_POST['x'], $_POST['y'], $_POST['w'], $_POST['h'],1920,200);
+                // $filename=$imgshot->generate_shot();
                 $id=M('Member')->where('id=' . session("uid"))->save(array(
                     'background'=>$filename
                 ));
@@ -707,6 +889,35 @@ class MemberController extends CommonController {
             }
         }
     }
+    public function test(){
+        $imgshot = new Imgshot();
+
+        $file="/Uploads/images/pc/20161108/144321_5066.jpg";
+
+        $image = new \Think\Image(); 
+        $image->open('.'.$file);
+        $width = $image->width(); // 返回图片的宽度
+        $height = $image->height(); // 返回图片的高度
+        $ratio = 956/$width;
+        $w = (int)round(956 / $ratio);
+        $h = (int)round(100 / $ratio);
+        $x = (int)round(0 / $ratio);
+        $y = (int)round( 238 / $ratio);
+        $imgshot->initialize(substr($file, 1), $x, $y, $w, $h,1920,200);
+        $filename=$imgshot->generate_shot();
+    }
+
+      public function resizeimage($pic_width,$pic_height,$maxwidth){
+              if($maxwidth && $pic_width>$maxwidth)
+              {
+                  $ratio = $maxwidth/$pic_width;
+              }
+
+              $newwidth = $pic_width * $ratio;
+              $newheight = $pic_height * $ratio;
+              return $newwidth;
+          
+      }
     /**
      * 我的钱包
      * @return void
@@ -926,7 +1137,7 @@ class MemberController extends CommonController {
         $data = M('vouchers_order a')
             ->join("left join zz_vouchers b on a.catid=b.id")
             ->where(array('a.id'=>$id))
-            ->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,a.price,a.hid,a.aid,b.city,b.`range`,b.validity_endtime,a.`status`,b.`range`,b.content")->find();
+            ->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,a.price,a.hid,a.aid,b.city,b.`range`,b.validity_starttime,b.validity_endtime,a.`status`,b.`range`,b.content")->find();
         if(!empty($data['city'])){
             $data['cityname']=M('area')->where(array('id'=>$data['city']))->getField("name");
         }
@@ -956,18 +1167,20 @@ class MemberController extends CommonController {
             
             switch ($type) {
               case "all":
-                  $where=array('a.uid|e.uid'=>$uid,'c.cancel_status'=>0,'a.ordertype'=>1);
+                  $where=array('a.uid|e.uid'=>$uid,'a.ordertype'=>1);
                   $order=array('a.inputtime'=>'desc');
-                  $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime,c.review_remark,d.endtime');
+                  $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,c.refund_status,a.ordertype,c.donetime,c.review_remark,d.endtime,f.remark as refundreview_remark');
                   $count=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")
                       ->join("left join zz_book_room d on a.orderid=d.orderid")
                       ->join("left join zz_hostel e on d.hid=e.id")
+                      ->join("left join zz_refund_apply f on a.orderid=f.orderid")
                       ->where($where)
                       ->count();
                   $page = new \Think\Page($count,10);
                   $list=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")
                       ->join("left join zz_book_room d on a.orderid=d.orderid")
                       ->join("left join zz_hostel e on d.hid=e.id")
+                      ->join("left join zz_refund_apply f on a.orderid=f.orderid")
                       ->where($where)
                       ->order($order)
                       ->field($field)
@@ -985,7 +1198,7 @@ class MemberController extends CommonController {
                   }
                   break;
               case "waitpay":
-                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>2,'c.pay_status'=>0,'c.cancel_status'=>0,'a.ordertype'=>1);
+                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>2,'c.pay_status'=>0,'a.ordertype'=>1);
                   $order=array('a.inputtime'=>'desc');
                   $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime,d.endtime');
                   $count=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")
@@ -1014,7 +1227,7 @@ class MemberController extends CommonController {
                   }
                   break;
               case "waitreview":
-                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>1,'c.pay_status'=>0,'c.cancel_status'=>0,'a.ordertype'=>1);
+                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>1,'c.pay_status'=>0,'a.ordertype'=>1);
                   $order=array('a.inputtime'=>'desc');
                   $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime,d.endtime');
                   $count=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")
@@ -1043,18 +1256,20 @@ class MemberController extends CommonController {
                   }
                   break;
               case "done":
-                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>4,'c.pay_status'=>1,'c.cancel_status'=>0,'a.ordertype'=>1);
+                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>4,'c.pay_status'=>1,'a.ordertype'=>1);
                   $order=array('a.inputtime'=>'desc');
-                  $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime,d.endtime');
+                  $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,c.refund_status,a.ordertype,c.donetime,d.endtime,f.remark as refundreview_remark');
                   $count=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")
                       ->join("left join zz_book_room d on a.orderid=d.orderid")
                       ->join("left join zz_hostel e on d.hid=e.id")
+                      ->join("left join zz_refund_apply f on a.orderid=f.orderid")
                       ->where($where)
                       ->count();
                   $page = new \Think\Page($count,10);
                   $list=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")
                       ->join("left join zz_book_room d on a.orderid=d.orderid")
                       ->join("left join zz_hostel e on d.hid=e.id")
+                      ->join("left join zz_refund_apply f on a.orderid=f.orderid")
                       ->where($where)
                       ->order($order)
                       ->field($field)
@@ -1102,14 +1317,15 @@ class MemberController extends CommonController {
             }
             
             switch ($type) {
-              case "done":
-                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>4,'c.pay_status'=>1,'c.cancel_status'=>0,'a.ordertype'=>2);
+              case "all":
+                  $where=array('a.uid|e.uid'=>$uid,'a.ordertype'=>2);
                   $order=array('a.inputtime'=>'desc');
-                  $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime,e.endtime');
+                  $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,c.refund_status,a.ordertype,c.donetime,e.endtime,f.remark as refundreview_remark');
                   $count=M('order a')
                       ->join("left join zz_order_time c on a.orderid=c.orderid")
                       ->join("left join zz_activity_apply d on a.orderid=d.orderid")
                       ->join("left join zz_activity e on d.aid=e.id")
+                      ->join("left join zz_refund_apply f on a.orderid=f.orderid")
                       ->where($where)
                       ->count();
                   $page = new \Think\Page($count,10);
@@ -1117,6 +1333,7 @@ class MemberController extends CommonController {
                       ->join("left join zz_order_time c on a.orderid=c.orderid")
                       ->join("left join zz_activity_apply d on a.orderid=d.orderid")
                       ->join("left join zz_activity e on d.aid=e.id")
+                      ->join("left join zz_refund_apply f on a.orderid=f.orderid")
                       ->where($where)
                       ->order($order)
                       ->field($field)
@@ -1127,13 +1344,45 @@ class MemberController extends CommonController {
                       $productinfo=M('activity_apply a')
                           ->join("left join zz_activity b on a.aid=b.id")
                           ->where(array('a.orderid'=>$value['orderid']))
-                          ->field("a.aid,b.thumb,b.title,b.money,b.isfree,b.starttime,b.endtime")
+                          ->field("a.aid,b.thumb,b.title,b.money,b.isfree,b.starttime,b.endtime,b.area,b.address")
+                          ->find();
+                      $list[$key]['productinfo']=$productinfo;
+                  }
+                  break;
+              case "done":
+                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>4,'c.pay_status'=>1,'a.ordertype'=>2);
+                  $order=array('a.inputtime'=>'desc');
+                  $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,c.refund_status,a.ordertype,c.donetime,e.endtime,f.remark as refundreview_remark');
+                  $count=M('order a')
+                      ->join("left join zz_order_time c on a.orderid=c.orderid")
+                      ->join("left join zz_activity_apply d on a.orderid=d.orderid")
+                      ->join("left join zz_activity e on d.aid=e.id")
+                      ->join("left join zz_refund_apply f on a.orderid=f.orderid")
+                      ->where($where)
+                      ->count();
+                  $page = new \Think\Page($count,10);
+                  $list=M('order a')
+                      ->join("left join zz_order_time c on a.orderid=c.orderid")
+                      ->join("left join zz_activity_apply d on a.orderid=d.orderid")
+                      ->join("left join zz_activity e on d.aid=e.id")
+                      ->join("left join zz_refund_apply f on a.orderid=f.orderid")
+                      ->where($where)
+                      ->order($order)
+                      ->field($field)
+                      ->limit($page->firstRow . ',' . $page->listRows)
+                      ->select();
+                  foreach ($list as $key => $value) {
+                      # code...
+                      $productinfo=M('activity_apply a')
+                          ->join("left join zz_activity b on a.aid=b.id")
+                          ->where(array('a.orderid'=>$value['orderid']))
+                          ->field("a.aid,b.thumb,b.title,b.money,b.isfree,b.starttime,b.endtime,b.area,b.address")
                           ->find();
                       $list[$key]['productinfo']=$productinfo;
                   }
                   break;
               case "waitpay":
-                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>2,'c.pay_status'=>0,'c.cancel_status'=>0,'a.ordertype'=>2);
+                  $where=array('a.uid|e.uid'=>$uid,'c.status'=>2,'c.pay_status'=>0,'a.ordertype'=>2);
                   $order=array('a.inputtime'=>'desc');
                   $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime,e.endtime');
                   $count=M('order a')
@@ -1157,7 +1406,7 @@ class MemberController extends CommonController {
                       $productinfo=M('activity_apply a')
                           ->join("left join zz_activity b on a.aid=b.id")
                           ->where(array('a.orderid'=>$value['orderid']))
-                          ->field("a.aid,b.thumb,b.title,b.money,b.isfree,b.starttime,b.endtime")
+                          ->field("a.aid,b.thumb,b.title,b.money,b.isfree,b.starttime,b.endtime,b.area,b.address")
                           ->find();
                       $list[$key]['productinfo']=$productinfo;
                   }
@@ -1455,9 +1704,9 @@ class MemberController extends CommonController {
             if(empty($type)){
               $type="hostel";
             }
-            $status=I('status');
-            if(empty($type)){
-              $status="1";
+            $status=$_GET['status'];
+            if ($status == "" || $status == null) {
+                $status=1;
             }
             switch ($type) {
               case "hostel":
@@ -1514,6 +1763,7 @@ class MemberController extends CommonController {
             $this->assign("Page", $show);
             if($_GET['isAjax']==1){
                 $jsondata['status']=1;
+                //$jsondata['sql']=$sql;
                 $jsondata['html']  = $this->fetch("morelist_myrelease");
                 $this->ajaxReturn($jsondata,'json');
             }else{
@@ -1626,12 +1876,18 @@ class MemberController extends CommonController {
         $phone=trim($ret['phone']);
         $user=M('Member')->where(array('id'=>$uid))->find();
         $linkman= M('linkman')->where(array('realname'=>$realname,'idcard'=>$idcard,'phone'=>$phone))->find();
+        $linkman_idcard=M('linkman')->where(array('idcard'=>$idcard))->find();
+        $linkman_phone=M('linkman')->where(array('phone'=>$phone))->find();
         if($uid==''||$realname==''||$idcard==''||$phone==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }elseif(empty($user)){
             exit(json_encode(array('code'=>-200,'msg'=>"用户不存在")));
         }elseif(!empty($linkman)){
             exit(json_encode(array('code'=>-200,'msg'=>"联系人已经存在")));
+        }elseif(!empty($linkman_idcard)){
+            exit(json_encode(array('code'=>-200,'msg'=>"身份证号已经存在")));
+        }elseif(!empty($linkman_phone)){
+            exit(json_encode(array('code'=>-200,'msg'=>"手机号码已经存在")));
         }else{
             $data['uid']=$uid;
             $data['realname']=$realname;
@@ -1655,12 +1911,18 @@ class MemberController extends CommonController {
         $phone=trim($ret['phone']);
         $user=M('Member')->where(array('id'=>$uid))->find();
         $linkman= M('linkman')->where(array('id'=>$lmid))->find();
+        $linkman_idcard=M('linkman')->where(array('idcard'=>$idcard,'id'=>array('neq',$lmid)))->find();
+        $linkman_phone=M('linkman')->where(array('phone'=>$phone,'id'=>array('neq',$lmid)))->find();
         if($uid==''||$lmid==''||$realname==''||$idcard==''||$phone==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }elseif(empty($user)){
             exit(json_encode(array('code'=>-200,'msg'=>"用户不存在")));
         }elseif(empty($linkman)){
             exit(json_encode(array('code'=>-200,'msg'=>"联系人不存在")));
+        }elseif(!empty($linkman_idcard)){
+            exit(json_encode(array('code'=>-200,'msg'=>"身份证号已经存在")));
+        }elseif(!empty($linkman_phone)){
+            exit(json_encode(array('code'=>-200,'msg'=>"手机号码已经存在")));
         }else{
             $data['uid']=$uid;
             $data['realname']=$realname;
@@ -1761,6 +2023,9 @@ class MemberController extends CommonController {
                     }
                 }
             }else{
+                $uid=session("uid");
+                $data=M('realname_apply')->where(array('uid'=>$uid))->find();
+                $this->assign("data",$data);
                 $this->display();
             }
         }
@@ -1827,7 +2092,31 @@ class MemberController extends CommonController {
                     }
                 }
             }else{
-                $this->display();
+                $uid=session("uid");
+                $realname_status=M('member')->where(array('id'=>$uid))->getField("realname_status");
+                $apply=M('realname_apply')->where(array('uid'=>$uid))->find();
+                if($apply['status']==1){
+                  $realname_status=-1;
+                }
+                switch ($realname_status) {
+                  case '-1':
+                    # code...
+                    $this->error("请等待实名认证审核");
+                    break;
+                  case '0':
+                    # code...
+                    $this->error("请先进行实名认证",U('Home/Member/realname'));
+                    break;
+                  case '1':
+                    # code...
+                    $data=M('houseowner_apply')->where(array('uid'=>$uid))->find();
+                    $data['realname']=M('member')->where(array('id'=>$uid))->getField("realname");
+                    $data['alipayaccount']=M('alipayaccount')->where(array('uid'=>$uid))->getField("alipayaccount");
+                    $this->assign("data",$data);
+                    $this->display();
+                    break;
+                }
+                
             }
         }
     }

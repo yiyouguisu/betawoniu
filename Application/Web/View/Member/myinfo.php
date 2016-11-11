@@ -125,7 +125,7 @@
                             </div>
                       </div>
                 </div>
-                <div class="fg_d son_btn ggt_href"><a href="{:U('Web/Member/certification')}">我要实名认证</a></div>
+                <div class="fg_d son_btn ggt_href"><a href="{:U('Web/Member/realname')}">我要实名认证</a></div>
           </div>	
 
    </div>	   	

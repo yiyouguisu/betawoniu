@@ -46,8 +46,15 @@
                             <div class="center_ul_list middle">
                                 <img src="__IMG__/Icon/img10.png" /><i><em>{$data.reviewnum|default="0"}</em>条评论</i>
                             </div>
+                            <div class="middle Event_details8_list2_03 ">
+                                <eq name="data['ishit']" value="1">
+                                    <img src="__IMG__/dianzan.png" class="zanbg1" data-id="{$data.id}"/>
+                                    <else />
+                                    <img src="__IMG__/Icon/img9.png" class="zanbg1" data-id="{$data.id}"/>
+                                </eq>
+                                <i class="zannum">{$data.hit|default="0"}</i>
+                            </div>
                         </div>
-
                     </div>
                     <div class="middle Inn_introduction_main_bottom3">
                         <a href="" class="a1"><img src="__IMG__/Icon/img24.png" /></a>
@@ -217,7 +224,7 @@
 
             <div class="Inn_introduction_main3">
                 <div class="Inn_introduction_main3_top">
-                    <a href="">
+                    <a href="{:U('Home/Member/detail',array('uid'=>$data['uid']))}">
                         <div>
                             <img src="{$data.head}" />
                         </div>
@@ -261,7 +268,7 @@
 
                 <div class="Inn_introduction_main3_bottom">
                     <!-- <a href="" class="a1">预订房间</a> -->
-                    <a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid']))}" class="a2">在线咨询房东</a>
+                    <a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid'],'type'=>'hostel'))}" class="a2">在线咨询房东</a>
                 </div>
 
 

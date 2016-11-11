@@ -35,10 +35,10 @@
             serverUrl :url,
             UEDITOR_HOME_URL:'__Editor__/UEditor/',
         });
-        UE.getEditor('bookremark',{
-            serverUrl :url,
-            UEDITOR_HOME_URL:'__Editor__/UEditor/',
-        });
+        // UE.getEditor('bookremark',{
+        //     serverUrl :url,
+        //     UEDITOR_HOME_URL:'__Editor__/UEditor/',
+        // });
         var province='{$data.province}';
         var city='{$data.city}';
         if(province!=''){
@@ -382,15 +382,11 @@
                 <div class="Release_of_legend_m4_list4 hidden">
                     <ul class="Release_of_legend_m4_ul hidden">
                         <volist name="support" id="vo">
-                            <li class="room support" data-id="{$vo.id}">
+                            <li class="room support">
                                 <div data-id="{$vo.id}" data-hot="{$vo.ishot}" class="Release_of_legend_a1 fl" style="background: url('{$vo.gray_thumb}') no-repeat 9px center;    background-size: 24px 24px;">
                                     <span>{$vo.catname}</span>
                                 </div>
-                                <eq name="vo['ishot']" value="1">
-                                    <i class="Release_of_legend_a1_i2 fl">特</i>
-                                    <else />
-                                    <i class="Release_of_legend_a1_i fl">特</i>
-                                </eq>
+                                <i data-id="{$vo.id}" class="hotsupport Release_of_legend_a1_i fl">特</i>
                             </li>
                         </volist>
                     </ul>
@@ -415,6 +411,7 @@
                     <input type="hidden" name="rid" id="rid" value=""/>
                     <input type="hidden" name="roomthumb" id="roomthumb" value=""/>
                     <input type="hidden" name="roomsupport" id="roomsupport" value=""/>
+                    <input type="hidden" name="roomhotsupport" id="roomhotsupport" value=""/>
                     <input class="Release_of_legend_m4_sub addroom" type="button" value="发布房间" />
                     <input class="Release_of_legend_m4_reset" type="reset" value="重置" />
                 </div>
@@ -424,23 +421,22 @@
     <script type="text/javascript">
         var rid=parseInt({$roomnum})||0;
         $(function () {
-            $(".Release_of_legend_m4_ul div").click(function () {
-                var ishot=$(this).data("hot");
-                var hitnum=$(".room .Release_of_legend_m4_span[data-hot=1]").length;
-                console.log(hitnum)
-                if(ishot=="1"){
-                    if(hitnum>=3){
+            $(".Release_of_legend_a1_i").click(function(){
+                if($(this).siblings(".Release_of_legend_m4_ul div").hasClass("Release_of_legend_m4_span")){
+                    var hitnum=$(".Release_of_legend_a1_i2").length;
+                    if(hitnum>=3&&!$(this).hasClass("Release_of_legend_a1_i2")){
                         alert("最多可以选择三个");
                         return false;
                     }else{
-                       $(this).toggleClass("Release_of_legend_m4_span")
-                        aa(); 
+                        $(this).toggleClass("Release_of_legend_a1_i2");
+                        aa();
                     }
-                }else{
-                    $(this).toggleClass("Release_of_legend_m4_span")
-                    aa();
                 }
                 
+            })
+            $(".Release_of_legend_m4_ul div").click(function () {
+                $(this).toggleClass("Release_of_legend_m4_span")
+                aa();
             })
             $(".delimglist").live("click",function(){
                 if(confirm("确认删除吗？")){
@@ -448,12 +444,13 @@
                 }
             })
             $(".delroom").live("click",function(){
+                var obj=$(this);
                 if(confirm("确认删除吗？")){
                     var p={};
                     p['rid']=$(this).data("id");
                     $.post("{:U('Home/Hostel/ajax_deleteroom')}",p,function(d){
                         if(d.code==200){
-                            $(this).parents("li").remove();
+                            obj.parents("li").remove();
                         }else{
                             alert(d.msg);
                             return false;
@@ -478,22 +475,31 @@
                         $("input[name='roomarea']").val(d.data.area);
                         $("select[name='roomtype']").val(d.data.roomtype);
                         $("textarea[name='roomcontent']").val(d.data.content);
+                        UE.getEditor('roomcontent').setContent(d.data.content,false);
                         $("input[name='roomsupport']").val(d.data.support);
+                        $("input[name='roomhotsupport']").val(d.data.hotsupport);
                         $("input[name='conveniences']").val(d.data.conveniences);
                         $("input[name='bathroom']").val(d.data.bathroom);
                         $("input[name='media']").val(d.data.media);
                         $("input[name='food']").val(d.data.food);
                         $.each(d.data.imglist,function(index,item){
-                            $(".roomimglist").append("<li class=\"fl pr\"><img src='"+item+"'/><input type='hidden' name='imglist[]' value='"+item+"' /><input type=\"button\" class=\"delimglist\" value=\"删除\" ></li>");
+                            $(".roomimglist").append("<li class=\"fl pr\"><img src='"+item+"'/><input type='hidden' name='roomimglist[]' value='"+item+"' /><input type=\"button\" class=\"delimglist\" value=\"删除\" ></li>");
                         })
                         $.each(d.data.support,function(index,item){
                             $(".support").each(function(){
-                                if($(this).data("id")==item.id){
+                                if($(this).find("div").data("id")==item){
                                     $(this).find("div").addClass("Release_of_legend_m4_span");
                                 }
                             })
                         })
-                        obj.remove();
+                        $.each(d.data.hotsupport,function(index,item){
+                            $(".support").each(function(){
+                                if($(this).find(".hotsupport").data("id")==item){
+                                    $(this).find(".hotsupport").addClass("Release_of_legend_a1_i2");
+                                }
+                            })
+                        })
+                        obj.parents("li").remove();
                         $("input[name='rid']").val(obj.data("id"));
                         $(".addroom").val("修改房间");
                     }else{
@@ -546,12 +552,13 @@
                 var orid=$("input[name='rid']").val();
                 var content=$("textarea[name='roomcontent']").val();
                 var support=$("input[name='roomsupport']").val();
+                var hotsupport=$("input[name='roomhotsupport']").val();
                 var conveniences=$("input[name='conveniences']").val();
                 var bathroom=$("input[name='bathroom']").val();
                 var media=$("input[name='media']").val();
                 var food=$("input[name='food']").val();
                 var imglist="";
-                $("input[name='imglist[]']").each(function(){
+                $("input[name='roomimglist[]']").each(function(){
                     var img=$(this).val();
                     if(imglist==""){
                         imglist=img;
@@ -559,6 +566,7 @@
                         imglist+="|"+img;
                     }
                 })
+                
                 var p={};
                 if(orid!=""){
                     p['rid']=orid;
@@ -575,6 +583,7 @@
                 p['roomtype']=roomtype;
                 p['content']=content;
                 p['support']=support;
+                p['hotsupport']=hotsupport;
                 p['conveniences']=conveniences;
                 p['bathroom']=bathroom;
                 p['media']=media;
@@ -593,12 +602,15 @@
                         $("input[name='roomarea']").val("");
                         $("select[name='roomtype']").val("");
                         $("textarea[name='roomcontent']").val("");
+                        UE.getEditor('roomcontent').setContent('',false);
                         $("input[name='roomsupport']").val();
+                        $("input[name='roomhotsupport']").val();
                         $("input[name='conveniences']").val("");
                         $("input[name='bathroom']").val("");
                         $("input[name='media']").val("");
                         $("input[name='food']").val("");
                         $(".Release_of_legend_m4_ul div").removeClass("Release_of_legend_m4_span");
+                        $(".Release_of_legend_a1_i").removeClass("Release_of_legend_a1_i2");
                         $(".rthumb").html("");
                         $(".uploadli").siblings().remove();
                         rid++;
@@ -620,6 +632,16 @@
                 }
             })
             $("input[name='roomsupport']").val(str);
+            var str="";
+            $(".room .Release_of_legend_a1_i2").each(function(index,item){
+                var id=$(this).data("id");
+                if(str==""){
+                    str=id;
+                }else{
+                    str+=","+id;
+                }
+            })
+            $("input[name='roomhotsupport']").val(str);
         }
     </script>
     <div class="wrap">
@@ -737,7 +759,7 @@
                 onComplete: function (evt, queueID, fileObj, response, data) {
                     data=eval("("+response+")");
                     if(data.status==1){
-                        $(".roomimglist").append("<li class=\"fl\"><img src='"+data.msg+"'/><input type='hidden' name='imglist[]' value='"+data.msg+"' /></li>");
+                        $(".roomimglist").append("<li class=\"fl pr\"><img src='"+data.msg+"'/><input type='hidden' name='roomimglist[]' value='"+data.msg+"' /><input type=\"button\" class=\"delimglist\" value=\"删除\" ></li>");
                     }else{
                         alert(data.msg);
                     }

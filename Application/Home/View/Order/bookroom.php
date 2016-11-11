@@ -21,8 +21,14 @@
                     onHide:function(){
                         var starttime=$(".starttime").val();
                         var endtime=$(".endtime").val();
+                        var nowdate="{:date('Y-m-d')}";
+                        if(Date.parse(starttime)-Date.parse(nowdate)<0){
+                            alert("请填写正确日期");
+                            $(".starttime").val();
+                            return false;
+                        }
                         if(starttime!=''&&endtime!=''){
-                            if(Date.parse(endtime) - Date.parse(starttime)==0){
+                            if(Date.parse(endtime) - Date.parse(starttime)<=0){
                                 alert("请填写正确日期");
                                 $(".endtime").val();
                                 return false;
@@ -88,7 +94,34 @@
             </div>
         </div>
         <div class="wrap">
-        	<form action="{:U('Home/Order/dobookroom')}" method="post">
+        	<form action="{:U('Home/Order/dobookroom')}" method="post" onsubmit="return checkform();">
+                <script>
+                    function checkform(){
+                        var mannum=$("ul.linkmanlist li.Fill_in_order2_a_bottom_list").length;
+                        var defaultmannum=$("input[name='num']").val();
+                        var realname=$("input[name='realname']").val();
+                        var idcard=$("input[name='idcard']").val();
+                        var phone=$("input[name='phone']").val();
+                        if(realname==''){
+                            alert("请填写姓名");
+                            $("input[name='realname']").focus();
+                            return false;
+                        }else if(idcard==''){
+                            alert("请填写身份证号码");
+                            $("input[name='idcard']").focus();
+                            return false;
+                        }else if(phone==''){
+                            alert("请填写手机号码");
+                            $("input[name='phone']").focus();
+                            return false;
+                        }else if(mannum!=parseInt(defaultmannum)-1){
+                            alert("入住人数信息不相符");
+                            return false;
+                        }else{
+                            return true;
+                        }
+                    }
+                </script>
 	            <div class="Fill_in_order2_main1">
 	                <span>入住信息 :</span>
 	                <div class="Fill_in_order2_div_public Fill_in_order2_main1_1">
@@ -98,7 +131,7 @@
 	                    </div>
 	                    <div>
 	                        <span>房东名称 ：</span>
-	                        <i>{$data.nickname}</i><a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid']))}">在线聊天</a>
+	                        <i>{$data.nickname}</i><a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid'],'type'=>'hostel'))}">在线聊天</a>
 	                    </div>
 	                    <div>
 	                        <span>入住时段 ：</span>
@@ -117,21 +150,23 @@
 	                    <div>
 	                        <span>入住人数 ：</span>
 	                        <div class="Hotel_Details_c3 middle">
-                                <span class="prev2 f18 mannum" onselectstart="return false;">+</span>
+                                <span class="next2 f24 mannum" onselectstart="return false;">-</span>
                                 <i id="mannum">{$mannum|default="0"}</i>
                                 <input type="hidden" name="num" value="{$mannum|default="0"}">
-                                <span class="next2 f24 mannum" onselectstart="return false;">-</span>
+                                <span class="prev2 f18 mannum" onselectstart="return false;">+</span>
+                                
                             </div>
 	                    </div>
                         <div>
                             <span>入住间数 ：</span>
                             <div class="Hotel_Details_c3 middle">
-                                <span class="prev2 f18 roomnum" onselectstart="return false;">+</span>
+                                <span class="next2 f24 roomnum" onselectstart="return false;">-</span>
                                 <i id="roomnum">{$roomnum|default="0"}</i>
                                 <input type="hidden" name="roomnum" value="{$roomnum|default="0"}">
-                                <span class="next2 f24 roomnum" onselectstart="return false;">-</span>
+                                <span class="prev2 f18 roomnum" onselectstart="return false;">+</span>
                             </div>
                         </div>
+                        
 	                </div>
 	                <span>入住人信息 :</span>
 	                <div class="Fill_in_order2_main2 Fill_in_order2_div_public">
@@ -145,6 +180,21 @@
                                 </tr>
                             </thead>
                             <tbody id="joinlist">
+                                <tr>
+                                    <td>
+                                        <input type="text" value="{$user.realname}" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" value="{$user.idcard}"/>
+                                    </td>
+                                    <td>
+                                        <input type="tel" value="{$user.phone}" />
+                                    </td>
+                                    <td>
+                                        
+                                    </td>
+                                </tr>
                                 <tr id="last">
                                     <td>
                                         <input type="text" value="" class="addlinkman_realname" />
@@ -241,7 +291,8 @@
         <div class="Fill_in_order2_a_bottom">
             <ul class="Fill_in_order2_a_bottom_ul linkmanlist">
                 <volist name="linkman" id="vo">
-                    <li class="linkman" data-id="{$vo.id}" id="linkman_{$vo.id}" data-idcard="{$vo.idcard}">
+                    <li class="linkman" data-id="{$vo.id}" id="linkman_{$vo.id}">
+                        <input type="hidden" class="idcard" value="{$vo.idcard}">
                         <span class="f16 realname">{$vo.realname}</span>
                         <i class="fr phone">{$vo.phone}</i>
                     </li>
@@ -328,6 +379,7 @@
                         $("#last").before(str);
 
                         var str="<li class=\"linkman Fill_in_order2_a_bottom_list\" data-id='"+linkmanid+"' id=\"linkman_"+linkmanid+"\" data-idcard='"+idcard+"''>";
+                            str+="<input type=\"hidden\" class=\"idcard\" value=\""+idcard+"\">";
                             str+="<span class=\"f16 realname\">"+realname+"</span>";
                             str+="<i class=\"fr phone\">"+phone+"</i></li>";
                         $(".linkmanlist").append(str);
@@ -340,30 +392,41 @@
                 });
 
                 var mannum=$("ul.linkmanlist li.Fill_in_order2_a_bottom_list").length;
-                if(mannum>parseInt(end_numlimit)){
+                if(mannum>parseInt(end_numlimit)-1){
                     alert("人数超过限制");
                     return false;
                 }
-                $("#mannum").text(mannum+1);
+                var defaultmannum=$("input[name='num']").val();
+                if(mannum>parseInt(defaultmannum)-1){
+                    alert("人数超过限制");
+                    return false;
+                }
                 aa();
             })
             $("#addlinkman").click(function(){
-                var numlimit=$("input[name='num']").val();
+                var end_numlimit="{$data.end_numlimit}";
                 var str="";
                 $("ul.linkmanlist li.Fill_in_order2_a_bottom_list").each(function(){
                     var linkmanid=$(this).data("id");
                     var realname=$(this).find(".realname").text();
                     var phone=$(this).find(".phone").text();
-                    var idcard=$(this).data("idcard");
+                    var idcard=$(this).find(".idcard").val();
                     str+="<tr><td><input type=\"text\" value=\""+realname+"\" /></td><td><input type=\"text\" value=\""+idcard+"\" /></td><td><input type=\"text\" value=\""+phone+"\" /></td><td><a href=\"javascript:;\" class='delmebmer' data-id="+linkmanid+">删除</a></td></tr>";
                 })
                 var mannum=$("ul.linkmanlist li.Fill_in_order2_a_bottom_list").length;
-                if(mannum>parseInt(numlimit)){
+                if(mannum>parseInt(end_numlimit)-1){
+                    alert("人数超过限制");
+                    return false;
+                }
+                var defaultmannum=$("input[name='num']").val();
+                if(mannum>parseInt(defaultmannum)-1){
                     alert("人数超过限制");
                     return false;
                 }
                 
-                $("#last").before(str);
+                var headstr=$("#joinlist tr:eq(0)").html();
+                var footstr=$("#joinlist tr:last").html();
+                $("#joinlist").html("<tr>"+headstr+"</tr>"+str+"<tr>"+footstr+"</tr>");
                 $(".Fill_in_order2_a").hide();
                 $(".mask").hide();
                 aa();

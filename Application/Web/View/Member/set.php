@@ -7,10 +7,10 @@
 
 <div class="container">
   <div class="help_box">
-      <a href="{:U('Web/Other/aboutWeb')}"><div class="help_list">
+      <a href="{:U('Web/About/index')}"><div class="help_list">
            <div class="help_a"><img src="__IMG__/help_b1.jpg"> 关于我们</div>
       </div></a>  
-      <a href="{:U('Web/Member/feedback')}"><div class="help_list">
+      <a href="{:U('Web/About/feedback')}"><div class="help_list">
            <div class="help_a"><img src="__IMG__/help_b3.jpg"> 意见反馈</div>
       </div></a>
   </div>

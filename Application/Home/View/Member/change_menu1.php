@@ -8,8 +8,10 @@
                     <span class="middle">{$data.nickname|default="未设置"}</span>
                     <eq name="data['realname_status']" value="1"><img src="__IMG__/Icon/img14.png" /></eq>
                     <eq name="data['houseowner_status']" value="1"><img src="__IMG__/Icon/img15.png" /></eq>
-                    <a <eq name="data['isattention']" value="1"> class="middle hmain_chang"<else /> class="middle"</eq> href="javascript:;" id="attention">关注</a>
-                    <a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['id']))}" class="middle">私信</a>
+                    <neq name="data['id']" value="$user.id">
+                        <a <eq name="data['isattention']" value="1"> class="middle hmain_chang"<else /> class="middle"</eq> href="javascript:;" id="attention">关注</a>
+                        <a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['id'],'type'=>'member'))}" class="middle">私信</a>
+                    </neq>
                 </div>
                 <div class="hmain_main2_2_bottom">
                     <span>{$data.info}</span>

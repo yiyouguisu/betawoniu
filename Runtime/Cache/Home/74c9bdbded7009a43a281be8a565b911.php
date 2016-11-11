@@ -38,6 +38,73 @@
 
 <script>
     $(function(){
+        gethostelchildren(0,true);
+        hostelinitvals();
+        $(".hosteljgbox").delegate("select","change",function(){
+            $(this).nextAll().remove();
+            gethostelchildren($(this).val(),true);
+        });
+    })
+    function gethostelval()
+    {
+        var vals="";
+        $(".hosteljgbox select").each(function(){
+            var val=$(this).val();
+            if(val!=null&&val!="")
+            {
+                vals+=',';
+                vals+=val;
+            }
+        });
+        if(vals!="")
+        {
+            vals=vals.substr(1);        
+            $("#hostelarea").val(vals);
+        }
+    }
+    function gethostelchildren(a,b) {
+        $.ajax({
+            url: "<?php echo U('Home/Public/getareachildren');?>",
+            async: false,
+            data: { id: a },
+            success: function (data) {
+                data=eval("("+data+")");
+                if (data != null && data.length > 0) {
+                    var ahtml = "<select class='hostelbox'>";
+                    if(b)
+                    {
+                        ahtml += "<option value=''>--请选择--</option>";
+                    }
+                    for (var i = 0; i < data.length; i++) {
+                        ahtml += "<option value='" + data[i].id + "'>" + data[i].name + "</option>";
+                    }
+                    ahtml += "</select>";
+                    $(".hosteljgbox").append(ahtml);
+                }
+            }
+        });
+        gethostelval();
+    }
+    function hostelinitvals()
+    {
+        var vals=$("#hostelarea").val();
+        if(vals!=null&&vals!="")
+        {
+            var arr=new Array();
+            arr=vals.split(",");
+            for(var i=0;i<arr.length;i++)
+            {
+                if($.trim(arr[i]) !="")
+                {
+                    $(".hosteljgbox select").last().val(arr[i]);
+                    gethostelchildren(arr[i],true);
+                }
+            }
+        }
+    }
+</script>
+<script>
+    $(function(){
         var dateInput = $("input.J_date")
         if (dateInput.length) {
             Wind.use('datePicker', function () {
@@ -46,7 +113,7 @@
         }
     })
 </script>
-<div class="main">
+<div class="main" style="background: url('<?php echo ($ad["image"]); ?>') no-repeat center center;">
     <div class="wrap main_top">
     <script>
     $(function(){
@@ -362,7 +429,7 @@ $(function () {
                             <form action="<?php echo U('Home/Hostel/index');?>" method="get">
                                 <div class="main_bottom2">
                                     <div class="text1 middle">
-                                        <input type="text" placeholder="目的地 :" />
+                                        <input type="text" placeholder="目的地 :" id="hosteladdress" />
                                     </div>
                                     <div class="text2 middle">
                                         <input type="text" class="J_date" name="starttime" placeholder="入住时间 :" />
@@ -373,10 +440,40 @@ $(function () {
                                     <div class="text3 middle">
                                         <input type="text" name="keyword" placeholder="请输入美宿名称等关键词搜索..." />
                                     </div>
-                                    <span class="middle">搜索</span>
+                                    <input type="submit" class="middle" value="搜索" style="border:none;cousor:pointer">
+                                </div>
+                                <div class="pr">
+                                    <div class="main_x pa hide">
+                                        <div class="hosteljgbox" style="display: inline-block;"></div>
+                                        <input type="hidden" name="area" value="" id="hostelarea">
+                                        <input class="main4_input" type="button" value="定位" />
+                                    </div>
                                 </div>
                             </form>
                         </div>
+                        <script type="text/javascript">
+                            $(function () {
+                                $(".text1 input").focus(function () {
+                                    if ($(this).html() == "") {
+                                        $(".main_x").show();
+                                    } else {
+                                        $(".main_x").hide();
+                                    }
+                                })
+                                $(".main4_input").click(function () {
+                                    var num=$(".hostelbox").length;
+                                    if(num==3){
+                                        $("#hosteladdress").val($(".hostelbox:eq(1) option:selected").text());
+                                    }else if(num==2){
+                                        $("#hosteladdress").val($(".hostelbox:eq(0) option:selected").text());
+                                    }else{
+                                        $("#hosteladdress").val($(".hostelbox:eq(0) option:selected").text());
+                                    }
+                                    
+                                    $(".main_x").hide();
+                                })
+                            })
+                        </script>
                         <div class="main_bottom1_tbg2 hide">
                             <form action="<?php echo U('Home/Note/index');?>" method="get">
                                 <div class="main_bottom2">
@@ -488,10 +585,13 @@ $(function () {
             <ul class="main4_bottom_ul">
                 <?php if(is_array($hothostel)): $i = 0; $__LIST__ = $hothostel;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
                         <div class="main4_bottom_list pr">
-                            <a href="javascript:;">
+                            <a href="<?php echo U('Home/Hostel/show',array('id'=>$vo['id']));?>">
                                 <img class="pic" data-original="<?php echo ($vo["thumb"]); ?>" src="/Public/Home/images/default.jpg" style="width:399px;height:250px"  onclick="window.location.href='<?php echo U('Home/Hostel/show',array('id'=>$vo['id']));?>'"/>
                                 <div class="pa main4_bottom_list1"></div>
                             </a>
+                            <?php if(($vo['type']) == "1"): ?><div class="pa main4_bottom_list_x">
+                                        <img src="/Public/Home/images/Icon/jing.png" style="width: 53px;height: 53px;"/>
+                                    </div><?php endif; ?>
                             <!-- <div class="main4_bottom_list2 pa">
                                 <img src="/Public/Home/images/Icon/img8.png" />
                             </div> -->
@@ -511,7 +611,7 @@ $(function () {
                         </div>
                         <div class="main_bottom_text">
                             <div class="main_bottom_textl">
-                                <span onclck="window.location.href='<?php echo U('Home/Hostel/show',array('id'=>$vo['id']));?>'"><?php echo str_cut($vo['title'],15);?></span>
+                                <span style="cursor: pointer;" onclick="window.location.href='<?php echo U('Home/Hostel/show',array('id'=>$vo['id']));?>'"><?php echo str_cut($vo['title'],15);?></span>
                                 <div class="fr main_bottom_textl1">
                                     <?php if(($vo['ishit']) == "1"): ?><img src="/Public/Home/images/dianzan.png" style="margin-left: 20px; margin-right: 3px;"  class="zanbg1_hostel" data-id="<?php echo ($vo["id"]); ?>"/>
                                         <?php else: ?>
@@ -547,14 +647,17 @@ $(function () {
                     <ul class="main5_top2_ul">
                         <?php if(is_array($hotnote)): $i = 0; $__LIST__ = $hotnote;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
                                 <div class="hidden main5_top2_list">
-                                    <div class="fl main5_top2_01">
+                                    <div class="fl main5_top2_01 pr">
                                         <a href="<?php echo U('Home/Note/show',array('id'=>$vo['id']));?>">
                                             <img class="pic" data-original="<?php echo ($vo["thumb"]); ?>" src="/Public/Home/images/default.jpg" />
                                         </a>
+                                        <?php if(($vo['type']) == "1"): ?><div class="pa main4_bottom_list_x">
+                                                <img src="/Public/Home/images/Icon/jing.png" style="width: 53px;height: 53px;"/>
+                                            </div><?php endif; ?>
                                     </div>
                                     <div class="fl main5_top2_02">
                                         <div class="main5_list1">
-                                            <a href="<?php echo U('Home/Note/show',array('id'=>$vo['id']));?>"><?php echo ($vo["title"]); ?></a>
+                                            <a href="<?php echo U('Home/Note/show',array('id'=>$vo['id']));?>"><?php echo str_cut($vo['title'],25);?></a>
                                         </div>
                                         <div class="main5_list2">
                                             <span><?php echo (date("Y-m-d",$vo["inputtime"])); ?></span>
@@ -594,10 +697,13 @@ $(function () {
                     <ul class="main5_top2_ul">
                        <?php if(is_array($newnote)): $i = 0; $__LIST__ = $newnote;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
                                 <div class="hidden main5_top2_list">
-                                    <div class="fl main5_top2_01">
+                                    <div class="fl main5_top2_01 pr">
                                         <a href="<?php echo U('Home/Note/show',array('id'=>$vo['id']));?>">
                                             <img class="pic" data-original="<?php echo ($vo["thumb"]); ?>" src="/Public/Home/images/default.jpg" />
                                         </a>
+                                        <?php if(($vo['type']) == "1"): ?><div class="pa main4_bottom_list_x">
+                                                <img src="/Public/Home/images/Icon/jing.png" style="width: 53px;height: 53px;"/>
+                                            </div><?php endif; ?>
                                     </div>
                                     <div class="fl main5_top2_02">
                                         <div class="main5_list1">
@@ -647,7 +753,7 @@ $(function () {
                 <?php if(is_array($hotparty)): $i = 0; $__LIST__ = $hotparty;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
                         <div class="main5_bottom_list">
                             <div class="main5_bottom_list_img pr">
-                                <img class="pic" data-original="<?php echo ($vo["thumb"]); ?>" src="/Public/Home/images/default.jpg" width="339px" height="213px" onclick="window.location.href='<?php echo U('Home/Party/show',array('id'=>$vo['id']));?>'" />
+                                <img src="<?php echo ($vo["thumb"]); ?>"  width="339px" height="213px" onclick="window.location.href='<?php echo U('Home/Party/show',array('id'=>$vo['id']));?>'" />
                                 <div class="pa main5_bottom_list_img2">
                                     <a href="<?php echo U('Home/Member/detail',array('uid'=>$vo['uid']));?>">
                                         <img src="<?php echo ($vo["head"]); ?>" />

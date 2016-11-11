@@ -70,6 +70,19 @@
                                       <font color="#cccccc">审核</font>
                                     </if> 
                                 </eq>
+                                <eq name="vo['isoff']" value="0">
+                                     <if condition="authcheck('Admin/Note/setoff')">
+                                        <a href="{:U('Admin/Note/setoff',array('id'=>$vo['id'],'isoff'=>1))}" >下架 </a>
+                                        <else/>
+                                        <font color="#cccccc">下架</font>
+                                    </if>  
+                                <else/>
+                                    <if condition="authcheck('Admin/Note/setoff')">
+                                        <a href="{:U('Admin/Note/setoff',array('id'=>$vo['id'],'isoff'=>0))}" >启用 </a>
+                                        <else/>
+                                        <font color="#cccccc">启用</font>
+                                    </if>  
+                                </eq>
                                 <if condition="authcheck('Admin/Note/edit')">
                                     <a href="{:U('Admin/Note/edit',array('id'=>$vo['id']))}" >修改</a> 
                                     <else/>

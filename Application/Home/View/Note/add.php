@@ -157,19 +157,19 @@
             <div class="activity2_main2_01">
                 <span class="middle">出发时间 : </span>
                 <div class="activity2_main2_text1 middle">
-                    <i>入住时间 :</i>
+                    <i>开始时间 :</i>
                     <input id="d5221" class="J_date starttime" type="text" name="begintime" required/>
                 </div>
                 <i><input type="text" id="days" name="days" value="0" style="    width: 20px;border: none;color: #21a7bb;">天</i>
                 <div class="activity2_main2_text1 middle">
-                    <i>离店时间 :</i>
+                    <i>结束时间 :</i>
                     <input id="d5222" class="J_date endtime" type="text" name="endtime" required/>
                 </div>
             </div>
             <div class="activity2_main2_01">
                 <span class="middle">游记中的美宿 : </span>
                 <div class="activity2_main2_x pr middle">
-                    <span>请选择文中出现的美宿</span>
+                    <span class="notehostel">请选择文中出现的美宿</span>
                     <div class="pa activity2_main2_y hide">
                         <ul class="activity2_main2_y_ul">
                             <volist name="hostel" id="vo">
@@ -284,6 +284,12 @@
                 }
             })
             $("input[name='hid']").val(hid);
+            var num=$(".activity2_main2_y_ul li.activity2_main2_y_list").length;
+            if(num==1){
+                $(".notehostel").text($(".activity2_main2_y_ul li.activity2_main2_y_list").find("i").text());
+            }else if(num>1){
+                $(".notehostel").text("您选择了多家美宿");
+            }
             $(".activity2_main2_x span").removeClass("activity2_main2_span3").siblings().slideToggle(200);
         })
     });

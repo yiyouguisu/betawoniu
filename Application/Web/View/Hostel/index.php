@@ -127,7 +127,7 @@
           <div class="land_btm">  
                 <volist name='data' id='vo'>
                     <div class="recom_list pr">
-                        <a href="{:U('Web/Hostel/show',array('id'=>$vo['id']))}"><div class="recom_a pr"><img src="{$vo.thumb}">
+                        <a href="{:U('Web/Hostel/show',array('id'=>$vo['id']))}"><div class="recom_a pr"><img class="pic" data-original="{$vo.thumb}" src="__IMG__/default.jpg" style="width: 100%;height: 60vw;">
                             <a href="{:U('Web/Member/memberHome',array('id'=>$vo['uid']))}"><div class="recom_d pa"><img src="{$vo.head}"></div></a>
                             <div class="recom_g f18 center pa">
                                 <div class="recom_g1 fl"><em>￥</em>{$vo.money}<span>起</span></div>
@@ -224,7 +224,7 @@ var data={};
             city.empty();
             var data={'id':$(this).val()};
             console.log(data);
-            $.post("{:U('Web/Travel/ajaxcity')}",data,function(res){
+            $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
                 var option='<option>--请选择--</option>';
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';
@@ -237,7 +237,7 @@ var data={};
             var county=$('#county');
             county.empty();
             var data={'id':$(this).val()};
-            $.post("{:U('Web/Travel/ajaxcity')}",data,function(res){
+            $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
                 var option='<option>--请选择--</option>';
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';

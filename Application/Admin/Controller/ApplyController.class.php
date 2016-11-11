@@ -97,6 +97,7 @@ class ApplyController extends CommonController {
             ));
             if($id>0&&$status==2){
                 M('member')->where(array('id'=>$data['uid']))->save(array('realname'=>$data['realname'],'idcard'=>$data['idcard'],'realname_status'=>1));
+                M("alipayaccount")->where(array('uid'=>$data['uid']))->save(array('alipayaccount'=>$data['alipayaccount']));
                 \Api\Controller\UtilController::addmessage($data['uid'],"申请实名认证审核成功","恭喜您，您的实名认证通过蜗牛客平台审核！","恭喜您，您的实名认证通过蜗牛客平台审核！","applyrealnamesuccess",$data['uid']);
                 $Ymsms = A("Api/Ymsms");
                 $content=$Ymsms->getsmstemplate("sms_applyrealnamesuccess");
@@ -209,6 +210,7 @@ class ApplyController extends CommonController {
             ));
             if($id>0&&$status==2){
                 M('member')->where(array('id'=>$data['uid']))->save(array('realname'=>$data['realname'],'houseowner_status'=>1));
+                M("alipayaccount")->where(array('uid'=>$data['uid']))->save(array('alipayaccount'=>$data['alipayaccount']));
                 \Api\Controller\UtilController::addmessage($data['uid'],"申请房东认证审核成功","恭喜您，您的商家认证已经通过平台审核！","恭喜您，您的商家认证已经通过平台审核！","applyhouseownersuccess",$data['uid']);
                 $Ymsms = A("Api/Ymsms");
                 $content=$Ymsms->getsmstemplate("sms_applyhouseownersuccess");
@@ -445,6 +447,35 @@ class ApplyController extends CommonController {
         $this->assign("data", $data);
         $this->assign("Page", $show);
         $this->display();
+    }
+    public function refundpay(){
+        $id = $_GET['id'];
+        $refunddata=M('refund_apply')->where(array('id'=>$id))->find();
+        if($refunddata['refund_status']==1){
+            $this->error("已经退款");
+        }
+        switch ($refunddata['channel'])
+        {
+            case "alipay":
+                $refundorderid=date("YmdHis", time()) . rand(100, 999);
+                M('refund_apply')->where(array('id'=>$id))->setField("refundorderid",$refundorderid);
+                $Refund=A("Api/Refund");
+                $refundcharge=$Refund->refund($refunddata['transaction_id'],$refunddata['total'],$refunddata['money'],$refundorderid,$refunddata['channel']);
+                exit($refundcharge);
+                break;
+            case "wxpay":
+                $Refund=A("Api/Refund");
+                $refundcharge=$Refund->refund($refunddata['transaction_id'],$refunddata['total'],$refunddata['money'],$refunddata['refundorderid'],$refunddata['channel']);
+                $this->success("退款成功",U('Admin/Apply/refund'));
+                break;
+            case "unionpay":
+                $this->error("暂不支持银联退款",U('Admin/Apply/refund'));
+                break;
+            default:
+                $this->error("数据校验错误",U('Admin/Apply/refund'));
+                break;
+        }
+        
     }
     public function refunddelete() {
         $id = $_GET['id'];

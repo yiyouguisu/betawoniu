@@ -22,6 +22,7 @@ class IndexController extends CommonController {
 		
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         if(!empty($city)){
             $where['a.city']=$city;
         }
@@ -54,6 +55,7 @@ class IndexController extends CommonController {
         $where=array();
         $where['a.status']=2;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         if(!empty($city)){
             $where['a.city']=$city;
         }
@@ -67,6 +69,9 @@ class IndexController extends CommonController {
 		$this->assign("hotparty", $hotparty);
 
 		$where=array();
+        $where['a.status']=2;
+        $where['a.isdel']=0;
+        $where['a.isoff']=0;
         if(!empty($city)){
             $where['a.city']=$city;
         }
@@ -125,7 +130,11 @@ class IndexController extends CommonController {
         $hotdestination=M('Tripinfo')->field("city,cityname,count(city) as citynum")->group("city")->select();
         $this->assign("hotdestination", $hotdestination);
 
+        $ad=M('ad')->where(array('catid'=>11))->order(array('listorder'=>'desc','id'=>'desc'))->find();
+        $this->assign("ad", $ad);
+
         $this->display();
     }
+
     
 }

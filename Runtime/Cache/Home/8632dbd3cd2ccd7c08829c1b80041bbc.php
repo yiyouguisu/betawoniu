@@ -487,7 +487,6 @@
                     });
                 }
             </script>
-            </script>
             <div class="activity_top3">
                    <div class="activity_top3_01">
                        <span>按位置 :</span>
@@ -616,7 +615,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Party/index.html";
+                p['url']="/index.php/Home/Party/index/partytype/1.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";

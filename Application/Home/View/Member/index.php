@@ -217,8 +217,6 @@
                                                             <else/>
                                                             <span class="my_home8_span1">已完成</span>
                                                         </eq>
-                                                        
-                                                        
                                                     </div>
                                                 </div>
                                             </div>
@@ -256,40 +254,115 @@
                                                 <div class="middle my_home9_bottom_list3_bottom2">
                                                     <label class="f22">￥</label><span class="f36">{$vo.productinfo.money|default="0.00"}</span><i class="f18">起</i>
                                                 </div>
-                                                <eq name="vo['status']" value="1">
-                                                    <div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span2">待审核</span>
-                                                        <a href="{:U('Home/Woniu/orderreview',array('orderid'=>$vo['orderid']))}" class="my_home9_bottom_list3_a3">去审核</a>
-                                                    </div>
-                                                </eq>
-                                                <eq name="vo['status']" value="2">
-                                                    <div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span1">未付款</span>
-                                                        <a href="{:U('Home/Order/bookpay',array('orderid'=>$vo['orderid']))}" class="my_home9_bottom_list3_a1">去支付</a>
-                                                    </div>
-                                                </eq>
-                                                <eq name="vo['status']" value="4">
-                                                    <div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <if condition="$vo['endtime'] lt time()">
-                                                            <span class="my_home9_bottom_list3_span2">已完成</span>
-                                                            <else />
-                                                            <span class="my_home9_bottom_list3_span2">待入住</span>
-                                                        </if>
-                                                        <if condition="$vo['uid'] eq $user['id']">
+                                                <if condition="$vo['uid'] neq $user['id']">
+                                                    <eq name="vo['status']" value="1">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">预定</span>
+                                                            <a href="{:U('Home/Woniu/orderreview',array('orderid'=>$vo['orderid']))}" class="my_home9_bottom_list3_a3">去审核</a>
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="2">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <a href="javascript:;" class="my_home9_bottom_list3_a1">待付款</a>
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="3">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <eq name="vo['refund_status']" value="2">
+                                                                <span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                <else />
+                                                                <span class="my_home9_bottom_list3_span2">已取消</span>
+                                                            </eq>
+                                                        </div>
+                                                    </eq>
+                                                    
+                                                    <eq name="vo['status']" value="4">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
                                                             <if condition="$vo['endtime'] lt time()">
-                                                                <a href="{:U('Home/Order/evaluate',array('orderid'=>$vo['orderid']))}" class="my_home9_bottom_list3_a2">去评论</a>
+                                                                <eq name="vo['evaluate_status']" value="0">
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2">待评价</a>
+                                                                    <else />
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2">已完成</a>
+                                                                </eq>
+                                                                <else />
+                                                                <eq name="vo['refund_status']" value="0">
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2">待入住</a>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="1">
+                                                                    <span class="my_home9_bottom_list3_span2">退订</span>
+                                                                    <a href="{:U('Home/Woniu/refundorderreview',array('orderid'=>$vo['orderid']))}"  class="my_home9_bottom_list3_a2">去审核</a>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="2">
+                                                                    <span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="3">
+                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                                </eq>
+                                                            </if>   
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="5">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                            <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="{$vo.review_remark}">失败原因</a>
+                                                        </div>
+                                                    </eq>
+                                                    <else />
+                                                    <eq name="vo['status']" value="1">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">预定</span>
+                                                            <a href="javascript:;"  class="my_home9_bottom_list3_a3">待审核</a>
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="2">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <a href="{:U('Home/Order/bookpay',array('orderid'=>$vo['orderid']))}" class="my_home9_bottom_list3_a1">去支付</a>
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="3">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <eq name="vo['refund_status']" value="2">
+                                                                <span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                <else />
+                                                                <span class="my_home9_bottom_list3_span2">已取消</span>
+                                                            </eq>
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="4">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <if condition="$vo['endtime'] lt time()">
+                                                                <eq name="vo['evaluate_status']" value="0">
+                                                                    <a href="{:U('Home/Order/evaluate',array('orderid'=>$vo['orderid']))}"  class="my_home9_bottom_list3_a2">我要评价</a>
+                                                                    <else />
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2">已完成</a>
+                                                                </eq>
+                                                                <else />
+                                                                <eq name="vo['refund_status']" value="0">
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2">待入住</a>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="1">
+                                                                    <span class="my_home9_bottom_list3_span2">退订</span>
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2">待审核</a>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="2">
+                                                                    <span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="3">
+                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a>
+                                                                </eq>
                                                             </if>
-                                                            <else />
-                                                            <a href="javascript:;" class="my_home9_bottom_list3_a2">已完成</a>
-                                                        </if>
-                                                    </div>
-                                                </eq>
-                                                <eq name="vo['status']" value="5">
-                                                    <div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                        <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="{$vo.review_remark}">失败原因</a>
-                                                    </div>
-                                                </eq>
+                                                                
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="5">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                            <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="{$vo.review_remark}">失败原因</a>
+                                                        </div>
+                                                    </eq>
+                                                </if>
                                             </div>
                                         </div>
                                     </div>
@@ -328,18 +401,81 @@
                                                         地点 :<em class="c666 f14">{:getarea($vo['productinfo']['area'])}{$vo.productinfo.address}</em>
                                                     </p>
                                                 </div>
-                                                <eq name="vo['status']" value="4">
-                                                    <div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span2">已完成</span>
-                                                    </div>
-                                                </eq>
-                                                <eq name="vo['status']" value="2">
-                                                    <div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span2">未付款</span>
-                                                        <a href="{:U('Home/Order/joinpay',array('orderid'=>$vo['orderid']))}" class="my_home9_bottom_list3_a1">去支付</a>
-                                                    </div>
-                                                </eq>
-                                                
+                                                <if condition="$vo['uid'] neq $user['id']">
+                                                    <eq name="vo['status']" value="2">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">待付款</span>
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="3">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <eq name="vo['refund_status']" value="2">
+                                                                <span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                <else />
+                                                                <span class="my_home9_bottom_list3_span2">已取消</span>
+                                                            </eq>
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="4">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <if condition="$vo['endtime'] lt time()">
+                                                                <span class="my_home9_bottom_list3_span2">已完成</span>
+                                                                <else />
+                                                                <eq name="vo['refund_status']" value="0">
+                                                                    <span class="my_home9_bottom_list3_span2">待参加</span>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="1">
+                                                                    <span class="my_home9_bottom_list3_span2">退订</span>
+                                                                    <a href="{:U('Home/Woniu/refundorderreview',array('orderid'=>$vo['orderid']))}" class="my_home9_bottom_list3_a1">去审核</a>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="2">
+                                                                    <span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="3">
+                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                                </eq>
+                                                            </if>
+                                                        </div>
+                                                    </eq>
+                                                    <else />
+                                                    <eq name="vo['status']" value="2">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <a href="{:U('Home/Order/joinpay',array('orderid'=>$vo['orderid']))}"  class="my_home9_bottom_list3_a1">去支付</a>
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="3">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <eq name="vo['refund_status']" value="2">
+                                                                <span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                <else />
+                                                                <span class="my_home9_bottom_list3_span2">已取消</span>
+                                                            </eq>
+                                                        </div>
+                                                    </eq>
+                                                    <eq name="vo['status']" value="4">
+                                                        <div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <if condition="$vo['endtime'] lt time()">
+                                                                <span class="my_home9_bottom_list3_span2">已完成</span>
+                                                                <else />
+                                                                <eq name="vo['refund_status']" value="0">
+                                                                    <span class="my_home9_bottom_list3_span2">待参加</span>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="1">
+                                                                    <span class="my_home9_bottom_list3_span2">退订</span>
+                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1">去审核</a>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="2">
+                                                                    <span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                </eq>
+                                                                <eq name="vo['refund_status']" value="3">
+                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                                </eq>
+                                                            </if>
+                                                        </div>
+                                                    </eq>
+                                                </if>
                                             </div>
                                         </div>
                                     </div>

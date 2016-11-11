@@ -82,6 +82,7 @@ class HostelController extends CommonController {
             $where=array();
             $where['a.status']=2;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             if(!empty($area)){
                 $where['a.area']=$area;
             }
@@ -210,6 +211,7 @@ class HostelController extends CommonController {
             $where=array();
             $where['a.status']=2;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             if(!empty($area)){
                 $where['a.area']=$area;
             }
@@ -326,6 +328,7 @@ class HostelController extends CommonController {
         $where['a.status']=2;
         $where['a.index']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $data=M("Hostel a")
             ->join("left join zz_member b on a.uid=b.id")
             ->where($where)
@@ -375,6 +378,7 @@ class HostelController extends CommonController {
             $where['a.uid']=$uid;
             $where['a.status']=2;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $count=M("Hostel a")
                 ->join("left join zz_member b on a.uid=b.id")
                 ->where($where)->count();
@@ -410,6 +414,7 @@ class HostelController extends CommonController {
             $where=array();
             $where['a.uid']=$uid;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $count=M("Hostel a")
                 ->join("left join zz_member b on a.uid=b.id")
                 ->where($where)->count();
@@ -463,7 +468,7 @@ class HostelController extends CommonController {
             }else{
                 $where['id']=array('eq',$hid);
             }
-            $id=M("Hostel")->where($where)->save(array('isdel'=>1,'deletetime'=>time()));
+            $id=M("Hostel")->where($where)->save(array('isoff'=>1,'offtime'=>time()));
             if($id){
                 exit(json_encode(array('code'=>200,'msg'=>"下架成功")));
             }else{
@@ -491,13 +496,15 @@ class HostelController extends CommonController {
             ->join("left join zz_member b on a.uid=b.id")
             ->join("left join {$sqlI} c on a.id=c.value")
             ->where(array('a.id'=>$id))
-            ->field('a.id,a.title,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.money,a.description,a.content,a.bookremark,a.support,a.score as evaluation,a.scorepercent as evaluationpercent,a.bookremark,a.vouchersrange,a.vouchersdiscount,a.status,a.remark,a.uid,b.nickname,b.head,b.realname_status,b.realname_status,b.houseowner_status,b.rongyun_token,a.inputtime,c.reviewnum')
+            ->field('a.id,a.title,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.money,a.description,a.imglist,a.content,a.bookremark,a.support,a.score as evaluation,a.scorepercent as evaluationpercent,a.bookremark,a.vouchersrange,a.vouchersdiscount,a.status,a.remark,a.uid,b.nickname,b.head,b.realname_status,b.realname_status,b.houseowner_status,b.rongyun_token,a.inputtime,c.reviewnum')
             ->find();
             if(empty($data['reviewnum'])) $data['reviewnum']=0;
             $evaluation=gethouse_evaluation($data['id']);
             // $house['evaluation']=!empty($evaluation['evaluation'])?$evaluation['evaluation']:0.0;
             // $house['evaluationpercent']=!empty($evaluation['percent'])?$evaluation['percent']:0.00;
             $data['evaluationset']=$evaluation;
+
+            $data['imglist']=json_decode($data['imglist'],true);
             $collectstatus=M('collect')->where(array('uid'=>$uid,'varname'=>"hostel",'value'=>$data['id']))->find();
             if(!empty($collectstatus)){
                 $data['iscollect']=1;
@@ -530,13 +537,14 @@ class HostelController extends CommonController {
             $support=array_unique($support);
 
             $data['support']=!empty($support)?implode(",", $support):null;
-            $roomnum=M('room')->where(array('hid'=>$data['id']))->count();
+            $roomnum=M('room')->where(array('hid'=>$data['id'],'isdel'=>0))->count();
             $data['roomnum']=!empty($roomnum)?$roomnum:0;
 
             $where=array();
             $where['a.status']=2;
             $where['a.uid']=$data['uid'];
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $house_owner_activity=M("activity a")
                 ->join("left join zz_member b on a.uid=b.id")
                 ->where($where)->order(array('id'=>"desc"))
@@ -562,6 +570,7 @@ class HostelController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($data['lat'],$data['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -592,6 +601,7 @@ class HostelController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($data['lat'],$data['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -851,6 +861,7 @@ class HostelController extends CommonController {
             $where['a.status']=2;
             $where['a.uid']=$hosteluid;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $data=M("activity a")
                 ->join("left join zz_member b on a.uid=b.id")
                 ->where($where)->order(array('id'=>"desc"))
@@ -900,6 +911,7 @@ class HostelController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($hostelset[$hid]['lat'],$hostelset[$hid]['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -955,6 +967,7 @@ class HostelController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($hostelset[$hid]['lat'],$hostelset[$hid]['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));

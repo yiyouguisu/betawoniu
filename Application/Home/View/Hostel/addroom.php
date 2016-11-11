@@ -11,11 +11,11 @@
             </div>
             <div class="center hidden">
                 <ul class="center_ul hidden middle">
-                    <li><img src="__IMG__/Icon/img43.png" /></li>
-                    <li><img src="__IMG__/Icon/img43.png" /></li>
-                    <li><img src="__IMG__/Icon/img43.png" /></li>
-                    <li><img src="__IMG__/Icon/img43.png" /></li>
-                    <li><img src="__IMG__/Icon/img43.png" /></li>
+                    <li><img src="__IMG__/Icon/img42.png" /></li>
+                    <li><img src="__IMG__/Icon/img42.png" /></li>
+                    <li><img src="__IMG__/Icon/img42.png" /></li>
+                    <li><img src="__IMG__/Icon/img42.png" /></li>
+                    <li><img src="__IMG__/Icon/img42.png" /></li>
                 </ul>
                 <span class="middle"><em>10.0</em>分</span>
                 <div class="center_ul_list middle">

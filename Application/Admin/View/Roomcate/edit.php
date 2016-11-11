@@ -48,7 +48,7 @@
                                 <span class="gray">双击文本框查看图片</span>
                             </td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <th>特色</th>
                             <td>
                                 <ul class="switch_list cc ">
@@ -66,7 +66,7 @@
                                     </li>
                                 </ul>
                             </td>
-                        </tr>
+                        </tr> -->
                         <tr>
                             <th>显示排序：</th>
                             <td>

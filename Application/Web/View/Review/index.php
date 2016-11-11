@@ -32,7 +32,7 @@ $(function(){
         alert(res.msg);
         var type={$type};
         if(type=0){
-          window.location.href="{:U('Web/Travel/show',array('id'=>$id))}"
+          window.location.href="{:U('Web/Note/show',array('id'=>$id))}"
         }
         else if(type=1){
           window.location.href="{:U('Web/Party/show',array('id'=>$id))}"

@@ -70,6 +70,7 @@ class IndexController extends CommonController {
         $where['a.status']=2;
         $where['a.isindex']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $note=M("Note a")
             ->join("left join zz_member b on a.uid=b.id")

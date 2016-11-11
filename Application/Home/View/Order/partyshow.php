@@ -37,7 +37,31 @@
                 <i>订单状态：<em>
                 	<eq name="data['status']" value="1">用户确认订单成功</eq>
                 	<eq name="data['status']" value="2">等待支付</eq>
-                	<eq name="data['status']" value="4">报名成功</eq>
+                    <eq name="data['status']" value="3">
+                        <eq name="data['refund_status']" value="2">
+                            退订成功
+                            <else />
+                            已取消
+                        </eq>
+                    </eq>
+                	<eq name="data['status']" value="4">
+                        <if condition="$data['productinfo']['endtime'] lt time()">
+                            已完成
+                            <else />
+                            <eq name="data['refund_status']" value="0">
+                                待参加
+                            </eq>
+                            <eq name="data['refund_status']" value="1">
+                                退订中
+                            </eq>
+                            <eq name="data['refund_status']" value="2">
+                                退订成功
+                            </eq>
+                            <eq name="data['refund_status']" value="3">
+                                退订审核失败
+                            </eq>
+                        </if>
+                    </eq>
                 </em></i>
             </div>
             <div class="payment hidden">
@@ -134,6 +158,26 @@
                                 <span>活动费用：</span>
                                 <i class="c333 f14">￥{$data.productinfo.money|default="0.00"}人</i>
                             </div>
+                        </div>
+                    </div>
+                    <div style="height:38px;border-bottom: 1px solid #e5e5e5;"></div>
+                    <div class="payment_main4 hidden">
+                        <div class="fl payment_main4_1">
+                            <span>￥<em>{$data.productinfo.money|default="0.00"}</em></span>
+                            <i>（活动费用 x {$data.productinfo.num|default="0"}人）</i>
+                            <label>—</label>
+                            <span>￥<em>{$data.discount|default="0.00"}</em></span>
+                            <i>（优惠券）</i>
+                            <div>=</div>
+                            <span>￥<em>{$data.money|default="0.00"}</em></span>
+                        </div>
+                        <div class="payment_main4_3 fr">
+                            <eq name="data['refund_status']" value="2">
+                                <span class="f16 c666">退款金额 : </span>
+                                <i class="f14">￥<em class="f25">{$data.money|default="0.00"}</em></i>
+                            </eq>
+                            <span class="f16 c666" style="margin-left: 30px;">订单金额 : </span>
+                            <i class="f14">￥<em class="f25">{$data.money|default="0.00"}</em></i>
                         </div>
                     </div>
                 </div>

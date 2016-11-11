@@ -562,7 +562,7 @@ input.ui-button::-moz-focus-inner,button.ui-button::-moz-focus-inner {
 	filter:inherit
 }
 .ui-slider-horizontal {
-	height:4px;
+	height:2px;
     background:#ff715f;
 }
 .ui-slider-horizontal .ui-slider-handle {

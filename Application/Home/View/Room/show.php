@@ -22,19 +22,23 @@
                     onHide:function(){
                         var starttime=$(".starttime").val();
                         var endtime=$(".endtime").val();
-                        console.log(starttime)
-                        console.log(endtime)
+                        var roomnum=$("input[name='roomnum']").val();
+                        var nowdate="{:date('Y-m-d')}";
+                        if(Date.parse(starttime)-Date.parse(nowdate)<0){
+                            alert("请填写正确日期");
+                            $(".starttime").val();
+                            return false;
+                        }
                         if(starttime!=''&&endtime!=''){
-                            if(Date.parse(endtime) - Date.parse(starttime)==0){
+                            if(Date.parse(endtime) - Date.parse(starttime)<=0){
                                 alert("请填写正确日期");
                                 $(".endtime").val();
                                 return false;
                             }else{
                                 var rid="{$data.rid}";
-                                $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime},function(d){
+                                $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
                                     if(d.code==200){
                                         var days=DateDiff(starttime,endtime);
-                                        console.log(days)
                                         $("#days").val(Number(days));
                                         $("#totalmoney").text(d.totalmoney);
                                         $("input[name='totalmoney']").val(d.totalmoney);
@@ -267,9 +271,8 @@
 
 
 
-
+        var currentdate = $('#calendar').fullCalendar('getDate');
         $('#calendar').fullCalendar({
-           
             header: {
                 left: 'prev',
                 center: 'title,monthNames',
@@ -278,28 +281,6 @@
             lang: currentLangCode,
             editable: true,
             droppable: false, // this allows things to be dropped onto the calendar !!!
-            drop: function (date, allDay) { // this function is called when something is dropped
-
-                // retrieve the dropped element's stored Event Object
-                var originalEventObject = $(this).data('eventObject');
-
-                // we need to copy it, so that multiple events don't have a reference to the same object
-                var copiedEventObject = $.extend({}, originalEventObject);
-
-                // assign it the date that was reported
-                copiedEventObject.start = date;
-                copiedEventObject.allDay = allDay;
-
-                // render the event on the calendar
-                $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
-
-                // is the "remove after drop" checkbox checked?
-                if ($('#drop-remove').is(':checked')) {
-                    // if so, remove the element from the "Draggable Events" list
-                    $(this).remove();
-                }
-
-            },
             columnFormat: {
                 week: 'ddd M-d', // Mon 9/7		
             },
@@ -311,6 +292,9 @@
             },
             monthNames: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
             events: {$data['jsonlist']},
+            // events: {
+            //     url: "{:U('Home/Room/ajax_getdate',array('rid'=>$data['rid']))}?currentdate="+currentdate.format(),
+            // },
         });
 
 
@@ -476,6 +460,25 @@
                     $("input[name='mannum']").val(i);
                 }else if($(this).hasClass("roomnum")){
                     $("input[name='roomnum']").val(i);
+                    var starttime=$(".starttime").val();
+                    var endtime=$(".endtime").val();
+                    var roomnum=i;
+                    if(starttime!=''&&endtime!=''){
+                        if(Date.parse(endtime) - Date.parse(starttime)==0){
+                            alert("请填写正确日期");
+                            $(".endtime").val();
+                            return false;
+                        }else{
+                            var rid="{$data.rid}";
+                            $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
+                                if(d.code==200){
+                                    $("#totalmoney").text(d.totalmoney);
+                                    $("input[name='totalmoney']").val(d.totalmoney);
+                                }
+                            });
+                        }
+
+                    }
                 }
             })
             $(".Hotel_Details_c3 .next2").click(function () {
@@ -489,6 +492,25 @@
                         $("input[name='mannum']").val(i);
                     }else if($(this).hasClass("roomnum")){
                         $("input[name='roomnum']").val(i);
+                        var starttime=$(".starttime").val();
+                        var endtime=$(".endtime").val();
+                        var roomnum=i;
+                        if(starttime!=''&&endtime!=''){
+                            if(Date.parse(endtime) - Date.parse(starttime)==0){
+                                alert("请填写正确日期");
+                                $(".endtime").val();
+                                return false;
+                            }else{
+                                var rid="{$data.rid}";
+                                $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
+                                    if(d.code==200){
+                                        $("#totalmoney").text(d.totalmoney);
+                                        $("input[name='totalmoney']").val(d.totalmoney);
+                                    }
+                                });
+                            }
+
+                        }
                     }
                 }
             })

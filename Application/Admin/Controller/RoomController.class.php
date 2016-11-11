@@ -207,8 +207,28 @@ class RoomController extends CommonController {
      */
     public function delete() {
         $id = $_GET['id'];
+        $room=M('Room')->where(array('id'=>$id))->find();
+        $hid=$room['hid'];
         $did=M("Room")->where(array('id'=>$id))->save(array('isdel'=>1,'deletetime'=>time()));
+
         if ($did) {
+            $money=M('room')->where(array('hid'=>$hid,'isdel'=>0))->min("money");
+            $area=M('room')->where(array('hid'=>$hid,'isdel'=>0))->max("area");
+            $support=M('room')->where(array('hid'=>$hid,'isdel'=>0))->group("hid")->field("hid,group_concat(support) as newsupport")->select();
+            $supportbox=explode(",", $support[0]['newsupport']);
+            $supportbox=array_unique($supportbox);
+
+            $bedtype=M('room')->where(array('hid'=>$hid,'isdel'=>0))->group("hid")->field("hid,group_concat(roomtype) as newbedtype")->select();
+            $bedtypebox=explode(",", $bedtype[0]['newbedtype']);
+            $bedtypebox=array_unique($bedtypebox);
+
+
+            M('hostel')->where(array('id'=>$hid))->save(array(
+                'money'=>$money,
+                'acreage'=>$area,
+                'support'=>",".implode(",", $supportbox).",",
+                'bedtype'=>",".implode(",", $bedtypebox).","
+                ));
             $this->success("删除房间成功！");
         } else {
             $this->error("删除房间失败！");
@@ -226,6 +246,25 @@ class RoomController extends CommonController {
             }
             foreach ($_POST['ids'] as $id) {
                 M("Room")->where(array('id'=>$id))->save(array('isdel'=>1,'deletetime'=>time()));
+                $room=M('Room')->where(array('id'=>$id))->find();
+                $hid=$room['hid'];
+                $money=M('room')->where(array('hid'=>$hid,'isdel'=>0))->min("money");
+                $area=M('room')->where(array('hid'=>$hid,'isdel'=>0))->max("area");
+                $support=M('room')->where(array('hid'=>$hid,'isdel'=>0))->group("hid")->field("hid,group_concat(support) as newsupport")->select();
+                $supportbox=explode(",", $support[0]['newsupport']);
+                $supportbox=array_unique($supportbox);
+
+                $bedtype=M('room')->where(array('hid'=>$hid,'isdel'=>0))->group("hid")->field("hid,group_concat(roomtype) as newbedtype")->select();
+                $bedtypebox=explode(",", $bedtype[0]['newbedtype']);
+                $bedtypebox=array_unique($bedtypebox);
+
+
+                M('hostel')->where(array('id'=>$hid))->save(array(
+                    'money'=>$money,
+                    'acreage'=>$area,
+                    'support'=>",".implode(",", $supportbox).",",
+                    'bedtype'=>",".implode(",", $bedtypebox).","
+                    ));
             }
             $this->success("删除成功！");
         } else {

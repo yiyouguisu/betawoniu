@@ -3,7 +3,7 @@
 .main_top { height: 57px; background: #21a7bb; border-radius: 0 0 5px 5px; }
 .main_top1 { margin-left: 14px; margin-top: 3px; width: 250px; }
 .main_top2 { display: inline-block; vertical-align: middle; *display: inline; *zoom: 1; }
-.main3_03span { margin-top: 10px; left: 0px; top: 0px; display: block; color: #fff; border: 1px solid #fff; background: url('../images/Icon/img1.png') no-repeat 95% center; padding-left: 8px; padding-right: 22px; border-radius: 1px; }
+.main3_03span { margin-top: 14px; left: 0px; top: 0px; display: block; color: #fff; border: 1px solid #fff; background: url('../images/Icon/img1.png') no-repeat 95% center; padding-left: 8px; padding-right: 22px; border-radius: 1px; }
 .main3_03span:hover { cursor: pointer; }
 .main3_05 { height: 50px; margin-top: 3px; padding-right: 3px; }
 .main3_03span_float { background: #fff; width: 445px; padding: 0 15px; box-shadow: 0 6px 9px #ddd; }

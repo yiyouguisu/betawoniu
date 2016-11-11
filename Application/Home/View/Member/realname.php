@@ -62,15 +62,15 @@
             <div class="activity2_main2">
                 <div class="activity2_main2_01">
                     <span class="middle">真实姓名 : </span>
-                    <input class="middle text4" style="width:185px;" type="text" name="realname" />
+                    <input class="middle text4" style="width:185px;" type="text" name="realname" value="{$data.realname}" />
                 </div>
                 <div class="activity2_main2_01">
                     <span class="middle">身份证号 : </span>
-                    <input class="middle text4" style="width:670px;" type="text" name="idcard" />
+                    <input class="middle text4" style="width:670px;" type="text" name="idcard" value="{$data.idcard}"  />
                 </div> 
                 <div class="activity2_main2_01">
                     <span class="middle">支付宝账号 : </span>
-                    <input class="middle text4" style="width:185px;" type="text" name="alipayaccount"  />
+                    <input class="middle text4" style="width:185px;" type="text" name="alipayaccount"value="{$data.alipayaccount}"   />
                 </div>
                 <div class="landlord1 hidden">
                     <span>上传证件照 : </span>
@@ -82,7 +82,9 @@
                             </span>
                         </li>
                         <li id="idcard_front">
-                            
+                            <notempty name="data['thumb']">
+                                <img src="{$data['idcard_front']}" width='298px' height='169px' />
+                            </notempty>
                         </li>
                     </ul>
                     <i>反面 :</i>
@@ -93,12 +95,14 @@
                             </span>
                         </li>
                         <li id="idcard_back">
-                            
+                            <notempty name="data['thumb']">
+                                <img src="{$data['idcard_back']}" width='298px' height='169px' />
+                            </notempty>
                         </li>
                     </ul>
                     <div class="landlord2"></div>
-                    <input type="hidden" name="idcard_front" value="" />
-                    <input type="hidden" name="idcard_back" value="" />
+                    <input type="hidden" name="idcard_front" value="{$data['idcard_front']}" />
+                    <input type="hidden" name="idcard_back" value="{$data['idcard_back']}" />
                     <input class="lan_sub" type="submit" value="提交认证信息" />
                 </div>
             </div>

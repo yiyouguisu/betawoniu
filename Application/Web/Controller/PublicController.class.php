@@ -1,13 +1,10 @@
 <?php
-
 namespace Web\Controller;
-
-use  Think\Controller;
+use Think\Controller;
 @ini_set('upload_max_filesize', '50M');
 class PublicController extends Controller {
 
-    
-    private $thumb;//是否开启缩略图
+   private $thumb;//是否开启缩略图
     private $water; //是否加水印(0:无水印,1:水印文字,2水印图片)
     private $waterText;//水印文字
     private $waterTextColor;//水印文字颜色
@@ -20,7 +17,7 @@ class PublicController extends Controller {
 
     public function _initialize(){
         set_time_limit(0);
-       $this->Configobj = D("Config");
+        $this->Configobj = D("Config");
         $ConfigData=F("web_config");
         if(!$ConfigData){
             $ConfigData=$this->Configobj->order(array('id'=>'desc'))->select();
@@ -56,6 +53,9 @@ class PublicController extends Controller {
         $this->subNameRule = array('date','Ymd');
         //$this->autologin();
     }
+    public function _empty(){      
+        $this->error("功能模块正在开发中","/index.php");
+    }
     public function check_verify() {
         $verify = new \Think\Verify();
         $code = $_POST['verify'];
@@ -69,7 +69,7 @@ class PublicController extends Controller {
 
     public function verify() {
         $verify = new \Think\Verify();
-        ob_end_clean();
+         ob_end_clean();
         $verify->expire = 300;
         $verify->fontSize = 16;
         $verify->length = 4;
@@ -80,13 +80,52 @@ class PublicController extends Controller {
         $verify->bg = array(255, 255, 255);
         $verify->entry();
     }
-
+    public function https_request($url, $data_string) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json; charset=utf-8',
+            'Content-Length: ' . strlen($data_string))
+        );
+        ob_start();
+        curl_exec($ch);
+        $return_content = ob_get_contents();
+        ob_end_clean();
+        curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        return $return_content;
+    }
+    public function checknum($len = 6) {
+        $chars = array(
+            "0", "1", "2","3", "4", "5", "6",
+            "7", "8", "9"
+        );
+        $charsLen = count($chars) - 1;
+        shuffle($chars); 
+        $output = "";
+        for ($i = 0; $i < $len; $i++) {
+            $output .= $chars[mt_rand(0, $charsLen)];
+        }
+        return $output;
+    }
+    public function postSMS($url,$data=''){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, "Jimmy's CURL Example beta");
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
     public function sendchecknum(){
-    	$phone = $_GET['phone'];
-    	if (!check_phone($phone)) {
-		    $msg = array('code' => "-200", 'msg' => "手机已经被注册");
-		    $this->ajaxReturn($msg,'json');
-		}else {
+        $phone=$_GET['phone'];
+        if($phone==''){
+            exit(json_encode(array('code'=>-200,'msg'=>"Request parameter is null!")));
+        }elseif(!isMobile($phone)){
+            exit(json_encode(array('code'=>-200,'msg'=>"手机号码格式错误")));
+        }else{
             $code=\Api\Common\CommonController::checknum(6);
             $verify=M('verify')->where(array('phone'=>$phone))->find();
             if($verify){
@@ -105,9 +144,9 @@ class PublicController extends Controller {
                     'status'=>0
                 ));
             }
-            $content="【蜗牛客】您的验证码是：".$code."，请在五分钟内输入！";
-            $data=json_encode(array('phone'=>$phone,'content'=>$content));
             $Ymsms = A("Api/Ymsms");
+            $content=$Ymsms->getsmstemplate("sms_phonecode",array('code'=>$code));
+            $data=json_encode(array('phone'=>$phone,'content'=>$content,'type'=>"sms_phonecode"));
             $statuscode=$Ymsms->sendsmsapi($data);
             if($statuscode!=0){
                 $data=array('statuscode'=>$statuscode);
@@ -116,115 +155,8 @@ class PublicController extends Controller {
                 $data=array('code'=>$code);
                 exit(json_encode(array('code'=>200,'msg'=>"发送成功",'data' => $data)));
             }
-		}
-    }
-    public function sendchecknum_forgot(){
-        $phone = $_GET['phone'];
-        if (empty($phone)) {
-            $msg = array('code' => "-200", 'msg' => "手机号不能为空");
-            $this->ajaxReturn($msg,'json');
-        }else {
-            $code=\Api\Common\CommonController::checknum(4);
-            $m=$phone;
-            $verify=M('verify')->where(array('phone'=>$m))->find();
-            if($verify){
-                M('verify')->where(array('phone'=>$m))->save(array(
-                    'verify'=>$code,
-                    'inputtime'=>time(),
-                    'expiretime'=>strtotime("+5 minute"),
-                    'status'=>0
-                ));
-            }else{
-                M('verify')->add(array(
-                    'phone'=>$phone,
-                    'verify'=>$code,
-                    'inputtime'=>time(),
-                    'expiretime'=>strtotime("+5 minute"),
-                    'status'=>0
-                ));
-            }
-            $data=json_encode(array('phone'=>$m,'datas'=>array($code,2),'templateid'=>"62495"));
-            $CCPRest = A("Api/CCPRest");
-            $CCPRest->sendsmsapi($data);
-            $msg = array('code'=>$code,'msg'=>"已发送");
-            $this->ajaxReturn($msg,'json');
         }
     }
-   
-    public function modifyaddr(){
-        $lat = $_COOKIE['web_lat'];
-        $lng = $_COOKIE['web_lng'];
-
-        $keyword = I('get.keyword');
-        $Map=A("Api/Map");
-        if(empty($keyword)){
-            // $areadata=$Map->get_areainfo_baidu_simple($lat.",".$lng);
-            // $data=M('store')->where(array('servicearea'=>array('like','%,'.$areadata['district'].',%')))->field('id as storeid,title as storename,thumb,lat,lng')->select();
-            $data=M('store')->field('id as storeid,title as storename,thumb,lat,lng')->select();
-        }else{
-            $data=M('store')->where(array('title'=>array('like','%'.$keyword.'%')))->field('id as storeid,title as storename,thumb,lat,lng')->select();
-        }
-        foreach ($data as $key => $value) {
-            # code...
-            $areadata=$Map->get_distance_baidu("driving",$lat.",".$lng,$value['lat'].",".$value['lng']);
-            $data[$key]['distance']=sprintf("%.2f", ($areadata['distance']['value']/1000));
-            $data[$key]['distancetext']=$areadata['distance']['text'];
-        }
-        foreach ($data as $value) {
-            $distance[] = $value['distance'];
-        }
-        array_multisort($distance, SORT_ASC, $data);
-        $this->assign("list",$data);
-        $this->display();
-    }
-
-    /**
-     * 首页获取门店列表
-     */
-    public function getstorelist(){
-        $Map=A('Api/Map');
-        $point = $Map->getlocation();
-        $keyword=trim(I('get.keyword'));
-
-        if(empty($point)){
-            exit(json_encode(array('code'=>-200,'msg'=>"定位失败")));
-        }else{
-            $lat=$point['x'];
-            $lng=$point['y'];
-            $Map=A("Api/Map");
-            if(empty($keyword)){
-                $areadata=$Map->get_areainfo_baidu_simple($lat.",".$lng);
-                $data=M('store')->where(array('servicearea'=>array('like','%,'.$areadata['district'].',%')))->field('id as storeid,title as storename,thumb,lat,lng')->find();
-            }else{
-                $data=M('store')->where(array('title'=>array('like','%'.$keyword.'%')))->field('id as storeid,title as storename,thumb,lat,lng')->select();
-            }
-            foreach ($data as $key => $value) {
-                # code...
-                $areadata=$Map->get_distance_baidu("driving",$lat.",".$lng,$value['lat'].",".$value['lng']);
-                $data[$key]['distance']=$areadata['distance']['value'];
-                $data[$key]['distancetext']=$areadata['distance']['text'];
-            }
-            
-            foreach ($data as $value) {
-                $distance[] = $value['distance'];
-            }
-            array_multisort($distance, SORT_ASC, $data);
-            
-            $result=array_slice($data,($p-1)*$num,$num);
-            if($result){
-                exit(json_encode(array('code'=>200,'msg'=>"获取数据成功",'data'=>$result)));
-            }else{
-                exit(json_encode(array('code'=>-201,'msg'=>"数据为空")));
-            }
-        }
-    }
-
-
-    public function outlogin() {
-        unset($_SESSION['userid']);
-        unset($_SESSION['user']);
-    }
-    
     public function upload() {
         if (!empty($_FILES)) {
             //如果有文件上传 上传附件
@@ -295,7 +227,7 @@ class PublicController extends Controller {
                     if($this->thumb==1){
                         $image->text($this->waterText,'./Public/Public/font/STXINGKA.TTF',$this->config['waterFontsize'],$this->config['waterColor'],$this->waterPosition,array(-2,0))->save(".".$thumbsrc); 
                     }else{
-                        $image->text($this->waterText,'./Public/Public/font/STXINGKA.TTF',$this->config['waterFontsize'],$this->config['waterColor'],$this->waterPosition,array(-2,0))->save(".".$$fname); 
+                        $image->text($this->waterText,'./Public/Public/font/STXINGKA.TTF',$this->config['waterFontsize'],$this->config['waterColor'],$this->waterPosition,array(-2,0))->save(".".$fname); 
                     }
                 }
                 if ($this->water==2) {
@@ -307,6 +239,50 @@ class PublicController extends Controller {
                 }   
             }
             echo $fname;
+        }
+    }
+
+    public function getareachildren() {
+        $parentid = $_GET['id'];
+        $result = M("area")->where(array("parentid" => $parentid))->cache(true)->select();
+        $result = json_encode($result);
+        echo $result;
+    }
+    public function ajax_getcity(){
+        if(IS_POST){
+            $where=array();
+            $location=$_POST['location'];
+            if($location==''){
+                $this->ajaxReturn(array('code'=>-200),'json');
+            }else{
+                $locationset=explode(",", $location);
+                if(in_array($locationset[0],array(2,3,4,5))){
+                    $city=$locationset[0];
+                }else{
+                    $city=$locationset[1];
+                }
+                $cityname=M('area')->where(array('id'=>$city))->getField("name");
+                if($cityname){
+                    $this->ajaxReturn(array('code'=>200,'cityname'=>$cityname),'json');
+                }else{
+                    $this->ajaxReturn(array('code'=>-200),'json');
+                }
+            }
+        }else{
+            $this->ajaxReturn(array('code'=>-200),'json');
+        }
+    }
+    public function ajax_cacheurl(){
+        if(IS_POST){
+            $url=$_POST['url'];
+            if($url==''){
+                $this->ajaxReturn(array('code'=>-200),'json');
+            }else{
+                cookie("returnurl",urlencode($url));
+                $this->ajaxReturn(array('code'=>200),'json');
+            }
+        }else{
+            $this->ajaxReturn(array('code'=>-200),'json');
         }
     }
 }

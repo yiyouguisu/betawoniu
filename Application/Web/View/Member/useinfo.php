@@ -7,10 +7,10 @@
 
 <div class="container">
   <div class="help_box">
-      <a href="{:U('Web/Other/explainWeb')}"><div class="help_list">
+      <a href="{:U('Web/About/instruction')}"><div class="help_list">
            <div class="help_a"><img src="__IMG__/help_a1.jpg"> 软件使用说明</div>
       </div></a> 
-      <a href="my-help1.html"><div class="help_list">
+      <a href="{:U('Web/About/help')}"><div class="help_list">
            <div class="help_a"><img src="__IMG__/help_a2.jpg"> 常见问题</div>
       </div></a> 
   </div>

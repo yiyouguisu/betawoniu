@@ -30,25 +30,25 @@ class OrderController extends CommonController {
             switch ($type) {
                 case 'all':
                     # code...
-                    $where=array('a.uid|e.uid'=>$uid,'c.cancel_status'=>0,'a.ordertype'=>1);
+                    $where=array('a.uid|e.uid'=>$uid,'a.ordertype'=>1);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime,c.review_remark');
                     break;
                 case 'waitpay':
                     # code...
-                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>2,'c.pay_status'=>0,'c.cancel_status'=>0,'a.ordertype'=>1);
+                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>2,'c.pay_status'=>0,'a.ordertype'=>1);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
                     break;
                 case 'waitreview':
                     # code...
-                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>1,'c.pay_status'=>0,'c.cancel_status'=>0,'a.ordertype'=>1);
+                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>1,'c.pay_status'=>0,'a.ordertype'=>1);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
                     break;
                 case 'done':
                     # code...
-                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>4,'c.pay_status'=>1,'c.cancel_status'=>0,'a.ordertype'=>1);
+                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>4,'c.pay_status'=>1,'a.ordertype'=>1);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
                     break;
@@ -105,19 +105,19 @@ class OrderController extends CommonController {
             switch ($type) {
                 case 'all':
                     # code...
-                    $where=array('a.uid|e.uid'=>$uid,'c.cancel_status'=>0,'a.ordertype'=>2);
+                    $where=array('a.uid|e.uid'=>$uid,'a.ordertype'=>2);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
                     break;
                 case 'waitpay':
                     # code...
-                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>2,'c.pay_status'=>0,'c.cancel_status'=>0,'a.ordertype'=>2);
+                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>2,'c.pay_status'=>0,'a.ordertype'=>2);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
                     break;
                 case 'done':
                     # code...
-                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>4,'c.pay_status'=>1,'c.cancel_status'=>0,'a.ordertype'=>2);
+                    $where=array('a.uid|e.uid'=>$uid,'c.status'=>4,'c.pay_status'=>1,'a.ordertype'=>2);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
                     break;
@@ -179,20 +179,20 @@ class OrderController extends CommonController {
                     break;
                 case 'waitpay':
                     # code...
-                    $where=array('c.status'=>2,'c.pay_status'=>0,'c.cancel_status'=>0,'a.ordertype'=>1);
+                    $where=array('c.status'=>2,'c.pay_status'=>0,'a.ordertype'=>1);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
                     break;
                 case 'waitreview':
                     # code...
-                    $where=array('c.status'=>1,'c.pay_status'=>0,'c.cancel_status'=>0,'a.ordertype'=>1);
+                    $where=array('c.status'=>1,'c.pay_status'=>0,'a.ordertype'=>1);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
                     break;
 
                 case 'done':
                     # code...
-                    $where=array('c.status'=>4,'c.pay_status'=>1,'c.cancel_status'=>0,'a.ordertype'=>1);
+                    $where=array('c.status'=>4,'c.pay_status'=>1,'a.ordertype'=>1);
                     $order=array('a.inputtime'=>'desc');
                     $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime');
                     break;
@@ -277,7 +277,7 @@ class OrderController extends CommonController {
                     break;
             }
             $data['couponstitle']=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$data['couponsid']))->getField("b.title");
-            $data['productinfo']=$productinfo;
+            $data['productinfo']= empty($productinfo)? null :$productinfo;
 
             if($data){
                 exit(json_encode(array('code'=>200,'msg'=>"加载成功",'data'=>$data)));
@@ -556,13 +556,13 @@ class OrderController extends CommonController {
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_successbookhouse");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_successbookhouse",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     UtilController::addmessage($room['uid'],"申请入住","您预定的房间，已经通过房东审核，请尽快支付。","您预定的房间，已经通过房东审核，请尽快支付。","successbookhouse",$orderid);
                 }elseif($status==5){
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_failbookhouse");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_failbookhouse",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     UtilController::addmessage($room['uid'],"申请入住","您预定的房间，没有通过房东的审核，请尽快修改订单。","您预定的房间，没有通过房东的审核，请尽快修改订单。","failbookhouse",$orderid);
                 }
                 exit(json_encode(array('code'=>200,'msg'=>"审核订单成功")));
@@ -647,7 +647,7 @@ class OrderController extends CommonController {
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_refundhostelapply");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_refundhostelapply",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     UtilController::addmessage($room['uid'],"申请退订","您预定的房间，已经成功申请退订，请等待审核。","您预定的房间，已经成功申请退订，请等待审核。","refundhostelapply",$orderid);
 
                     $content=$Ymsms->getsmstemplate("sms_brefundhostelapply");
@@ -659,7 +659,7 @@ class OrderController extends CommonController {
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_refundpartyapply");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_refundpartyapply",'r_id'=>$party['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     UtilController::addmessage($party['uid'],"取消报名","您报名的活动，已经成功申请取消，请等待审核。","您报名的活动，已经成功申请取消，请等待审核。","refundpartyapply",$orderid);
 
                     $content=$Ymsms->getsmstemplate("sms_brefundpartyapply");
@@ -705,12 +705,52 @@ class OrderController extends CommonController {
                 ));
             if($id){
                 if($status==2){
+                    $account=M('account')->where(array('uid'=>$uid))->find();
+
+                    $mid=M('account')->where(array('uid'=>$uid))->save(array(
+                        'usemoney'=>$account['usemoney']-floatval($money),
+                        ));
+                    if($mid){
+                        switch ($type)
+                        {
+                            case "ac":
+                                M('account_log')->add(array(
+                                  'uid'=>$uid,
+                                  'type'=>'refundsuccess',
+                                  'money'=>$money,
+                                  'total'=>$account['total'],
+                                  'usemoney'=>$account['usemoney']-floatval($money),
+                                  'waitmoney'=>$account['waitmoney'],
+                                  'status'=>1,
+                                  'dcflag'=>1,
+                                  'remark'=>'用户取消活动报名成功退款',
+                                  'addip'=>get_client_ip(),
+                                  'addtime'=>time()
+                                  ));
+                                break;
+                            case "hc":
+                                M('account_log')->add(array(
+                                  'uid'=>$uid,
+                                  'type'=>'refundsuccess',
+                                  'money'=>$money,
+                                  'total'=>$account['total'],
+                                  'usemoney'=>$account['usemoney']-floatval($money),
+                                  'waitmoney'=>$account['waitmoney'],
+                                  'status'=>1,
+                                  'dcflag'=>1,
+                                  'remark'=>'用户取消预定房间成功退款',
+                                  'addip'=>get_client_ip(),
+                                  'addtime'=>time()
+                                  ));
+                        }
+                    }
+
                     M('order_time')->where(array('orderid'=>$orderid))->save(array("status"=>3,"cancel_status"=>1,"cancel_time"=>time(),"refund_status"=>2,"refund_donetime"=>time()));
                     $room= M('book_room a')->join("left join zz_room b on a.rid=b.id")->join("left join zz_hostel c on b.hid=c.id")->where(array('a.orderid'=>$orderid))->field("a.*,c.area,c.address")->find();
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_refundreviewsuccess");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_refundreviewsuccess",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     UtilController::addmessage($room['uid'],"退订申请审核通过","您申请的退订已经审核通过。","您申请的退订已经审核通过。","refundreviewsuccess",$orderid);
                 }else if($status==3){
                     M('order_time')->where(array('orderid'=>$orderid))->save(array("refund_status"=>3));
@@ -718,7 +758,7 @@ class OrderController extends CommonController {
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_refundreviewfail");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_refundreviewfail",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     UtilController::addmessage($room['uid'],"退订申请审核不通过","您申请的退订审核不通过，请联系管理员。","您申请的退订审核不通过，请联系管理员。","refundreviewfail",$orderid);
                 }
                 exit(json_encode(array('code'=>200,'msg'=>"退订申请审核成功")));
@@ -978,12 +1018,12 @@ class OrderController extends CommonController {
                           ->join("left join zz_order_time c on a.orderid=c.orderid")
                           ->join("left join zz_book_room d on a.orderid=d.orderid")
                           ->join("left join zz_hostel e on d.hid=e.id")
-                          ->where(array('e.uid'=>$uid,'c.status'=>1,'c.pay_status'=>0,'c.cancel_status'=>0,'a.ordertype'=>1))
+                          ->where(array('e.uid'=>$uid,'c.status'=>1,'c.pay_status'=>0,'a.ordertype'=>1))
                           ->count();
             }else{
                 $ordernum=M('Order a')
                           ->join("left join zz_order_time b on a.orderid=b.orderid")
-                          ->where(array('a.uid'=>$uid,'b.status'=>2,'b.pay_status'=>0,'c.cancel_status'=>0))
+                          ->where(array('a.uid'=>$uid,'b.status'=>2,'b.pay_status'=>0))
                           ->count();
             }
             $ordernum=!empty($ordernum)?$ordernum:0;

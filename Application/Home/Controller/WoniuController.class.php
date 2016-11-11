@@ -40,6 +40,16 @@ class WoniuController extends CommonController {
             $url=__SELF__;cookie("returnurl",urlencode($url));$this->redirect('Home/Member/login');
         } else {
         	$tuid=I('tuid');
+            $uid=session("uid");
+            $type=I('type');
+            if($tuid==$uid){
+                if($type=='party'){
+                    $this->error("不能咨询自己的活动");
+                }else if($type=='hostel'){
+                    $this->error("不能咨询自己的美宿");
+                }
+                
+            }
         	$user_data=M('Member')->field('id,nickname,head,rongyun_token')->find($tuid);
             $data=array(
                 'id'=>$user_data['id'], // 用户id
@@ -140,8 +150,51 @@ class WoniuController extends CommonController {
         $message=M('message')->where(array('id'=>$mid))->find();
         $this->assign("message",$message);
         $orderid=$message['value'];
-        $order=M('book_room a')->join("left join zz_refund_apply b on a.orderid=b.orderid")->where(array('a.orderid'=>$orderid))->field("a.*,b.content")->find();
+        $type=substr($orderid,0,2);
+        switch ($type)
+        {
+            case "ac":
+                $order=M('activity_apply a')->join("left join zz_refund_apply b on a.orderid=b.orderid")->where(array('a.orderid'=>$orderid))->field("a.*,b.content,b.inputtime as messagetime")->find();
+                break;
+            case "hc":
+                $order=M('book_room a')->join("left join zz_refund_apply b on a.orderid=b.orderid")->where(array('a.orderid'=>$orderid))->field("a.*,b.content,b.inputtime as messagetime")->find();
+                break;
+        }
+
         $this->assign("order",$order);
+
+        $member=M('member')->where(array('phone'=>$order['phone']))->find();
+        $this->assign("member",$member);
+        $this->display();
+    }
+    public function refundorderreview(){
+        $orderid=$_GET['orderid'];
+        if(!$orderid){
+            $this->error("ID参数错误");
+        }
+        $type=substr($orderid,0,2);
+        switch ($type)
+        {
+            case "ac":
+                $order=M('activity_apply a')->join("left join zz_refund_apply b on a.orderid=b.orderid")->where(array('a.orderid'=>$orderid))->field("a.*,b.content,b.inputtime as messagetime")->find();
+                $title="取消报名";
+                $content="您有新的取消报名申请，请尽快审核。";
+                break;
+            case "hc":
+                $order=M('book_room a')->join("left join zz_refund_apply b on a.orderid=b.orderid")->where(array('a.orderid'=>$orderid))->field("a.*,b.content,b.inputtime as messagetime")->find();
+                $title="取消入住";
+                $content="您有新的取消入住申请，请尽快审核。";
+                break;
+        }
+
+        $this->assign("order",$order);
+
+        $message=array(
+            'title'=>$title,
+            'content'=>$content,
+            'inputtime'=>$order['messagetime']
+            );
+        $this->assign("message",$message);
 
         $member=M('member')->where(array('phone'=>$order['phone']))->find();
         $this->assign("member",$member);

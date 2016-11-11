@@ -7,12 +7,12 @@
       <div class="head_click tra_head pa"><a href="{:U('Web/Member/editmynote')}">编辑</a></div>
 </div>
 
-<!-- http://192.168.2.107/index.php/Web/Travel/show/id/95.html -->
+<!-- http://192.168.2.107/index.php/Web/Note/show/id/95.html -->
 <div class="container">
 	<div class="land">
 		<div class="land_c f14">
 			<volist name='data' id='vo'>
-				<a href="{:U('Web/Travel/show',array('id'=>$vo['id']))}">
+				<a href="{:U('Web/Note/show',array('id'=>$vo['id']))}">
 					<div class="land_d pr f0">
 						<div class="land_e vertical"><img src="{$vo.thumb}"></div>
 						<div class="land_f vertical">

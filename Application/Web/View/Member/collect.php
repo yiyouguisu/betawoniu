@@ -15,7 +15,7 @@
    		<!-- 游记 -->
 		<div class="land_c f14 collect" style='display:none'>
 			<volist name='note' id='vo'>
-				<a href="{:U('Web/Travel/show',array('id'=>$vo['nid']))}">
+				<a href="{:U('Web/Note/show',array('id'=>$vo['nid']))}">
 					<div class="land_d pr f0">
 						<div class="land_e vertical"><img src="{$vo.thumb}"></div>
 						<div class="land_f vertical">

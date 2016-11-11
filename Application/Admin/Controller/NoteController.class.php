@@ -249,7 +249,20 @@ class NoteController extends CommonController {
             $this->error("删除失败！");
         }
     }
-
+    /**
+     *  下架
+     */
+    public function setoff() {
+        $id = $_GET['id'];
+        $offtime=time();
+        $did=M()->execute("update zz_note set isoff={$_GET['isoff']}, offtime={$offtime} where id={$id}");
+        //$did=M("Note")->where(array('id'=>$id))->save(array('isoff'=>$_GET['isoff'],'offtime'=>time()));
+        if ($did) {
+            $this->success("更新状态成功！");
+        } else {
+            $this->error("更新状态失败！");
+        }
+    }
     /*
      * 游记审核
      */

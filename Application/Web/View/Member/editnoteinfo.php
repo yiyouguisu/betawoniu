@@ -189,7 +189,7 @@
             city.empty();
             var data={'id':$(this).val()};
             console.log(data);
-            $.post("{:U('Web/Travel/ajaxcity')}",data,function(res){
+            $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
                 var option='<option>-请选择-</option>';
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';
@@ -203,7 +203,7 @@
             var county=$('#county');
             county.empty();
             var data={'id':$(this).val()};
-            $.post("{:U('Web/Travel/ajaxcity')}",data,function(res){
+            $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
                 var option='<option>-请选择-</option>';
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';

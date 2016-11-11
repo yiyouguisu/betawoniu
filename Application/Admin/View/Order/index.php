@@ -74,7 +74,8 @@
                                     订单已完成<br/>{$vo.donetime|date="Y-m-d H:i:s",###}</br>
                                 </if>
                                 <a href="{:U('Admin/Order/docancel',array('orderid'=>$vo['orderid']))}">取消订单</a></br>
-                                <a href="{:U('Admin/Order/doclose',array('orderid'=>$vo['orderid']))}" class="close">关闭订单</a>
+                                <a href="{:U('Admin/Order/doclose',array('orderid'=>$vo['orderid']))}" class="close">关闭订单</a></br>
+                                <a href="javascript:;" onClick="omnipotent('selectid','{:U('Admin/Order/show',array('orderid'=>$vo['orderid']))}','查看详情',1,850,600)">查看详情</a></br>
                             </td>
                         </tr>
 

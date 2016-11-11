@@ -27,7 +27,7 @@
                         </div>
                         <div class="Legend_comment_main1_5">
                             <span class="middle">房东：</span>
-                            <a href="{:U('Home/Woniu/chatdetail',array('uid'=>$data['houseownerid']))}" class="middle">
+                            <a href="{:U('Home/Woniu/chatdetail',array('uid'=>$data['houseownerid'],'type'=>'hostel'))}" class="middle">
                                 <div>
                                     <img src="{$data.head}" style="width:24px;height:24px" />
                                 </div>

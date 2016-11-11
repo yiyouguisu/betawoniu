@@ -1,4 +1,54 @@
 <include file="public:head" />
+<script type="text/javascript">
+    var InterValObj; //timer变量，控制时间
+    var count = 60; //间隔函数，1秒执行
+    var curCount;//当前剩余秒数
+    function sendMessage() {
+        var phone = $("#phone").val();
+        if (phone == '') {
+            alert("手机号码不能为空");
+            $("#phone").focus();
+            return false;
+        } else {
+            if (!/^1[3|4|5|7|8][0-9]{9}$/.test(phone)) {
+                alert("手机号码格式不正确");
+                $("#phone").focus();
+                return false;
+            } else {
+                curCount = count;
+                $("#btnSendCode").attr("disabled", "true");
+                $("#btnSendCode").text("重新发送(" + curCount + ")");
+                InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+                $.ajax({
+                    type: "GET", //用POST方式传输
+                    dataType: "JSON", //数据格式:JSON
+                    url: "{:U('Home/Public/sendchecknum')}", //目标地址
+                    data: { "phone": phone },
+                    success: function (status) {
+                        // alert(status.phone);
+                        console.log(status);
+                    }
+                });
+
+            }
+
+        }
+
+    }
+    //timer处理函数
+    function SetRemainTime() {
+        if (curCount == 0) {
+            window.clearInterval(InterValObj);//停止计时器
+            $("#btnSendCode").removeAttr("disabled");//启用按钮
+            $("#btnSendCode").text("重新发送");
+        }
+        else {
+            curCount--;
+            $("#btnSendCode").text("重新发送(" + curCount + ")");
+        }
+    }
+    
+</script>
 <div class="register pr">
         <div class="Sign_inm2">
             <img src="__IMG__/img35.jpg" />
@@ -12,7 +62,7 @@
                 <script type="text/javascript">
                     function checkform() {
                         var phone = $("input[name='phone']").val();
-                        var verify = $("input[name='verify']").val();
+                        var verify = $("input[name='特；verify']").val();
                         var password = $("input[name='password']").val();
                         var pwdconfirm = $("input[name='pwdconfirm']").val();
                         if (!/^1[3|4|5|7|8][0-9]{9}$/.test(phone)) {
@@ -54,11 +104,9 @@
 
                 </script>
                 <div class="register2">
-                    <input type="text" class="register2_text" name="phone" placeholder="您的手机号码 :" />
-                    <input type="text" class="register2_text2" name="verify" placeholder="输入验证码 :">
-                    <span>
-                        <img src="{:U('Home/Public/verify')}" width="100px" height="35px" style="    margin-top: 20px;" class="verifyimg reloadverify">
-                    </span>
+                    <input type="text" class="register2_text2" id="phone" name="phone" placeholder="您的手机号码 :" />
+                    <i id="btnSendCode" onclick="sendMessage()">发送验证码</i>
+                    <input type="text" class="register2_text" name="telverify" placeholder="输入验证码 :">
                     <input type="password" class="register2_text" name="password" placeholder="请输入密码 :" />
                     <input type="password" class="register2_text"  name="pwdconfirm" placeholder="请再次输入密码 :" />
                     <input class="register_btn" type="submit" value="注册" />

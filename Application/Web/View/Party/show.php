@@ -10,19 +10,19 @@
 <div class="container padding_0">
    <div class="land">
                <div class="act_g pr">
-                    <div class="act_g1"><img src="{$data.thumb}"></div>
+                    <div class="act_g1"><img src="{$data.thumb}" style="width: 100%;height: 60vw;"></div>
                     <div class="recom_c pa"><div class="recom_gg collect <if condition='$data.iscollect eq 1'>recom_c_cut</if> "></div>
                                             <span><a href-""><img src="__IMG__/recom_a3.png"></a></span>
                     </div>
                     <div class="act_g2 f16 center pa">
-                            报名费：<em>￥</em><span>{$data.money|default="0.00"}/ 人</span>
+                            报名费：<em>￥</em><span>{$data.money|default="0.00"}</span>
                     </div>
                </div>  
                
                <div class="det_box">
                        <div class="act_k">
                             <div class="act_k1 vertical">{$data.title}</div>
-                            <div class="act_k2 certical">
+                            <div class="act_k2 vertical">
                               <if condition='$data.ishit eq 1'>
                                 <img src="__IMG__/poin_1.png"> 
                               <else/>
@@ -33,10 +33,10 @@
                        </div>
                        <div class="vb_a">
                             <div class="land_font">
-                                <span>时间:</span> {$data.starttime|date="Y-m-d",###} 至{$data.endtime|date="Y-m-d",###}       
+                                <span>时间:</span> {$data.starttime|date="Y-m-d",###} 至 {$data.endtime|date="Y-m-d",###}       
                             </div> 
                             <div class="land_font">
-                                <span>地点:</span> {$data.address}      
+                                <span>地点:</span> {:getarea($data['area'])}{$data.address}      
                             </div> 
                             <div class="land_font pr">
                                 <span>人数:</span> 限定{$data.start_numlimit|default='0'}-{$data.end_numlimit|default='0'}人
@@ -62,7 +62,7 @@
                
                <div class="vb_c ">
                     <div class="vb_c1 center">活动简介</div>
-                    {$data.content}
+                    <div class="vb_c2">{$data.content}</div>
                </div>
                
                <div class="vb_d center">

@@ -63,7 +63,7 @@
                                     </div>
                                     <i>{$data.nickname}</i>
                                 </a>
-                                <a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid']))}" class="payment_main3_04_01_2">在线聊天</a>
+                                <a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid'],'type'=>'party'))}" class="payment_main3_04_01_2">在线聊天</a>
                             </div>
                             <div class="payment_main3_04_02">
                                 <span>活动时间：</span>

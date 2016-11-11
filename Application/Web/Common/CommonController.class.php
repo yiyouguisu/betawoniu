@@ -74,17 +74,7 @@ class CommonController extends Controller {
             }
         }
     }
-    public function cart_total_num()
-    {
-    	//底部一直显示购物车的总数
-    	$uid = session('uid');
-        $storeid = $_COOKIE['web_storeid'];
-    	$cart = M('cart')->where("uid=" . $uid)->find();
-    	$totalnum = 0;
-        $totalnum = M('cartinfo')->where(array('cartid'=>$cart['id']))->sum('num');
-        if (empty($totalnum)) $totalnum = 0;
-    	$this->assign("cartcount",$totalnum);
-    }
+
     /**
      * 对明文密码，进行加密，返回加密后的密码
      * @param int|string $identifier 为数字时，表示uid，其他为用户名

@@ -393,28 +393,48 @@ class PayController extends CommonController {
                 'waitmoney'=>$account['waitmoney']+floatval($money),
                 ));
             if($mid){
-                M('account_log')->add(array(
-                  'uid'=>$data['houseownerid'],
-                  'type'=>'paysuccess',
-                  'money'=>$money,
-                  'total'=>$account['total']+floatval($money),
-                  'usemoney'=>$account['usemoney'],
-                  'waitmoney'=>$account['waitmoney']+floatval($money),
-                  'status'=>1,
-                  'dcflag'=>1,
-                  'remark'=>'用户预定房间成功支付订单',
-                  'addip'=>get_client_ip(),
-                  'addtime'=>time()
-                  ));
+                switch ($type)
+                {
+                    case "ac":
+                        M('account_log')->add(array(
+                          'uid'=>$data['houseownerid'],
+                          'type'=>'paysuccess',
+                          'money'=>$money,
+                          'total'=>$account['total']+floatval($money),
+                          'usemoney'=>$account['usemoney'],
+                          'waitmoney'=>$account['waitmoney']+floatval($money),
+                          'status'=>1,
+                          'dcflag'=>1,
+                          'remark'=>'用户活动报名成功支付订单',
+                          'addip'=>get_client_ip(),
+                          'addtime'=>time()
+                          ));
+                        break;
+                    case "hc":
+                        M('account_log')->add(array(
+                          'uid'=>$data['houseownerid'],
+                          'type'=>'paysuccess',
+                          'money'=>$money,
+                          'total'=>$account['total']+floatval($money),
+                          'usemoney'=>$account['usemoney'],
+                          'waitmoney'=>$account['waitmoney']+floatval($money),
+                          'status'=>1,
+                          'dcflag'=>1,
+                          'remark'=>'用户预定房间成功支付订单',
+                          'addip'=>get_client_ip(),
+                          'addtime'=>time()
+                          ));
+                }
             }
+            M('vouchers_order')->where(array('id'=>$order['couponsid']))->setField('status',1);
             UtilController::addmessage($order['uid'],"订单支付成功","恭喜您，您有一笔预定订单支付成功！","恭喜您，您有一笔预定订单支付成功！","payordersuccess",$orderid);
             $Ymsms = A("Api/Ymsms");
             $content=$Ymsms->getsmstemplate("sms_payordersuccess");
-            $data=json_encode(array('content'=>$content,'type'=>"sms_payordersuccess",'r_id'=>$order['uid']));
-            $statuscode=$Ymsms->sendsms($data);
+            $smsdata=json_encode(array('content'=>$content,'type'=>"sms_payordersuccess",'r_id'=>$order['uid']));
+            //$statuscode=$Ymsms->sendsms($smsdata);
             UtilController::addmessage($data['houseownerid'],"订单支付成功","恭喜您，您有一笔预定订单支付成功！","恭喜您，您有一笔预定订单支付成功！","bpayordersuccess",$orderid);
-            $data=json_encode(array('content'=>$content,'type'=>"sms_payordersuccess",'r_id'=>$data['houseownerid']));
-            $statuscode=$Ymsms->sendsms($data);
+            $smsdata=json_encode(array('content'=>$content,'type'=>"sms_payordersuccess",'r_id'=>$data['houseownerid']));
+            //$statuscode=$Ymsms->sendsms($smsdata);
             if($vouchers_order_id){
                 UtilController::addmessage($order['uid'],"订单支付成功","恭喜您，获得我们的优惠券！","恭喜您，获得我们的优惠券！","getcoupons",$vouchers_order_id);
             }

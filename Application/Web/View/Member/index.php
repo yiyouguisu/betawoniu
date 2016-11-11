@@ -75,7 +75,7 @@
       
       <div class="set_c">
          <div class="snail_d center trip_btn f16">
-                  <a href="{:U('Web/Member/certification')}" class="snail_cut ">我要实名认证</a>
+                  <a href="{:U('Web/Member/realname')}" class="snail_cut ">我要实名认证</a>
          </div>
       </div>
       

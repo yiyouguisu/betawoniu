@@ -58,7 +58,7 @@ class OrderController extends CommonController {
 	        $this->assign("endtime",$endtime);
 	        $this->assign("mannum",$mannum);
 	        $this->assign("roomnum",$roomnum);
-            $this->assign("totalmoney",$totalmoney);
+            $this->assign("totalmoney",$totalmoney/$roomnum);
             $linkman=M("linkman")
                 ->where(array('uid'=>$uid))
                 ->order(array('id'=>"desc"))
@@ -178,7 +178,7 @@ class OrderController extends CommonController {
 
             $user=M('Member')->where(array('id'=>$uid))->find();
             $room= M('Room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.id'=>$rid))->field("a.*,b.title as hostel,b.uid as houseownerid")->find();
-            $apply= M('book_room')->where(array('rid'=>$rid,'uid'=>$uid,'_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))->find();
+            $apply= M('book_room a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.rid'=>$rid,'a.uid'=>$uid,'_string'=>$endtime." <= a.endtime and ".$starttime." >= a.starttime",'b.status'=>4))->find();
 
             $booknum=M('book_room')->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))->sum('num');
             if($uid==''||$rid==''||$num==''||$roomnum==''||$days==''||$starttime==''||$endtime==''||$realname==''||$idcard==''||$phone==''){
@@ -293,7 +293,7 @@ class OrderController extends CommonController {
                             ));
                         }
                     }
-                    M('vouchers_order')->where(array('id'=>$couponsid))->setField('status',1);
+                    //M('vouchers_order')->where(array('id'=>$couponsid))->setField('status',1);
                     $data['orderid']=$orderid;
                     \Api\Controller\UtilController::addmessage($room['houseownerid'],"申请入住","您有新的房间预定订单需要审核，请尽快处理。","您有新的房间预定订单需要审核，请尽快处理。","applybookhouse",$orderid);
                     $Ymsms = A("Api/Ymsms");
@@ -324,8 +324,8 @@ class OrderController extends CommonController {
             $phone=trim($ret['phone']);
             $num=intval(trim($ret['num']));
             $roomnum=intval(trim($ret['roomnum']));
-            $starttime=intval(trim($ret['starttime']));
-            $endtime=intval(trim($ret['endtime']));
+            $starttime=intval(strtotime(trim($ret['starttime'])));
+            $endtime=intval(strtotime(trim($ret['endtime'])));
             $days=intval(trim($ret['days']));
             $memberids=trim($ret['memberids']);
             $couponsid=intval(trim($ret['couponsid']));
@@ -335,7 +335,7 @@ class OrderController extends CommonController {
             $user=M('Member')->where(array('id'=>$uid))->find();
             $order=M('order')->where(array('orderid'=>$orderid))->find();
             $room= M('Room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.id'=>$rid))->field("a.*,b.title as hostel,b.uid as houseownerid")->find();
-            $apply= M('book_room')->where(array('rid'=>$rid,'uid'=>$uid,'_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))->find();
+            $apply= M('book_room a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.rid'=>$rid,'a.uid'=>$uid,'_string'=>$endtime." <= a.endtime and ".$starttime." >= a.starttime",'b.status'=>4))->find();
 
             $booknum=M('book_room')->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))->sum('num');
             if($uid==''||$rid==''||$num==''||$roomnum==''||$days==''||$starttime==''||$endtime==''||$realname==''||$idcard==''||$phone==''){
@@ -598,6 +598,10 @@ class OrderController extends CommonController {
                 ->where(array('a.id'=>$id))
                 ->field('a.id,a.catid,a.city,a.title,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.money,a.partytype,a.starttime,a.endtime,a.content,a.start_numlimit,a.end_numlimit,a.yes_num,a.view,a.uid,b.nickname,b.head,b.realname_status,b.houseowner_status,b.rongyun_token,a.inputtime')
                 ->find();
+            if($data['uid']==$uid){
+                $this->error("不能参加自己的活动");
+            }
+
             $data['catname']=M('partycate')->where(array('id'=>$data['catid']))->getField("catname");  
             if(empty($data['reviewnum'])) $data['reviewnum']=0;
             $joinnum=M('activity_apply')->where(array('aid'=>$data['id'],'paystatus'=>1))->sum("num");
@@ -640,7 +644,7 @@ class OrderController extends CommonController {
                 ->join("left join zz_activity b on a.aid=b.id")
                 ->join("left join zz_member c on a.uid=c.id")
                 ->where(array('a.orderid'=>$data['orderid']))
-                ->field("a.aid,a.uid,b.thumb,b.title,b.catid,a.money,a.memberids,b.isfree,b.area,b.address,b.starttime,b.endtime,b.start_numlimit,b.end_numlimit,a.realname,a.phone,a.idcard,a.num,a.paystatus,b.uid as houseownerid,c.nickname,c.head,c.realname_status,c.houseowner_status")
+                ->field("a.aid,a.uid,b.thumb,b.title,b.catid,b.money,a.memberids,b.isfree,b.area,b.address,b.starttime,b.endtime,b.start_numlimit,b.end_numlimit,a.realname,a.phone,a.idcard,a.num,a.paystatus,b.uid as houseownerid,c.nickname,c.head,c.realname_status,c.houseowner_status")
                 ->find();
             $productinfo['catname']=M('partycate')->where(array('id'=>$productinfo['catid']))->getField("catname");  
             $joinnum=M('activity_apply')->where(array('aid'=>$productinfo['aid'],'paystatus'=>1))->sum("num");
@@ -701,7 +705,7 @@ class OrderController extends CommonController {
 
             $user=M('Member')->where(array('id'=>$uid))->find();
             $activity= M('activity')->where(array('id'=>$aid))->find();
-            $apply= M('activity_apply')->where(array('aid'=>$aid,'uid'=>$uid))->find();
+            $apply= M('activity_apply a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.aid'=>$aid,'a.uid'=>$uid,'b.status'=>array('in','2,4')))->find();
             if($uid==''||$aid==''||$realname==''||$idcard==''||$num==''||$phone==''){
                 $this->error("请求参数错误");
             }elseif(empty($user)){
@@ -714,7 +718,7 @@ class OrderController extends CommonController {
                 $this->error("活动人数超过限制");
             }elseif($activity['endtime']<time()){
                 $this->error("活动已经过期");
-            }elseif(!empty($apply)&&$apply['paystatus']==1){
+            }elseif(!empty($apply)){
                 $this->error("已经报名");
             }else{
                 if(!empty($couponsid)){
@@ -807,7 +811,7 @@ class OrderController extends CommonController {
                             ));
                         }
                     }
-                    M('vouchers_order')->where(array('id'=>$couponsid))->setField('status',1);
+                    //M('vouchers_order')->where(array('id'=>$couponsid))->setField('status',1);
                     $data['orderid']=$orderid;
                     if(empty($premoney)||$premoney=='0.00'){
                         $this->redirect("Home/Order/joinsuccess",array('orderid'=>$orderid));
@@ -842,7 +846,7 @@ class OrderController extends CommonController {
             $user=M('Member')->where(array('id'=>$uid))->find();
             $order=M('order')->where(array('orderid'=>$orderid))->find();
             $activity= M('activity')->where(array('id'=>$aid))->find();
-            $apply= M('activity_apply')->where(array('aid'=>$aid,'uid'=>$uid))->find();
+            $apply= M('activity_apply a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.aid'=>$aid,'a.uid'=>$uid,'b.status'=>4))->find();
             if($orderid==''||$uid==''||$aid==''||$realname==''||$idcard==''||$num==''||$phone==''){
                 $this->error("请求参数错误");
             }elseif(empty($user)){
@@ -1134,12 +1138,46 @@ class OrderController extends CommonController {
             ->join("left join zz_member d on a.uid=d.id")
             ->join("left join {$sqlI} e on c.id=e.value")
             ->where(array('a.orderid'=>$data['orderid']))
-            ->field("a.rid,a.uid,c.title,c.score as evaluation,c.scorepercent as evaluationpercent,b.id as hid,b.thumb,b.title as hostel,b.area,b.address,b.content,a.money,a.realname,a.idcard,a.phone,a.num,a.roomnum,a.days,a.discount,a.couponsid,a.starttime,a.endtime,a.paystatus,d.nickname,d.head,d.realname_status,d.houseowner_status,e.reviewnum,b.uid as houseownerid")
+            ->field("a.rid,a.uid,c.title,c.score as evaluation,c.scorepercent as evaluationpercent,b.id as hid,b.thumb,b.title as hostel,b.area,b.address,b.content,c.nomal_money,c.week_money,c.holiday_money,a.money,a.realname,a.idcard,a.phone,a.num,a.roomnum,a.days,a.discount,a.couponsid,a.starttime,a.endtime,a.paystatus,d.nickname,d.head,d.realname_status,d.houseowner_status,e.reviewnum,b.uid as houseownerid")
             ->find();
-        $book_member=M('book_member')->where(array('orderid'=>$data['orderid'],'linkmanid'=>array('gt',0)))->order(array('id'=>'desc'))->select();
+        $data['refundmoney']=M('refund_apply')->where(array('orderid'=>$data['orderid']))->getField("money");
+        $book_member=M('book_member')->where(array('orderid'=>$data['orderid']))->order(array('id'=>'desc'))->select();
         $productinfo['book_member']=!empty($book_member)?$book_member:null;
         $data['couponstitle']=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$data['couponsid']))->getField("b.title");
         $data['productinfo']=$productinfo;
+        $totalmoney=$money=0.00;
+        $starttime=$data['productinfo']['starttime'];
+        $endtime=$data['productinfo']['endtime'];
+
+        $weeknum=$holidaynum=$nomalnum=$flag=0;
+        while ( $starttime < $endtime) {
+            # code...
+            
+            $money=$data['productinfo']['nomal_money'];
+            $week=date("w",$value['value']);
+            if(in_array($week, array(0,6))) {
+                $money=$data['productinfo']['week_money'];
+                $flag=1;
+            }
+            $holiday=M('holiday')->where(array('status'=>1,'_string'=>$starttime." <= enddate and ".$starttime." >= startdate"))->field("id,name,days")->find();
+            if(!empty($holiday)){
+                $money=$data['productinfo']['holiday_money'];
+                $flag=2;
+            }
+            $totalmoney+=$money;
+            $starttime=strtotime("+1 days",$starttime);
+            if($flag==0){
+                $nomalnum++;
+            }elseif($flag==1){
+                $weeknum++;
+            }elseif($flag==2){
+                $holidaynum++;
+            }
+        }
+        $this->assign("nomalnum",$nomalnum);
+        $this->assign("weeknum",$weeknum);
+        $this->assign("holidaynum",$holidaynum);
+        $data['totalmoney']=$totalmoney;
         $this->assign("data",$data);
 
         $houseowner=M('member')->where(array('id'=>$productinfo['houseownerid']))->field("id,head,nickname")->find();
@@ -1157,14 +1195,15 @@ class OrderController extends CommonController {
             ->join("left join zz_activity b on a.aid=b.id")
             ->join("left join zz_member c on a.uid=c.id")
             ->where(array('a.orderid'=>$data['orderid']))
-            ->field("a.aid,a.uid,b.thumb,b.title,b.catid,a.money,b.isfree,b.area,b.address,b.starttime,b.endtime,b.start_numlimit,b.end_numlimit,b.cancelrule,a.realname,a.phone,a.idcard,a.num,a.paystatus,b.uid as houseownerid,c.nickname,c.head,c.realname_status,c.houseowner_status")
+            ->field("a.aid,a.uid,b.thumb,b.title,b.catid,b.money,b.isfree,b.area,b.address,b.starttime,b.endtime,b.start_numlimit,b.end_numlimit,b.cancelrule,a.realname,a.phone,a.idcard,a.num,a.paystatus,b.uid as houseownerid,c.nickname,c.head,c.realname_status,c.houseowner_status")
             ->find();
+        $data['refundmoney']=M('refund_apply')->where(array('orderid'=>$data['orderid']))->getField("money");
         $productinfo['catname']=M('partycate')->where(array('id'=>$productinfo['catid']))->getField("catname");  
         $joinnum=M('activity_apply')->where(array('aid'=>$productinfo['aid'],'paystatus'=>1))->sum("num");
         $productinfo['joinnum']=!empty($joinnum)?$joinnum:0;
         $joinlist=M('activity_apply a')->join("left join zz_member b on a.uid=b.id")->where(array('a.aid'=>$productinfo['aid'],'a.paystatus'=>1))->field("b.id,b.nickname,b.head,b.rongyun_token")->limit(6)->select();
         $productinfo['joinlist']=!empty($joinlist)?$joinlist:null;
-        $book_member=M('activity_member')->where(array('orderid'=>$data['orderid'],'linkmanid'=>array('gt',0)))->order(array('id'=>'desc'))->select();
+        $book_member=M('activity_member')->where(array('orderid'=>$data['orderid']))->order(array('id'=>'desc'))->select();
         $productinfo['book_member']=!empty($book_member)?$book_member:null;
         $data['couponstitle']=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$data['couponsid']))->getField("b.title");
         $data['productinfo']=$productinfo;
@@ -1196,12 +1235,12 @@ class OrderController extends CommonController {
         if($order['ordertype']==1){
             $room= M('book_room a')->join("left join zz_room b on a.rid=b.id")->where(array('a.orderid'=>$orderid))->find();
             $title="预定房间";
-            $body="预定".$room['title']."支付".$order['money'];
+            $body="预定".$room['title'];
             $value=$room['rid'];
         }else if($order['ordertype']==2){
             $activity= M('activity_apply a')->join("left join zz_activity b on a.aid=b.id")->where(array('a.orderid'=>$orderid))->find();
             $title="参加活动";
-            $body="参加".$activity['title'].",支付".$order['money'];
+            $body="参加".$activity['title'];
             $value=$activity['aid'];
         }
         $orderid=$orderid.rand(100000, 999999);
@@ -1493,6 +1532,8 @@ class OrderController extends CommonController {
         $orderid=trim($ret['out_trade_no']);
         $trade_no=trim($ret['trade_no']);
 
+        $order=M('order')->where(array('orderid'=>$orderid))->find();
+
         $id=M('order')->where(array('orderid'=>$orderid))->save(array(
             'trade_no'=>$trade_no,
             'paynotifydata'=>json_encode($ret)
@@ -1563,29 +1604,48 @@ class OrderController extends CommonController {
                 'waitmoney'=>$account['waitmoney']+floatval($money),
                 ));
             if($mid){
-                M('account_log')->add(array(
-                  'uid'=>$data['houseownerid'],
-                  'type'=>'paysuccess',
-                  'money'=>$money,
-                  'total'=>$account['total']+floatval($money),
-                  'usemoney'=>$account['usemoney'],
-                  'waitmoney'=>$account['waitmoney']+floatval($money),
-                  'status'=>1,
-                  'dcflag'=>1,
-                  'remark'=>'用户预定房间成功支付订单',
-                  'addip'=>get_client_ip(),
-                  'addtime'=>time()
-                  ));
+                switch ($type)
+                {
+                    case "ac":
+                        M('account_log')->add(array(
+                          'uid'=>$data['houseownerid'],
+                          'type'=>'paysuccess',
+                          'money'=>$money,
+                          'total'=>$account['total']+floatval($money),
+                          'usemoney'=>$account['usemoney'],
+                          'waitmoney'=>$account['waitmoney']+floatval($money),
+                          'status'=>1,
+                          'dcflag'=>1,
+                          'remark'=>'用户活动报名成功支付订单',
+                          'addip'=>get_client_ip(),
+                          'addtime'=>time()
+                          ));
+                        break;
+                    case "hc":
+                        M('account_log')->add(array(
+                          'uid'=>$data['houseownerid'],
+                          'type'=>'paysuccess',
+                          'money'=>$money,
+                          'total'=>$account['total']+floatval($money),
+                          'usemoney'=>$account['usemoney'],
+                          'waitmoney'=>$account['waitmoney']+floatval($money),
+                          'status'=>1,
+                          'dcflag'=>1,
+                          'remark'=>'用户预定房间成功支付订单',
+                          'addip'=>get_client_ip(),
+                          'addtime'=>time()
+                          ));
+                }
             }
-
+            M('vouchers_order')->where(array('id'=>$order['couponsid']))->setField('status',1);
             \Api\Controller\UtilController::addmessage($order['uid'],"订单支付成功","恭喜您，您有一笔预定订单支付成功！","恭喜您，您有一笔预定订单支付成功！","payordersuccess",$orderid);
             $Ymsms = A("Api/Ymsms");
             $content=$Ymsms->getsmstemplate("sms_payordersuccess");
-            $data=json_encode(array('content'=>$content,'type'=>"sms_payordersuccess",'r_id'=>$order['uid']));
-            $statuscode=$Ymsms->sendsms($data);
+            $smsdata=json_encode(array('content'=>$content,'type'=>"sms_payordersuccess",'r_id'=>$order['uid']));
+            //$statuscode=$Ymsms->sendsms($smsdata);
             \Api\Controller\UtilController::addmessage($data['houseownerid'],"订单支付成功","恭喜您，您有一笔预定订单支付成功！","恭喜您，您有一笔预定订单支付成功！","bpayordersuccess",$orderid);
-            $data=json_encode(array('content'=>$content,'type'=>"sms_payordersuccess",'r_id'=>$data['houseownerid']));
-            $statuscode=$Ymsms->sendsms($data);
+            $smsdata=json_encode(array('content'=>$content,'type'=>"sms_payordersuccess",'r_id'=>$data['houseownerid']));
+            //$statuscode=$Ymsms->sendsms($smsdata);
             if($vouchers_order_id){
                 \Api\Controller\UtilController::addmessage($order['uid'],"订单支付成功","恭喜您，获得我们的优惠券！","恭喜您，获得我们的优惠券！","getcoupons",$vouchers_order_id);
             }
@@ -1643,13 +1703,13 @@ class OrderController extends CommonController {
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_successbookhouse");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_successbookhouse",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     \Api\Controller\UtilController::addmessage($room['uid'],"申请入住","您预定的房间，已经通过房东审核，请尽快支付。","您预定的房间，已经通过房东审核，请尽快支付。","successbookhouse",$orderid);
                 }elseif($status==5){
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_failbookhouse");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_failbookhouse",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     \Api\Controller\UtilController::addmessage($room['uid'],"申请入住","您预定的房间，没有通过房东的审核，请尽快修改订单。","您预定的房间，没有通过房东的审核，请尽快修改订单。","failbookhouse",$orderid);
                 }
                 exit(json_encode(array('code'=>200,'msg'=>"审核订单成功")));
@@ -1689,12 +1749,52 @@ class OrderController extends CommonController {
                 ));
             if($id){
                 if($status==2){
+                    $account=M('account')->where(array('uid'=>$uid))->find();
+
+                    $mid=M('account')->where(array('uid'=>$uid))->save(array(
+                        'usemoney'=>$account['usemoney']-floatval($money),
+                        ));
+                    if($mid){
+                        switch ($type)
+                        {
+                            case "ac":
+                                M('account_log')->add(array(
+                                  'uid'=>$uid,
+                                  'type'=>'refundsuccess',
+                                  'money'=>$money,
+                                  'total'=>$account['total'],
+                                  'usemoney'=>$account['usemoney']-floatval($money),
+                                  'waitmoney'=>$account['waitmoney'],
+                                  'status'=>1,
+                                  'dcflag'=>1,
+                                  'remark'=>'用户取消活动报名成功退款',
+                                  'addip'=>get_client_ip(),
+                                  'addtime'=>time()
+                                  ));
+                                break;
+                            case "hc":
+                                M('account_log')->add(array(
+                                  'uid'=>$uid,
+                                  'type'=>'refundsuccess',
+                                  'money'=>$money,
+                                  'total'=>$account['total'],
+                                  'usemoney'=>$account['usemoney']-floatval($money),
+                                  'waitmoney'=>$account['waitmoney'],
+                                  'status'=>1,
+                                  'dcflag'=>1,
+                                  'remark'=>'用户取消预定房间成功退款',
+                                  'addip'=>get_client_ip(),
+                                  'addtime'=>time()
+                                  ));
+                        }
+                    }
+
                     M('order_time')->where(array('orderid'=>$orderid))->save(array("status"=>3,"cancel_status"=>1,"cancel_time"=>time(),"refund_status"=>2,"refund_donetime"=>time()));
                     $room= M('book_room a')->join("left join zz_room b on a.rid=b.id")->join("left join zz_hostel c on b.hid=c.id")->where(array('a.orderid'=>$orderid))->field("a.*,c.area,c.address")->find();
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_refundreviewsuccess");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_refundreviewsuccess",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     \Api\Controller\UtilController::addmessage($room['uid'],"退订申请审核通过","您申请的退订已经审核通过。","您申请的退订已经审核通过。","refundreviewsuccess",$orderid);
                 }else if($status==3){
                     M('order_time')->where(array('orderid'=>$orderid))->save(array("refund_status"=>3));
@@ -1702,7 +1802,7 @@ class OrderController extends CommonController {
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_refundreviewfail");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_refundreviewfail",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     \Api\Controller\UtilController::addmessage($room['uid'],"退订申请审核不通过","您申请的退订审核不通过，请联系管理员。","您申请的退订审核不通过，请联系管理员。","refundreviewfail",$orderid);
                 }
                 exit(json_encode(array('code'=>200,'msg'=>"退订申请审核成功")));
@@ -1782,24 +1882,24 @@ class OrderController extends CommonController {
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_refundhostelapply");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_refundhostelapply",'r_id'=>$room['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     \Api\Controller\UtilController::addmessage($room['uid'],"申请退订","您预定的房间，已经成功申请退订，请等待审核。","您预定的房间，已经成功申请退订，请等待审核。","refundhostelapply",$orderid);
 
                     $content=$Ymsms->getsmstemplate("sms_brefundhostelapply");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_brefundhostelapply",'r_id'=>$room['houseownerid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     \Api\Controller\UtilController::addmessage($room['houseownerid'],"申请退订","您有新的退订申请，请尽快审核。","您有新的退订申请，请尽快审核。","brefundhostelapply",$orderid);
                 }else if($order['ordertype']==2){
                     $party= M('activity_apply a')->join("left join zz_activity b on a.aid=b.id")->where(array('a.orderid'=>$orderid))->field("a.*,b.area,b.address,b.uid as houseownerid")->find();
                     $Ymsms = A("Api/Ymsms");
                     $content=$Ymsms->getsmstemplate("sms_refundpartyapply");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_refundpartyapply",'r_id'=>$party['uid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     \Api\Controller\UtilController::addmessage($party['uid'],"取消报名","您报名的活动，已经成功申请取消，请等待审核。","您报名的活动，已经成功申请取消，请等待审核。","refundpartyapply",$orderid);
 
                     $content=$Ymsms->getsmstemplate("sms_brefundpartyapply");
                     $data=json_encode(array('content'=>$content,'type'=>"sms_brefundpartyapply",'r_id'=>$party['houseownerid']));
-                    $statuscode=$Ymsms->sendsms($data);
+                    //$statuscode=$Ymsms->sendsms($data);
                     \Api\Controller\UtilController::addmessage($party['houseownerid'],"取消报名","您有新的取消报名申请，请尽快审核。","您有新的取消报名申请，请尽快审核。","brefundpartyapply",$orderid);
                 }
                 exit(json_encode(array('code'=>200,'msg'=>"退订申请成功")));

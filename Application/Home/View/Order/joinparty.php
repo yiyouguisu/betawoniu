@@ -88,7 +88,7 @@
                                         </div>
                                         <i>{$data.nickname}</i>
                                     </a>
-                                    <a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid']))}" class="payment_main3_04_01_2">在线聊天</a>
+                                    <a href="{:U('Home/Woniu/chatdetail',array('tuid'=>$data['uid'],'type'=>'party'))}" class="payment_main3_04_01_2">在线聊天</a>
                                 </div>
                                 <div class="payment_main3_04_02">
                                     <span>活动时间：</span>
@@ -115,6 +115,21 @@
                                 </tr>
                             </thead>
                             <tbody id="joinlist">
+                                <tr>
+                                    <td>
+                                        <input type="text" value="{$user.realname}" />
+                                    </td>
+
+                                    <td>
+                                        <input type="text" value="{$user.idcard}"/>
+                                    </td>
+                                    <td>
+                                        <input type="tel" value="{$user.phone}" />
+                                    </td>
+                                    <td>
+                                        
+                                    </td>
+                                </tr>
                                 <tr id="last">
                                     <td>
                                         <input type="text" value="" class="addlinkman_realname" />
@@ -133,7 +148,7 @@
                             </tbody>
                         </table>
                         <div class="Fill_in_order2_main3">
-                            <input class="Fill_in_order2_sub2 addlinkman" type="button" value="添加入住人" />
+                            <input class="Fill_in_order2_sub2 addlinkman" type="button" value="添加参与者" />
                             <span class="Fill_in_order2_sub3 fr">选择常用联系人</span>
                         </div>
                     </div>
@@ -210,7 +225,8 @@
         <div class="Fill_in_order2_a_bottom">
             <ul class="Fill_in_order2_a_bottom_ul linkmanlist">
                 <volist name="linkman" id="vo">
-                    <li class="linkman" data-id="{$vo.id}" id="linkman_{$vo.id}" data-idcard="{$vo.idcard}">
+                    <li class="linkman" data-id="{$vo.id}" id="linkman_{$vo.id}">
+                        <input type="hidden" class="idcard" value="{$vo.idcard}">
                         <span class="f16 realname">{$vo.realname}</span>
                         <i class="fr phone">{$vo.phone}</i>
                     </li>
@@ -247,6 +263,7 @@
     <div class="mask2 hide"></div>
     <script type="text/javascript">
         $(function () {
+            aa();
             $(".mask").height($(document).height());
             $(".mask2").height($(document).height());
             $(".Fill_in_order2_a_bottom_ul li").live("click",function () {
@@ -297,6 +314,7 @@
                         $("#last").before(str);
 
                         var str="<li class=\"linkman Fill_in_order2_a_bottom_list\" data-id='"+linkmanid+"' id=\"linkman_"+linkmanid+"\" data-idcard='"+idcard+"''>";
+                            str+="<input type=\"hidden\" class=\"idcard\" value=\""+idcard+"\">";
                             str+="<span class=\"f16 realname\">"+realname+"</span>";
                             str+="<i class=\"fr phone\">"+phone+"</i></li>";
                         $(".linkmanlist").append(str);
@@ -323,7 +341,7 @@
                     var linkmanid=$(this).data("id");
                     var realname=$(this).find(".realname").text();
                     var phone=$(this).find(".phone").text();
-                    var idcard=$(this).data("idcard");
+                    var idcard=$(this).find(".idcard").val();
                     str+="<tr><td><input type=\"text\" value=\""+realname+"\" /></td><td><input type=\"text\" value=\""+idcard+"\" /></td><td><input type=\"text\" value=\""+phone+"\" /></td><td><a href=\"javascript:;\" class='delmebmer' data-id="+linkmanid+">删除</a></td></tr>";
                 })
                 var mannum=$("ul.linkmanlist li.Fill_in_order2_a_bottom_list").length;
@@ -332,7 +350,9 @@
                     return false;
                 }
                 $("#mannum").text(mannum+1);
-                $("#last").before(str);
+                var headstr=$("#joinlist tr:eq(0)").html();
+                var footstr=$("#joinlist tr:last").html();
+                $("#joinlist").html("<tr>"+headstr+"</tr>"+str+"<tr>"+footstr+"</tr>");
                 $(".Fill_in_order2_a").hide();
                 $(".mask").hide();
                 aa();

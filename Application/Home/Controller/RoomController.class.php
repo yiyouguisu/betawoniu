@@ -68,7 +68,7 @@ class RoomController extends CommonController {
                     $bookdate[$key]['isgone']=0;
                     $bookdate[$key]['wait_num']=$data['mannum']-$booknum;
                 }
-                $book_status=M('book_room')->where(array('_string'=>$value['value']." <= endtime and ".$value['value']." >= starttime",'uid'=>$uid,'rid'=>$id))->find();
+                $book_status=M('book_room a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('_string'=>$value['value']." <= a.endtime and ".$value['value']." >= a.starttime",'a.uid'=>$uid,'a.rid'=>$id,'b.status'=>4))->find();
                 if(!empty($book_status)){
                     $bookdate[$key]['isbook']=1;
                 }else{
@@ -82,20 +82,20 @@ class RoomController extends CommonController {
                 $str="";
                 if($key==0){
                     if($value['isbook']==1){
-                        $str="{title: '已租',start: \"".$value['name']."\",constraint: 'businessHours',}";
+                        $str="{title: '已定',start: \"".$value['name']."\",constraint: 'businessHours',}";
                     }else{
                         if($value['isgone']==1){
-                            $str="{title: '租完',start: \"".$value['name']."\",constraint: 'businessHours',}";
+                            $str="{title: '定完',start: \"".$value['name']."\",constraint: 'businessHours',}";
                         }else{
                             $str="{title: '剩".$value['wait_num']."间 ￥".$value['price']."',start: \"".$value['name']."\",constraint: 'businessHours',}";
                         }
                     }
                 }else{
                     if($value['isbook']==1){
-                        $str=",{title: '已租',start: \"".$value['name']."\",constraint: 'businessHours',}";
+                        $str=",{title: '已定',start: \"".$value['name']."\",constraint: 'businessHours',}";
                     }else{
                         if($value['isgone']==1){
-                            $str=",{title: '租完',start: \"".$value['name']."\",constraint: 'businessHours',}";
+                            $str=",{title: '定完',start: \"".$value['name']."\",constraint: 'businessHours',}";
                         }else{
                             $str=",{title: '剩".$value['wait_num']."间 ￥".$value['price']."',start: \"".$value['name']."\",constraint: 'businessHours',}";
                         }
@@ -112,6 +112,7 @@ class RoomController extends CommonController {
 	        $where['a.status']=2;
 	        $where['a.type']=1;
 	        $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
 	        $recoords=getcoords($data['lat'],$data['lng'],2);
 	        $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -148,6 +149,7 @@ class RoomController extends CommonController {
 	        $where['a.status']=2;
 	        $where['a.type']=1;
 	        $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
 	        $recoords=getcoords($data['lat'],$data['lng'],2);
 	        $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -302,6 +304,7 @@ class RoomController extends CommonController {
         $rid=$_POST['rid'];
         $starttime=strtotime($_POST['starttime']);
         $endtime=strtotime($_POST['endtime']);
+        $roomnum=intval($_POST['roomnum']);
         
         $data=M('room')->where(array('id'=>$rid))->find();
 
@@ -311,7 +314,7 @@ class RoomController extends CommonController {
         while ( $starttime < $endtime) {
             # code...
             $money=$data['nomal_money'];
-            $week=date("w",$value['value']);
+            $week=date("w",$starttime);
             if(in_array($week, array(0,6))) {
                 $money=$data['week_money'];
             }
@@ -331,9 +334,67 @@ class RoomController extends CommonController {
         if($isgone==1){
             $this->ajaxReturn(array('code'=>-200),'json');  
         }else{
+            $totalmoney=$totalmoney*$roomnum;
             $totalmoney=sprintf("%.2f",$totalmoney);
             $this->ajaxReturn(array('code'=>200,'totalmoney'=>$totalmoney),'json');  
         }
               
+    }
+    public function ajax_getdate(){
+        $id=I('rid');
+        $data=M("Room")->where(array('id'=>$id))->find();
+        $bookdate=getmonth();
+        foreach ($bookdate as $key => $value) {
+            # code...
+            $bookdate[$key]['price']=$data['nomal_money'];
+            $week=date("w",$value['value']);
+            if(in_array($week, array(0,6))) {
+                $bookdate[$key]['isweek']=1;
+                $bookdate[$key]['price']=$data['week_money'];
+            }else{
+                $bookdate[$key]['isweek']=0;
+            }
+            $holiday=M('holiday')->where(array('status'=>1,'_string'=>$value['value']." <= enddate and ".$value['value']." >= startdate"))->field("id,name,days")->find();
+            if(!empty($holiday)){
+                $bookdate[$key]['isholiday']=1;
+                $bookdate[$key]['holiday']=$holiday;
+                $bookdate[$key]['price']=$data['holiday_money'];
+            }else{
+                $bookdate[$key]['isholiday']=0;
+            }
+
+            $booknum=M('book_room')->where(array('_string'=>$value['value']." <= endtime and ".$value['value']." >= starttime"))->sum('num');
+            if($booknum>=$data['mannum']){
+                $bookdate[$key]['isgone']=1;
+            }elseif($booknum<$data['mannum']){
+                $bookdate[$key]['isgone']=0;
+                $bookdate[$key]['wait_num']=$data['mannum']-$booknum;
+            }
+            $book_status=M('book_room')->where(array('_string'=>$value['value']." <= endtime and ".$value['value']." >= starttime",'uid'=>$uid,'rid'=>$id))->find();
+            if(!empty($book_status)){
+                $bookdate[$key]['isbook']=1;
+            }else{
+                $bookdate[$key]['isbook']=0;
+            }
+        }
+
+
+        $output=array();
+        foreach ($bookdate as $value) {
+            # code...
+            if($value['isbook']==1){
+                $output[]=array('title'=>'已定','start'=>$value['name'],'constraint'=>'businessHours');
+            }else{
+                if($value['isgone']==1){
+                    $output[]=array('title'=>'定完','start'=>$value['name'],'constraint'=>'businessHours');
+                }else{
+                    $output[]=array('title'=>"剩".$value['wait_num']."间 ￥".$value['price'],'start'=>$value['name'],'constraint'=>'businessHours');
+                }
+            }
+            
+        }
+        
+        
+        echo json_encode($output);
     }
 }

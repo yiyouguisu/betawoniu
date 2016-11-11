@@ -42,10 +42,6 @@
                         <table width="100%" class="table_form contentWrap">
                             <tbody>
                             <tr>
-                                <th  width="80">企业编号</th>
-                                <td><input type="text" class="input"  name="realnamenumber" value="{$data.realnamenumber}" /></td>
-                            </tr>
-                            <tr>
                                 <th  width="80">审核</th>
                                 <td>
                                     <ul class="switch_list cc ">

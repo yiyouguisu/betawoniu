@@ -59,37 +59,19 @@
         <div class="activity2_main2">
             <div class="activity2_main2_01">
                 <span class="middle">真实姓名 : </span>
-                <input class="middle text4" style="width:185px;" type="text" name="realname"  />
+                <input class="middle text4" style="width:185px;" type="text" name="realname" value="{$data.realname}" readonly/>
             </div>
             <div class="activity2_main2_01">
                 <span class="middle">支付宝账号 : </span>
-                <input class="middle text4" style="width:185px;" type="text" name="alipayaccount"  />
+                <input class="middle text4" style="width:185px;" type="text" name="alipayaccount" value="{$data.alipayaccount}" readonly />
             </div>
             <div class="activity2_main2_01">
                 <span class="middle">美宿名称 : </span>
-                <input class="middle text4" style="width:670px;" type="text" name="housename"  />
+                <input class="middle text4" style="width:670px;" type="text" name="housename"  value="{$data.housename}"/>
             </div>            
             <div class="activity2_main2_01">
                 <span class="middle">美宿地址 : </span>
-                <!-- <div class="middle activity2_main2_text3">
-                    <select class="sc-wd chosen-select-no-single">
-                        <option>江苏省</option>
-                        <option value="花前月下">花前月下</option>
-                        <option value="闭月羞花">闭月羞花</option>
-                        <option value="花前月下">花前月下</option>
-                        <option value="闭月羞花">闭月羞花</option>
-                    </select>
-                </div>
-                <div class="middle activity2_main2_text3">
-                    <select class="sc-wd chosen-select-no-single">
-                        <option>苏州市</option>
-                        <option value="亲子类">亲子类</option>
-                        <option value="情侣类">情侣类</option>
-                        <option value="亲子类">亲子类</option>
-                        <option value="情侣类">情侣类</option>
-                    </select>
-                </div> -->
-                <input type="text" class="activity2_main2_text5 middle" style="width:722px !important;"  name="address"/>
+                <input type="text" class="activity2_main2_text5 middle" style="width:722px !important;"  name="address" value="{$data.address}"/>
             </div>
             <div class="landlord1 hidden">
                 <span>上传相关执照 :<em>（非必填）</em> </span>
@@ -100,11 +82,13 @@
                         </span>
                     </li>
                     <li id="thumb">
-                        
+                        <notempty name="data['thumb']">
+                            <img src="{$data['thumb']}" width='298px' height='169px' />
+                        </notempty>
                     </li>
                 </ul>
                 <div class="landlord2"></div>
-                <input type="hidden" name="thumb" value="" />
+                <input type="hidden" name="thumb" value="{$data['thumb']}" />
                 <input class="lan_sub" type="submit" value="提交认证信息" />
             </div>
         </div>

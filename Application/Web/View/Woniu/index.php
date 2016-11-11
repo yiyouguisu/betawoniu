@@ -30,7 +30,7 @@
                                    <sup><img src="__IMG__/point.jpg"></sup><span>(6)</span>
                </div>
               </div></a> 
-              <a href="my-travel.html"><div class="help_list">
+              <a href="my-Note.html"><div class="help_list">
                <div class="help_a"><img src="__IMG__/set_a4.jpg"> 我的游记</div>
               </div></a> 
               <a href="my-collection.html"><div class="help_list">

@@ -1,25 +1,11 @@
 
-#goodsList {
-    position:absolute; z-index:1;
-    top:0px; bottom:0px; left:91px;
-    overflow:auto;
-}
-#orderList {
-    position:absolute; z-index:1;
-    top:55px; bottom:0px; 
-    overflow:auto;
-}
-#groupList {
-    position:absolute; z-index:1;
-    top:0px; bottom:0px; 
-    overflow:auto;
-}
-
-#discussList{
-    position:absolute; z-index:1;
-    top:195px; bottom:0px; 
-    overflow:auto;
-    background-color:#ffffff
+#DataList {
+    position: absolute;
+    z-index: 1;
+    top: 10rem;
+    bottom: 0px;
+    overflow: auto;
+    width: 100%;
 }
 
 #scroller {

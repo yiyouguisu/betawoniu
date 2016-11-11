@@ -118,10 +118,10 @@
               var img_height = $('#upfileResult').height();
               if (parseInt(coords.w) > 0)
               {
-                jQuery('#x').val(coords.x*2); //选中区域左上角横  
-                jQuery('#y').val(coords.y*2); //选中区域左上角纵坐标   
-                jQuery('#w').val(coords.w*2); //选中区域的宽度  
-                jQuery('#h').val(coords.h*2); //选中区域的高度 
+                jQuery('#x').val(coords.x); //选中区域左上角横  
+                jQuery('#y').val(coords.y); //选中区域左上角纵坐标   
+                jQuery('#w').val(coords.w); //选中区域的宽度  
+                jQuery('#h').val(coords.h); //选中区域的高度 
               }
             }
         });

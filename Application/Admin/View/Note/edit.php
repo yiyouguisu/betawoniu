@@ -260,8 +260,8 @@
                                             <notempty name="imglist">
                                                 <volist name="imglist" id="vo">
                                                     <li id='imglist{$i}'>
-                                                        <textarea name="imglist[{$key}][content]" style='width:400px;height:200px;float:left' class='input'>{$vo.content}</textarea>";
-                                                        <img src='{$vo.thumb}' style='width:210px;height:210px' title='移除' ondbclick="javascript:remove_div('imglist{$i}')">";
+                                                        <textarea name="imglist[{$key}][content]" style='width:400px;height:200px;float:left' class='input'>{$vo.content}</textarea>
+                                                        <img class="img" src='{$vo.thumb}' style='width:210px;height:210px' title='移除' >
                                                         <input type='hidden' name="imglist[{$key}][thumb]" value='{$vo.thumb}'/>
                                                     </li>
                                                 </volist>
@@ -385,13 +385,15 @@
             function getResultimglist(content, queueID) {
                 str = "<li id='imglist" + xss + "'>";
                 str = str+"<textarea name=\"imglist["+xss+"][content]\" style='width:400px;height:200px;float:left' class='input'></textarea>";
-                str=str+"<img src='" + content + "' style='width:210px;height:210px' title='移除' ondbclick=\"javascript:remove_div('" + queueID + "')\">";
+                str=str+"<img class='img' src='" + content + "' style='width:210px;height:210px' title='移除'>";
                 str = str+"<input type='hidden' name=\"imglist["+xss+"][thumb]\" value='" + content + "' style='width:310px;' class='input'>";
                 str = str+"</li>";
                 albums.append(str);
                 xss++;
             }
-
+            $(".img").dblclick(function(){
+                $(this).parent("li").remove();
+            })
         });
     </script>
 </body>

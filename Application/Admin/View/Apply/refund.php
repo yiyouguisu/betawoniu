@@ -67,6 +67,13 @@
                                 </notempty>
                             </td>
                             <td align="center" > 
+                                <if condition="$vo['refund_status'] eq 0 and $vo['status'] eq 2">
+                                <if condition="authcheck('Admin/apply/refundpay')">
+              <a href="{:U('Admin/apply/refundpay',array('id'=>$vo['id']))}" >退款</a> 
+                <else/>
+                 <font color="#cccccc">退款</font>
+              </if> 
+          </if> 
                             <if condition="authcheck('Admin/apply/refunddelete')">
               <a href="{:U('Admin/apply/refunddelete',array('id'=>$vo['id']))}"  class="del">删除</a> 
                 <else/>

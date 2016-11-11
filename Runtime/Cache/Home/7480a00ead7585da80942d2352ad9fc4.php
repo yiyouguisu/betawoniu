@@ -148,7 +148,7 @@
                     <a href="<?php echo U('Home/Woniu/index');?>">蜗牛</a>
                 </li>
                 <li class="fl">|</li>
-                <li <?php if(($controller_url) == "Home/About"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
+                <li <?php if(($current_url) == "Home/About/app"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
                     <a href="<?php echo U('Home/About/app');?>">APP下载</a>
                 </li>
             </ul>
@@ -544,8 +544,6 @@
                                                         <?php if(($vo['donestatus']) == "0"): ?><span class="my_home8_span2">进行中</span>
                                                             <?php else: ?>
                                                             <span class="my_home8_span1">已完成</span><?php endif; ?>
-                                                        
-                                                        
                                                     </div>
                                                 </div>
                                             </div>
@@ -578,26 +576,65 @@
                                                 <div class="middle my_home9_bottom_list3_bottom2">
                                                     <label class="f22">￥</label><span class="f36"><?php echo ((isset($vo["productinfo"]["money"]) && ($vo["productinfo"]["money"] !== ""))?($vo["productinfo"]["money"]):"0.00"); ?></span><i class="f18">起</i>
                                                 </div>
-                                                <?php if(($vo['status']) == "1"): ?><div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span2">待审核</span>
-                                                        <a href="<?php echo U('Home/Woniu/orderreview',array('orderid'=>$vo['orderid']));?>" class="my_home9_bottom_list3_a3">去审核</a>
-                                                    </div><?php endif; ?>
-                                                <?php if(($vo['status']) == "2"): ?><div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span1">未付款</span>
-                                                        <a href="<?php echo U('Home/Order/bookpay',array('orderid'=>$vo['orderid']));?>" class="my_home9_bottom_list3_a1">去支付</a>
-                                                    </div><?php endif; ?>
-                                                <?php if(($vo['status']) == "4"): ?><div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <?php if($vo['endtime'] < time()): ?><span class="my_home9_bottom_list3_span2">已完成</span>
-                                                            <?php else: ?>
-                                                            <span class="my_home9_bottom_list3_span2">待入住</span><?php endif; ?>
-                                                        <?php if($vo['uid'] == $user['id']): if($vo['endtime'] < time()): ?><a href="<?php echo U('Home/Order/evaluate',array('orderid'=>$vo['orderid']));?>" class="my_home9_bottom_list3_a2">去评论</a><?php endif; ?>
-                                                            <?php else: ?>
-                                                            <a href="javascript:;" class="my_home9_bottom_list3_a2">已完成</a><?php endif; ?>
-                                                    </div><?php endif; ?>
-                                                <?php if(($vo['status']) == "5"): ?><div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                        <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="<?php echo ($vo["review_remark"]); ?>">失败原因</a>
-                                                    </div><?php endif; ?>
+                                                <?php if($vo['uid'] != $user['id']): if(($vo['status']) == "1"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">预定</span>
+                                                            <a href="<?php echo U('Home/Woniu/orderreview',array('orderid'=>$vo['orderid']));?>" class="my_home9_bottom_list3_a3">去审核</a>
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "2"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <a href="javascript:;" class="my_home9_bottom_list3_a1">待付款</a>
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "3"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <?php if(($vo['refund_status']) == "2"): ?><span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                <?php else: ?>
+                                                                <span class="my_home9_bottom_list3_span2">已取消</span><?php endif; ?>
+                                                        </div><?php endif; ?>
+                                                    
+                                                    <?php if(($vo['status']) == "4"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <?php if($vo['endtime'] < time()): if(($vo['evaluate_status']) == "0"): ?><a href="javascript:;"  class="my_home9_bottom_list3_a2">待评价</a>
+                                                                    <?php else: ?>
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2">已完成</a><?php endif; ?>
+                                                                <?php else: ?>
+                                                                <?php if(($vo['refund_status']) == "0"): ?><a href="javascript:;"  class="my_home9_bottom_list3_a2">待入住</a><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "1"): ?><span class="my_home9_bottom_list3_span2">退订</span>
+                                                                    <a href="<?php echo U('Home/Woniu/refundorderreview',array('orderid'=>$vo['orderid']));?>"  class="my_home9_bottom_list3_a2">去审核</a><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "2"): ?><span class="my_home9_bottom_list3_span2">退订成功</span><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "3"): ?><span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a2 remark" data-remark="<?php echo ($vo["refundreview_remark"]); ?>"  style="background: #8c8e85;">失败原因</a><?php endif; endif; ?>   
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "5"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                            <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="<?php echo ($vo["review_remark"]); ?>">失败原因</a>
+                                                        </div><?php endif; ?>
+                                                    <?php else: ?>
+                                                    <?php if(($vo['status']) == "1"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">预定</span>
+                                                            <a href="javascript:;"  class="my_home9_bottom_list3_a3">待审核</a>
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "2"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <a href="<?php echo U('Home/Order/bookpay',array('orderid'=>$vo['orderid']));?>" class="my_home9_bottom_list3_a1">去支付</a>
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "3"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <?php if(($vo['refund_status']) == "2"): ?><span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                <?php else: ?>
+                                                                <span class="my_home9_bottom_list3_span2">已取消</span><?php endif; ?>
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "4"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <?php if($vo['endtime'] < time()): if(($vo['evaluate_status']) == "0"): ?><a href="<?php echo U('Home/Order/evaluate',array('orderid'=>$vo['orderid']));?>"  class="my_home9_bottom_list3_a2">我要评价</a>
+                                                                    <?php else: ?>
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2">已完成</a><?php endif; ?>
+                                                                <?php else: ?>
+                                                                <?php if(($vo['refund_status']) == "0"): ?><a href="javascript:;"  class="my_home9_bottom_list3_a2">待入住</a><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "1"): ?><span class="my_home9_bottom_list3_span2">退订</span>
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2">待审核</a><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "2"): ?><span class="my_home9_bottom_list3_span2">退订成功</span><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "3"): ?><span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2 remark" data-remark="<?php echo ($vo["refundreview_remark"]); ?>" style="background: #8c8e85;">失败原因</a><?php endif; endif; ?>
+                                                                
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "5"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                            <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="<?php echo ($vo["review_remark"]); ?>">失败原因</a>
+                                                        </div><?php endif; endif; ?>
                                             </div>
                                         </div>
                                     </div>
@@ -634,14 +671,43 @@
                                                         地点 :<em class="c666 f14"><?php echo getarea($vo['productinfo']['area']); echo ($vo["productinfo"]["address"]); ?></em>
                                                     </p>
                                                 </div>
-                                                <?php if(($vo['status']) == "4"): ?><div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span2">已完成</span>
-                                                    </div><?php endif; ?>
-                                                <?php if(($vo['status']) == "2"): ?><div class="my_home9_bottom_list3_bottom3 middle">
-                                                        <span class="my_home9_bottom_list3_span2">未付款</span>
-                                                        <a href="<?php echo U('Home/Order/joinpay',array('orderid'=>$vo['orderid']));?>" class="my_home9_bottom_list3_a1">去支付</a>
-                                                    </div><?php endif; ?>
-                                                
+                                                <?php if($vo['uid'] != $user['id']): if(($vo['status']) == "2"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <span class="my_home9_bottom_list3_span2">待付款</span>
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "3"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <?php if(($vo['refund_status']) == "2"): ?><span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                <?php else: ?>
+                                                                <span class="my_home9_bottom_list3_span2">已取消</span><?php endif; ?>
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "4"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <?php if($vo['endtime'] < time()): ?><span class="my_home9_bottom_list3_span2">已完成</span>
+                                                                <?php else: ?>
+                                                                <?php if(($vo['refund_status']) == "0"): ?><span class="my_home9_bottom_list3_span2">待参加</span><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "1"): ?><span class="my_home9_bottom_list3_span2">退订</span>
+                                                                    <a href="<?php echo U('Home/Woniu/refundorderreview',array('orderid'=>$vo['orderid']));?>" class="my_home9_bottom_list3_a1">去审核</a><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "2"): ?><span class="my_home9_bottom_list3_span2">退订成功</span><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "3"): ?><span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="<?php echo ($vo["refundreview_remark"]); ?>"  style="background: #8c8e85;">失败原因</a><?php endif; endif; ?>
+                                                        </div><?php endif; ?>
+                                                    <?php else: ?>
+                                                    <?php if(($vo['status']) == "2"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <a href="<?php echo U('Home/Order/joinpay',array('orderid'=>$vo['orderid']));?>"  class="my_home9_bottom_list3_a1">去支付</a>
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "3"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <?php if(($vo['refund_status']) == "2"): ?><span class="my_home9_bottom_list3_span2">退订成功</span>
+                                                                <?php else: ?>
+                                                                <span class="my_home9_bottom_list3_span2">已取消</span><?php endif; ?>
+                                                        </div><?php endif; ?>
+                                                    <?php if(($vo['status']) == "4"): ?><div class="my_home9_bottom_list3_bottom3 middle">
+                                                            <?php if($vo['endtime'] < time()): ?><span class="my_home9_bottom_list3_span2">已完成</span>
+                                                                <?php else: ?>
+                                                                <?php if(($vo['refund_status']) == "0"): ?><span class="my_home9_bottom_list3_span2">待参加</span><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "1"): ?><span class="my_home9_bottom_list3_span2">退订</span>
+                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1">去审核</a><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "2"): ?><span class="my_home9_bottom_list3_span2">退订成功</span><?php endif; ?>
+                                                                <?php if(($vo['refund_status']) == "3"): ?><span class="my_home9_bottom_list3_span2">审核失败</span>
+                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="<?php echo ($vo["refundreview_remark"]); ?>"  style="background: #8c8e85;">失败原因</a><?php endif; endif; ?>
+                                                        </div><?php endif; endif; ?>
                                             </div>
                                         </div>
                                     </div>
@@ -843,11 +909,11 @@
                     <div class="foot1_li3_01">
                         <img src="/Public/Home/images/logo2.png"  />
                         <i>snailinns</i>
-                        <a href="" class="foot_a">
+                        <a href="<?php echo U('Home/About/app');?>" class="foot_a">
                             <img src="/Public/Home/images/Icon/img12.png" />
                             IOS
                         </a>
-                        <a href="">
+                        <a href="<?php echo U('Home/About/app');?>">
                             <img src="/Public/Home/images/Icon/img13.png" />
                             安卓
                         </a>

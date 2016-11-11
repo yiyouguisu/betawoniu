@@ -31,7 +31,7 @@
         </div>
         <div class="My_message_details_main4">
             <div class="My_message_details_m4top">
-                <span>请输入不通过的理由</span>
+                <span>失败原因</span>
                 <div class="My_message_details_m4topf"></div>
             </div>
             <div class="My_message_details_m4bottom">

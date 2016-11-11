@@ -148,7 +148,7 @@
                     <a href="<?php echo U('Home/Woniu/index');?>">蜗牛</a>
                 </li>
                 <li class="fl">|</li>
-                <li <?php if(($controller_url) == "Home/About"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
+                <li <?php if(($current_url) == "Home/About/app"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
                     <a href="<?php echo U('Home/About/app');?>">APP下载</a>
                 </li>
             </ul>
@@ -349,8 +349,8 @@
                     <span class="middle"><?php echo ((isset($data["nickname"]) && ($data["nickname"] !== ""))?($data["nickname"]):"未设置"); ?></span>
                     <?php if(($data['realname_status']) == "1"): ?><img src="/Public/Home/images/Icon/img14.png" /><?php endif; ?>
                     <?php if(($data['houseowner_status']) == "1"): ?><img src="/Public/Home/images/Icon/img15.png" /><?php endif; ?>
-                    <a <?php if(($data['isattention']) == "1"): ?>class="middle hmain_chang"<?php else: ?> class="middle"<?php endif; ?> href="javascript:;" id="attention">关注</a>
-                    <a href="<?php echo U('Home/Woniu/chatdetail',array('tuid'=>$data['id']));?>" class="middle">私信</a>
+                    <?php if(($data['id']) != $user["id"]): ?><a <?php if(($data['isattention']) == "1"): ?>class="middle hmain_chang"<?php else: ?> class="middle"<?php endif; ?> href="javascript:;" id="attention">关注</a>
+                        <a href="<?php echo U('Home/Woniu/chatdetail',array('tuid'=>$data['id'],'type'=>'member'));?>" class="middle">私信</a><?php endif; ?>
                 </div>
                 <div class="hmain_main2_2_bottom">
                     <span><?php echo ($data["info"]); ?></span>
@@ -763,11 +763,11 @@
                     <div class="foot1_li3_01">
                         <img src="/Public/Home/images/logo2.png"  />
                         <i>snailinns</i>
-                        <a href="" class="foot_a">
+                        <a href="<?php echo U('Home/About/app');?>" class="foot_a">
                             <img src="/Public/Home/images/Icon/img12.png" />
                             IOS
                         </a>
-                        <a href="">
+                        <a href="<?php echo U('Home/About/app');?>">
                             <img src="/Public/Home/images/Icon/img13.png" />
                             安卓
                         </a>

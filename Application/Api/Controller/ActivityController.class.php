@@ -76,6 +76,7 @@ class ActivityController extends CommonController {
             }
             $where['a.status']=2;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $data=M("activity a")->join("left join zz_member b on a.uid=b.id")->where($where)->order(array('id'=>"desc"))->field('a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.starttime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime')->page($p,$num)->select();
             foreach ($data as $key => $value) {
                 # code...
@@ -124,6 +125,7 @@ class ActivityController extends CommonController {
         $where['a.status']=2;
         $where['a.index']=1;
         $where['a.isdel']=0;
+        $where['a.isoff']=0;
         $data=M("activity a")->join("left join zz_member b on a.uid=b.id")->where($where)->order(array('id'=>"desc"))->field('a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.starttime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime')->limit(3)->select();
         foreach ($data as $key => $value) {
             # code...
@@ -172,6 +174,7 @@ class ActivityController extends CommonController {
             $where['a.uid']=$uid;
             $where['a.status']=2;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $count=M("activity a")
                 ->join("left join zz_member b on a.uid=b.id")
                 ->where($where)->count();
@@ -214,6 +217,7 @@ class ActivityController extends CommonController {
             }
             $where['a.uid']=$uid;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
             $count=M("activity a")
                 ->join("left join zz_member b on a.uid=b.id")
                 ->where($where)->count();
@@ -300,7 +304,7 @@ class ActivityController extends CommonController {
             $data['joinnum']=!empty($joinnum)?$joinnum:0;
             $joinlist=M('activity_apply a')->join("left join zz_member b on a.uid=b.id")->where(array('a.aid'=>$data['id'],'a.paystatus'=>1))->field("b.id,b.nickname,b.head,b.rongyun_token")->select();
             $data['joinlist']=!empty($joinlist)?$joinlist:null;
-            $joinstatus=M('activity_apply')->where(array('aid'=>$data['id'],'uid'=>$uid,'paystatus'=>1))->find();
+            $joinstatus= M('activity_apply a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.aid'=>$data['id'],'a.uid'=>$uid,'b.status'=>array('in','2,4')))->find();
             if(!empty($joinstatus)){
                 $data['isjoin']=1;
             }else{
@@ -329,6 +333,7 @@ class ActivityController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($data['lat'],$data['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -359,6 +364,7 @@ class ActivityController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($data['lat'],$data['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -417,7 +423,8 @@ class ActivityController extends CommonController {
         
         $user=M('Member')->where(array('id'=>$uid))->find();
         $activity= M('activity')->where(array('id'=>$aid))->find();
-        $apply= M('activity_apply')->where(array('aid'=>$aid,'uid'=>$uid))->find();
+        $apply= M('activity_apply a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.aid'=>$aid,'a.uid'=>$uid,'b.status'=>array('in','2,4')))->find();
+        
         if($uid==''||$aid==''||$realname==''||$idcard==''||$num==''||$phone==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }elseif(empty($user)){
@@ -430,7 +437,7 @@ class ActivityController extends CommonController {
             exit(json_encode(array('code'=>-200,'msg'=>"活动人数超过限制")));
         }elseif($activity['endtime']<time()){
             exit(json_encode(array('code'=>-200,'msg'=>"活动已经过期")));
-        }elseif(!empty($apply)&&$apply['paystatus']==1){
+        }elseif(!empty($apply)){
             exit(json_encode(array('code'=>-200,'msg'=>"已经报名")));
         }else{
             if(!empty($couponsid)){
@@ -546,7 +553,8 @@ class ActivityController extends CommonController {
         $orderid=trim($ret['orderid']);
         $order=M('order')->where(array('orderid'=>$orderid))->find();
         $activity= M('activity')->where(array('id'=>$aid))->find();
-        $apply= M('activity_apply')->where(array('aid'=>$aid,'uid'=>$uid))->find();
+        $apply= M('activity_apply a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.aid'=>$aid,'a.uid'=>$uid,'b.status'=>4))->find();
+        
         if($orderid==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }elseif(!$order){
@@ -557,7 +565,7 @@ class ActivityController extends CommonController {
             exit(json_encode(array('code'=>-200,'msg'=>"活动人数超过限制")));
         }elseif($activity['endtime']<time()){
             exit(json_encode(array('code'=>-200,'msg'=>"活动已经过期")));
-        }elseif(!empty($apply)&&$apply['paystatus']==1){
+        }elseif(!empty($apply)){
             exit(json_encode(array('code'=>-200,'msg'=>"已经报名")));
         }else{
             if(!empty($couponsid)){
@@ -579,9 +587,9 @@ class ActivityController extends CommonController {
                 'couponsid'=>$couponsid,
                 'discount'=>$discount
                 ));
-            M('vouchers_order')->where(array('id'=>$couponsid))->setField('status',1);
+            //M('vouchers_order')->where(array('id'=>$couponsid))->setField('status',1);
             $title="参加活动";
-            $body="参加".$activity['title'].",支付".$money;
+            $body="参加".$activity['title'];
             $Pay=A("Api/Pay");
             $paycharge=$Pay->pay($orderid,$title,$body,$money,$channel);
             exit($paycharge);
@@ -827,6 +835,7 @@ class ActivityController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($activityset[$aid]['lat'],$activityset[$aid]['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));
@@ -882,6 +891,7 @@ class ActivityController extends CommonController {
             $where['a.status']=2;
             $where['a.type']=1;
             $where['a.isdel']=0;
+            $where['a.isoff']=0;
 
             $recoords=getcoords($activityset[$aid]['lat'],$activityset[$aid]['lng'],2);
             $where['a.lng']=array(array('ELT',$recoords['y1']),array('EGT',$recoords['y2']));

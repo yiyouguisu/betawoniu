@@ -22,7 +22,7 @@
                         <tr>
                             <td align="center" ><input name='listorders[{$vo.id}]' class="input length_1 mr5"  type='number' size='3' value='{$vo.listorder}' align="center"></td>
                             <td align="center" >{$vo.id}</td>
-                            <td align="left" ><eq name="vo['ishot']" value="1"><span style="color:red">【特色】</span></eq>{$vo.catname}</td>
+                            <td align="left" >{$vo.catname}</td>
                             <td align="center" >{$vo.inputtime|date="Y-m-d H:i:s",###}</td>
                             <td align="center" > 
                               <a href="{:U('Admin/Roomcate/edit',array('id'=>$vo['id']))}" >修改</a> 

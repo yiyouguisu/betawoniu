@@ -41,7 +41,8 @@
                     </div>
                     <div class="My_message_details_m_bottom">
                         <span>入住人数 : <em>{$order.num|default="0"}人</em></span>
-                        <span>入驻日期 : <em>{$order.starttime|date="Y年m月d日",###}  -  {$order.endtime|date="Y年m月d日",###} </em></span>
+                        <span>入住间数 : <em>{$order.roomnum|default="0"}间</em></span>
+                        <span>入住日期 : <em>{$order.starttime|date="Y年m月d日",###}  -  {$order.endtime|date="Y年m月d日",###} </em></span>
                     </div>
                 </div>
                 <div class="My_message_details_m2">

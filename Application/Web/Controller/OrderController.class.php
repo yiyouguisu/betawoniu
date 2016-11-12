@@ -515,7 +515,6 @@ class OrderController extends CommonController {
             $pid=I('id');
             $data=M('activity')->where(array('id'=>$pid))->find();
             $people=json_decode(cookie('add'));
-            dump($people);
             foreach ($people as $key => $value) {
                 $people[$key]=(array)$value;
             }
@@ -552,40 +551,40 @@ class OrderController extends CommonController {
         $data['couponsid']=intval(trim($_POST['couponsid']));
         $data['discount']=intval(trim($_POST['discount']));
         $data['money']=floatval(trim($_POST['money']));
-        $data['total']=$_POST['money']*$_POST['num'];
+        $data['total']=$_POST['money'];
         $memberids=json_decode(cookie('add'));
-        
+        dump($memberids);exit;
+        foreach ($memberids as $value)
+        {
+          $res = M('activity_member')->add(array(
+            'uid'=>$uid,
+            'aid'=>$aid,
+            'linkmanid'=>$value->id,
+            'orderid'=>$orderid,
+            'realname'=>$value->realname,
+            'idcard'=>$value->idcard,
+            'phone'=>$value->phone,
+            'inputtime'=>time()
+          ));
+          dump($res);exit;
+        }
         $data['inputtime']=time();
-        //$memberids='';
         foreach ($memberids as $key => $value) {
            $memberids.=$value->id.",";
         }
         $data['memberids']=$memberids;
         $id=M("activity_apply")->add($data);
-        //if($id){
-        foreach ($memberids as $value)
-        {
-            M('activity_member')->add(array(
-                'uid'=>$uid,
-                'aid'=>$aid,
-                'linkmanid'=>$value->id,
-                'orderid'=>$orderid,
-                'realname'=>$value->realname,
-                'idcard'=>$value->idcard,
-                'phone'=>$value->phone,
-                'inputtime'=>time()
-            ));
-        }
+
         // 清除COOKIE中存在的联系人
         cookie('add',null);
         M('activity_member')->add(array(
-            'uid'=>$uid,
-            'aid'=>$aid,
-            'orderid'=>$orderid,
-            'realname'=>$data['realname'],
-            'idcard'=>$data['idcard'],
-            'phone'=>$data['phone'],
-            'inputtime'=>time()
+          'uid'=>$uid,
+          'aid'=>$aid,
+          'orderid'=>$orderid,
+          'realname'=>$data['realname'],
+          'idcard'=>$data['idcard'],
+          'phone'=>$data['phone'],
+          'inputtime'=>time()
         ));
         $order=M('order')->add(array(
             'title'=>"蜗牛客慢生活-订单编号".$orderid,

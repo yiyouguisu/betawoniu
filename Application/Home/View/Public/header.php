@@ -5,7 +5,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -23,6 +28,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -72,7 +79,7 @@
         <div class="main_top2 pr">
             <div class="main3_05 hidden">
                 <input type="hidden" name="arrparentid" id="arrparentid" value="{$arrparentid}">
-                <span class="main3_03span position">{$cityname|default="上海"}</span>
+                <span class="main3_03span position">{$cityname|default="请选择"}</span>
             </div>
             <div class="pa main3_03span_float hide">
                 <div class="main3_03span_float_top1">

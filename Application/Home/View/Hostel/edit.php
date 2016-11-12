@@ -242,15 +242,15 @@
                                                     <li><img src="__IMG__/Icon/img42.png" /></li>
                                                     <li><img src="__IMG__/Icon/img42.png" /></li>
                                                     <li><img src="__IMG__/Icon/img42.png" /></li>
-                                                    <li><img src="__IMG__/Icon/img43.png" /></li>
+                                                    <li><img src="__IMG__/Icon/img42.png" /></li>
                                                 </ul>
-                                                <span class="middle"><em>{$vo.evaluation|default="0.0"}</em>分</span>
+                                                <span class="middle"><em>{$vo.evaluation|default="10.0"}</em>分</span>
                                                 <div class="center_ul_list middle">
                                                     <img src="__IMG__/Icon/img10.png" /><i><em>{$vo.reviewnum|default="0"}</em>条评论</i>
                                                 </div>
                                             </div>
                                             <div class="center2">
-                                                <span>房间面积：<em>{$vo.area|default="0.0"}m2 </em></span>
+                                                <span>房间面积：<em>{$vo.area|default="0.0"}平米 </em></span>
                                                 <span>床型信息：<em>{$vo.bedtype}</em></span>
                                                 <span>最多入住：<em>{$vo.mannum|default="0"}人</em></span>
                                             </div>
@@ -343,7 +343,7 @@
                 <span class="middle">房间面积 : </span>
                 <div class="middle activity2_main2_text2">
                     <input type="text" class="room" value="" name="roomarea" id="roomarea" />
-                    <i>m2</i>
+                    <i>平米</i>
                 </div>
                 <span class="middle">床型 : </span>
                 <div class="middle activity2_main2_text3">

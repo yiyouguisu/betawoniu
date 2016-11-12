@@ -191,6 +191,7 @@
                         <option <if condition="'硕士' eq $userinfo['education']">selected</if>>硕士</option>
                         <option <if condition="'本科' eq $userinfo['education']">selected</if>>本科</option>
                         <option <if condition="'专科' eq $userinfo['education']">selected</if>>专科</option>
+                        <option <if condition="'其他' eq $userinfo['education']">selected</if>>其他</option>
                     </select>
                 </div>
                 <div class="pd_main3_bottom">
@@ -251,7 +252,7 @@
                 <div class="pd_main4_bottom">
                     <div class="pd_main4_bottom2" style="overflow: hidden;">
                         <span>个人标签：</span>
-                        <i class="c333 f16">特性</i>
+                        <i class="c333 f16">特性(最多3个)</i>
                         
                     </div>
                     <div class="pd_main4_bottom3 hidden">
@@ -277,7 +278,7 @@
                     
                     <div class="pd_main4_bottom5">
                         <div class="hidden">
-                            <label>爱好</label>
+                            <label>爱好(最多3个)</label>
                         </div>
                         <ul class="pd_main4_bottom5_ul">
                             <volist name="hobby" id="vo">

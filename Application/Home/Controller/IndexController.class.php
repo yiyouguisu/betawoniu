@@ -7,8 +7,8 @@ class IndexController extends CommonController {
     public function index() {
         $uid=session("uid");
         $city=session("city");
-    	$where=array();
-    	$ids=M('area')->where(array('parentid'=>0,'id'=>array('not in','2,3,4,5')))->getField("id",true);
+        $where=array();
+        $ids=M('area')->where(array('parentid'=>0,'id'=>array('not in','2,3,4,5')))->getField("id",true);
         $map['parentid']  = array("in",$ids);
         $map['id']  = array('in','2,3,4,5');
         $map['_logic'] = 'or';
@@ -19,7 +19,7 @@ class IndexController extends CommonController {
 
         $where=array();
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'hostel'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
-		
+        
         $where['a.status']=2;
         $where['a.isdel']=0;
         $where['a.isoff']=0;
@@ -60,31 +60,31 @@ class IndexController extends CommonController {
             $where['a.city']=$city;
         }
         $hotparty=M("activity a")
-        		->join("left join zz_member b on a.uid=b.id")
-        		->where($where)
-        		->order(array("a.hit" => "desc","a.listorder" => "desc","a.id" => "desc"))
-        		->limit(4)
-        		->field('a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.starttime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime')
-        		->select();
-		$this->assign("hotparty", $hotparty);
+                ->join("left join zz_member b on a.uid=b.id")
+                ->where($where)
+                ->order(array("a.hit" => "desc","a.listorder" => "desc","a.id" => "desc"))
+                ->limit(4)
+                ->field('a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.starttime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime')
+                ->select();
+        $this->assign("hotparty", $hotparty);
 
-		$where=array();
+        $where=array();
         $where['a.status']=2;
         $where['a.isdel']=0;
         $where['a.isoff']=0;
         if(!empty($city)){
             $where['a.city']=$city;
         }
-		$sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
-		$hotnote = M("Note a")
+        $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
+        $hotnote = M("Note a")
                 ->join("left join zz_member b on a.uid=b.id")
                 ->join("left join {$sqlI} c on a.id=c.value")
                 ->where($where)
-		        ->limit(10)
-		        ->order(array('a.hit'=>'desc'))
-		        ->field('a.id,a.title,a.thumb,a.description,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,a.type,c.reviewnum')
-		        ->select();
-		foreach ($hotnote as $key => $value) {
+                ->limit(10)
+                ->order(array('a.hit'=>'desc'))
+                ->field('a.id,a.title,a.thumb,a.description,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,a.type,c.reviewnum')
+                ->select();
+        foreach ($hotnote as $key => $value) {
             # code...
             if(empty($value['reviewnum'])) $hotnote[$key]['reviewnum']=0;
             $collectstatus=M('collect')->where(array('uid'=>$uid,'varname'=>"note",'value'=>$value['id']))->find();
@@ -105,11 +105,11 @@ class IndexController extends CommonController {
                 ->join("left join zz_member b on a.uid=b.id")
                 ->join("left join {$sqlI} c on a.id=c.value")
                 ->where($where)
-		        ->limit(10)
-		        ->order(array('a.id'=>'desc'))
-		        ->field('a.id,a.title,a.thumb,a.description,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,a.type,c.reviewnum')
-		        ->select();
-		foreach ($newnote as $key => $value) {
+                ->limit(10)
+                ->order(array('a.id'=>'desc'))
+                ->field('a.id,a.title,a.thumb,a.description,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,a.type,c.reviewnum')
+                ->select();
+        foreach ($newnote as $key => $value) {
             # code...
             if(empty($value['reviewnum'])) $newnote[$key]['reviewnum']=0;
             $collectstatus=M('collect')->where(array('uid'=>$uid,'varname'=>"note",'value'=>$value['id']))->find();

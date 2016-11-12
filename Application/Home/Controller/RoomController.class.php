@@ -61,7 +61,7 @@ class RoomController extends CommonController {
                     $bookdate[$key]['isholiday']=0;
                 }
 
-                $booknum=M('book_room')->where(array('_string'=>$value['value']." <= endtime and ".$value['value']." >= starttime"))->sum('num');
+                $booknum=M('book_room')->where(array('_string'=>$value['value']." <= endtime and ".$value['value']." >= starttime","id"=>$id))->sum('num');
                 if($booknum>=$data['mannum']){
                     $bookdate[$key]['isgone']=1;
                 }elseif($booknum<$data['mannum']){
@@ -311,22 +311,32 @@ class RoomController extends CommonController {
         
         $totalmoney=$money=0.00;
         $isgone=0;
+        $weeknum=$holidaynum=$nomalnum=$flag=0;
         while ( $starttime < $endtime) {
             # code...
             $money=$data['nomal_money'];
             $week=date("w",$starttime);
             if(in_array($week, array(0,6))) {
                 $money=$data['week_money'];
+                $flag=1;
             }
             $holiday=M('holiday')->where(array('status'=>1,'_string'=>$starttime." <= enddate and ".$starttime." >= startdate"))->field("id,name,days")->find();
             if(!empty($holiday)){
                 $money=$data['holiday_money'];
+                $flag=2;
             }
 
-            $booknum=M('book_room')->where(array('_string'=>$starttime." <= endtime and ".$starttime." >= starttime"))->sum('num');
+            $booknum=M('book_room')->where(array('_string'=>$starttime." <= endtime and ".$starttime." >= starttime","id"=>rid))->sum('num');
             if($booknum>=$data['mannum']){
                 $isgone=1;
                 break;
+            }
+            if($flag==0){
+                $nomalnum++;
+            }elseif($flag==1){
+                $weeknum++;
+            }elseif($flag==2){
+                $holidaynum++;
             }
             $totalmoney+=$money;
             $starttime=strtotime("+1 days",$starttime);
@@ -336,7 +346,7 @@ class RoomController extends CommonController {
         }else{
             $totalmoney=$totalmoney*$roomnum;
             $totalmoney=sprintf("%.2f",$totalmoney);
-            $this->ajaxReturn(array('code'=>200,'totalmoney'=>$totalmoney),'json');  
+            $this->ajaxReturn(array('code'=>200,'totalmoney'=>$totalmoney,'nomalnum'=>$nomalnum,'weeknum'=>$weeknum,'holidaynum'=>$holidaynum),'json');  
         }
               
     }

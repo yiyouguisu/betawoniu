@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="center2">
-                <span>房间面积：<em>{$data.area|default="0.0"}m2 </em></span>
+                <span>房间面积：<em>{$data.area|default="0.0"}m² </em></span>
                 <span>床型信息：<em>{$data.bedtype}</em></span>
                 <span>最多入住：<em>{$data.mannum|default="0"}人</em></span>
             </div>

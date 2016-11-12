@@ -10,7 +10,7 @@ class OauthController extends Controller {
         $this->wxlogin=array(
             'appid'    => "wxdc7412969e0ea991",
             'secret'   => "40190eaf383b6d89d71bd42e8576733a",
-            'callback' => "http://".$_SERVER['HTTP_HOST'].U('Home/Oauth/weixinlogin'),
+            'callback' => "http://". 'snailinns.com' .U('Home/Oauth/weixinlogin'),
             'scope'    => "snsapi_login"
           );
         $this->qqlogin=array(

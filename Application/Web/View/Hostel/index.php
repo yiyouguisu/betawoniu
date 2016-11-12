@@ -16,7 +16,6 @@
       <div class="head_go pa"><a href="javascript:history.go(-1)"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
       <div class="tra_pr map_small f14 pa"><a href="{:U('Web/Hostel/all_map')}"><img src="__IMG__/map_small.jpg">地图</a></div>      
 </div>
-
 <div class="container">
    <div class="land">
           <div class="tra_list pr z-index112 center f14">

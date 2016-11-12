@@ -18,7 +18,7 @@
                 <else />
                 <eq name="order.refund_status" value="1">
                     申请退款
-                    <else />待入住
+                    <else />待参加
                 </eq>
             </if>
             <elseif condition="$order.status eq 5" />审核失败

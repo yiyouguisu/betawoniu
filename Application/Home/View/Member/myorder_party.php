@@ -13,8 +13,9 @@
                         <a href="{:U('Home/Member/myorder_party')}" class="order_list_a1">活动</a>
                     </div>
                     <div class="order_main2_201_list2">
-                        <span class="order_list_a2" style="width:441px;" data="done" onclick="showBorrow(this);">已完成</span>
-                        <span style="width:441px;"  data="waitpay" onclick="showBorrow(this);">未付款</span>
+                        <span style="width:294px;" class="order_list_a2" data="all" onclick="showBorrow(this);">全部订单</span>
+                        <span style="width:294px;" data="done" onclick="showBorrow(this);">已完成</span>
+                        <span style="width:294px;"  data="waitpay" onclick="showBorrow(this);">未付款</span>
                     </div>
                     <div id="DataList">
                         <include file="Member:morelist_partyorder" />

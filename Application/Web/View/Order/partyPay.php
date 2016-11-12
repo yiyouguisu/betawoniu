@@ -10,7 +10,7 @@
 <div class="container padding_0" style="margin-top:6rem">
   <form action="{:U('Web/Order/dopay')}" method="get" id='form'>
      <div class="act_e">
-           <div class="act_e1 fl"><img src="{$data.thumb}"></div>
+           <div class="act_e1 fl" style=""><img src="{$data.thumb}" style="width:85px;height:70px;"></div>
            <div class="act_e2 fr">
                 <div class="act_e3">{$data.title}</div>
                 <div>
@@ -24,8 +24,8 @@
            </div>
      </div>
      <div class="act_e f14">
-          <div class="act_e5"><span>时间 :</span>{$data.starttime|date='Y年m月d日',###}</div>
-          <div class="act_e5"><span>地址 :</span>{$data.address}</div>
+          <div class="act_e5"><span>时间：</span>{$data.starttime|date='Y年m月d日',###}</div>
+          <div class="act_e5"><span>地址：</span>{$data.address}</div>
      </div>
      <div class="act_f play_blue" style="margin-bottom:1rem;">
        <span>支付方式 :</span>
@@ -40,7 +40,7 @@
           <div class="act_f pr"><span>总价格 :</span><em>￥</em><i class="total">{$order.total}</i>
                 <div class="act_font pa">（{$order.num}人）</div>
           </div>
-          <div class="help_a common_click act_h"><img src="__IMG__/bi.jpg">是否有优惠券？</div>
+          <div class="help_a common_click act_h ft14"><img src="__IMG__/bi.jpg">是否有优惠券？</div>
           <if condition='($order.couponsid eq NULL) OR ($order.couponsid eq 0)'>
             <div class="help_a act_h add" style='display:none;background: none;'></div>
           <else/>

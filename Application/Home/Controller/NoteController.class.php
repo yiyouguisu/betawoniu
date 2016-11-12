@@ -178,10 +178,10 @@ class NoteController extends CommonController {
                 $this->assign("notestyle",$notestyle);
                 $noteman=M("noteman")->order(array('listorder'=>'desc','id'=>'asc'))->select();
                 $this->assign("noteman",$noteman);
-                $hostel=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$uid,'b.status'=>2,'b.isdel'=>0,'a.paystatus'=>1))->order(array('b.listorder'=>'desc','b.id'=>'desc'))->select();
-                if(empty($hostel)){
-                    $hostel=M('Hostel')->where(array('status'=>2,'isdel'=>0,'type'=>'1'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
-                }
+                // $hostel=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$uid,'b.status'=>2,'b.isdel'=>0,'a.paystatus'=>1))->order(array('b.listorder'=>'desc','b.id'=>'desc'))->select();
+                // if(empty($hostel)){
+                    $hostel=M('Hostel')->where(array('status'=>2,'isdel'=>0,'isoff'=>0))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
+                //}
                 $this->assign("hostel",$hostel);
                 $this->display();
             }
@@ -268,10 +268,10 @@ class NoteController extends CommonController {
                 $province = M('area')->where(array('parentid'=>0,'status'=>1))->select();
                 $this->assign('province',$province);
                 $hidbox=explode(",",$data['hid']);
-                $hostel=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$_POST['uid'],'b.status'=>2,'b.isdel'=>0,'a.paystatus'=>1))->order(array('b.listorder'=>'desc','b.id'=>'desc'))->select();
-                if(empty($hostel)){
-                    $hostel=M('Hostel')->where(array('status'=>2,'isdel'=>0,'type'=>'1'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
-                }
+                // $hostel=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$_POST['uid'],'b.status'=>2,'b.isdel'=>0,'a.paystatus'=>1))->order(array('b.listorder'=>'desc','b.id'=>'desc'))->select();
+                // if(empty($hostel)){
+                    $hostel=M('Hostel')->where(array('status'=>2,'isdel'=>0,'isoff'=>0))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
+                //}
                 foreach ($hostel as $key => $value) {
                     # code...
                     if(!empty($hidbox)&&in_array($value['id'],$hidbox)){

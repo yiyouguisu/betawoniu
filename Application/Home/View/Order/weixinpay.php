@@ -27,23 +27,9 @@
                                 <a href="{:U('Home/Room/show',array('id'=>$data['id']))}" class="f28 c333">{:str_cut($data['productinfo']['title'],10)}</a>
                                 <div class="my_home7_list3_01 hidden">
                                     <ul class="hidden my_home7_list3_01_ul fl">
-                                        <li class="fl">
-                                            <img src="__IMG__/Icon/img42.png" />
-                                        </li>
-                                        <li class="fl">
-                                            <img src="__IMG__/Icon/img42.png" />
-                                        </li>
-                                        <li class="fl">
-                                            <img src="__IMG__/Icon/img42.png" />
-                                        </li>
-                                        <li class="fl">
-                                            <img src="__IMG__/Icon/img42.png" />
-                                        </li>
-                                        <li class="fl">
-                                            <img src="__IMG__/Icon/img43.png" />
-                                        </li>
+                                        {:getevaluation($data['productinfo']['evaluationpercent'])}
                                     </ul>
-                                    <span class="fl"><em class="">8.0</em>分</span>
+                                    <span class="fl"><em class="">{$data.productinfo.evuation|default="10.0"}</em>分</span>
                                     <div class="my_home7_list3_02 fl">
                                         <img src="__IMG__/Icon/img10.png" />
                                         <i class="f15 c999"><em class="f16">{$data.productinfo.reviewnum|default="0"}</em>条评论</i>

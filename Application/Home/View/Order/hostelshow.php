@@ -52,14 +52,26 @@
                             <eq name="data['evaluate_status']" value="0">
                                 待评价
                                 <else />
-                                已完成
+                                
+                                <eq name="data['refund_status']" value="0">
+                                    已完成
+                                </eq>
+                                <eq name="data['refund_status']" value="1">
+                                    退订申请中
+                                </eq>
+                                <eq name="data['refund_status']" value="2">
+                                    退订成功
+                                </eq>
+                                <eq name="data['refund_status']" value="3">
+                                    退订审核失败
+                                </eq>
                             </eq>
                             <else />
                             <eq name="data['refund_status']" value="0">
                                 待入住
                             </eq>
                             <eq name="data['refund_status']" value="1">
-                                退订中
+                                退订申请中
                             </eq>
                             <eq name="data['refund_status']" value="2">
                                 退订成功

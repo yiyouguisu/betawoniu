@@ -60,6 +60,90 @@
                 }
                 
             })
+            $(".hostel_switchoff").live("click",function(){
+                var obj=$(this);
+                var msg = "";
+                var isoff = 0;
+                if(obj.attr("data-isoff") == '0'){
+                    msg = "确认下架吗？";
+                    isoff = 1;
+                }
+                else{
+                    msg = "确认启用吗？";
+                    isoff = 0;
+                }
+                if(confirm(msg)){
+                    
+                    var hid=obj.data("id");
+                    recordId = hid;
+                    try{
+                        var p={"id":hid,"isoff":isoff};
+                        $.post("{:U('Home/Hostel/ajax_switchoff')}",p,function(d){
+                            if(d.status==1){
+                                // obj.parents("li").remove();
+                                alert("修改成功！");
+                                $(".hostel_switchoff").each(function(){
+                                    if($(this).attr("data-id") == recordId){
+                                        if($(this).attr("data-isoff") == 1){
+                                            $(this).attr("data-isoff","0");
+                                            $(this).val("下架");
+                                        }else{
+                                            $(this).attr("data-isoff","1");
+                                            $(this).val("启用");
+                                        }
+                                    }
+                                });
+
+                            }else{
+                                alert(d.info);
+                            }
+                        });
+                    }catch(e){};
+                }
+                
+            })
+            var recordId = 0;
+            $(".party_switchoff").live("click",function(){
+                var obj=$(this);
+                var msg = "";
+                var isoff = 0;
+                if(obj.attr("data-isoff") == '0'){
+                    msg = "确认下架吗？";
+                    isoff = 1;
+                }
+                else{
+                    msg = "确认启用吗？";
+                    isoff = 0;
+                }
+                if(confirm(msg)){
+                    
+                    var pid=obj.data("id");
+                    recordId = pid;
+                    try{
+                        var p={"id":pid,"isoff":isoff};
+                        $.post("{:U('Home/Party/ajax_switchoff')}",p,function(d){
+                            if(d.status==1){
+                                // obj.parents("li").remove();
+                                alert("修改成功！");
+                                $(".party_switchoff").each(function(){
+                                    if($(this).attr("data-id") == recordId){
+                                        if($(this).attr("data-isoff") == 1){
+                                            $(this).attr("data-isoff","0");
+                                            $(this).val("下架");
+                                        }else{
+                                            $(this).attr("data-isoff","1");
+                                            $(this).val("启用");
+                                        }
+                                    }
+                                });
+                            }else{
+                                alert(d.info);
+                            }
+                        });
+                    }catch(e){};
+                }
+                
+            })
         })
         function showBorrow(obj){
             var varname=$(obj).attr("data");

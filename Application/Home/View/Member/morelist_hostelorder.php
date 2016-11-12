@@ -13,7 +13,7 @@
                             <a href="{:U('Home/Room/show',array('id'=>$vo['productinfo']['rid']))}" class="f24 c333 fl">{$vo.productinfo.title}</a>
                             <a href="{:U('Home/Order/hostelshow',array('orderid'=>$vo['orderid']))}" class="fr order_main3_list2_top_a2">查看订单详情 ></a>
                         </div>
-                        <div class="order_main3_list2_bottom hidden">
+                        <div class="order_main3_list2_bottom hidden" style="margin-top:0">
                             <div class="fl hidden order_main3_list2_bottom4">
                                 <i class="f22">￥</i><span class="f36">{$vo.money|default="0.00"}</span><label class="f18"></label>
                             </div>
@@ -44,7 +44,20 @@
                                             <eq name="vo['evaluate_status']" value="0">
                                                 <a href="javascript:;">待评价</a>
                                                 <else />
-                                                <a href="javascript:;">已完成</a>
+                                                <eq name="vo['refund_status']" value="0">
+                                                    <a href="javascript:;">已完成</a>
+                                                </eq>
+                                                <eq name="vo['refund_status']" value="1">
+                                                    <i>退订</i>
+                                                    <a href="{:U('Home/Woniu/refundorderreview',array('orderid'=>$vo['orderid']))}">去审核</a>
+                                                </eq>
+                                                <eq name="vo['refund_status']" value="2">
+                                                    <i>已退订</i>
+                                                </eq>
+                                                <eq name="vo['refund_status']" value="3">
+                                                    <i>审核失败</i>
+                                                    <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                </eq>
                                             </eq>
                                             <else />
                                             <eq name="vo['refund_status']" value="0">
@@ -97,7 +110,20 @@
                                             <eq name="vo['evaluate_status']" value="0">
                                                 <a href="{:U('Home/Order/evaluate',array('orderid'=>$vo['orderid']))}">我要评价</a>
                                                 <else />
-                                                <a href="javascript:;">已完成</a>
+                                                <eq name="vo['refund_status']" value="0">
+                                                    <a href="javascript:;">已完成</a>
+                                                </eq>
+                                                <eq name="vo['refund_status']" value="1">
+                                                    <i>退订</i>
+                                                    <a href="javascript:;">待审核</a>
+                                                </eq>
+                                                <eq name="vo['refund_status']" value="2">
+                                                    <i>已退订</i>
+                                                </eq>
+                                                <eq name="vo['refund_status']" value="3">
+                                                    <i>审核失败</i>
+                                                    <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a>
+                                                </eq>
                                             </eq>
                                             <else />
                                             <eq name="vo['refund_status']" value="0">

@@ -108,20 +108,35 @@ class OrderController extends CommonController {
             $totalmoney=$money=0.00;
             $starttime=$data['productinfo']['starttime'];
             $endtime=$data['productinfo']['endtime'];
+
+            $weeknum=$holidaynum=$nomalnum=$flag=0;
             while ( $starttime < $endtime) {
                 # code...
+                
                 $money=$data['productinfo']['nomal_money'];
-                $week=date("w",$value['value']);
+                $week=date("w",$starttime);
                 if(in_array($week, array(0,6))) {
                     $money=$data['productinfo']['week_money'];
+                    $flag=1;
                 }
                 $holiday=M('holiday')->where(array('status'=>1,'_string'=>$starttime." <= enddate and ".$starttime." >= startdate"))->field("id,name,days")->find();
                 if(!empty($holiday)){
                     $money=$data['productinfo']['holiday_money'];
+                    $flag=2;
                 }
                 $totalmoney+=$money;
                 $starttime=strtotime("+1 days",$starttime);
+                if($flag==0){
+                    $nomalnum++;
+                }elseif($flag==1){
+                    $weeknum++;
+                }elseif($flag==2){
+                    $holidaynum++;
+                }
             }
+            $this->assign("nomalnum",$nomalnum);
+            $this->assign("weeknum",$weeknum);
+            $this->assign("holidaynum",$holidaynum);
             $data['totalmoney']=$totalmoney;
             $this->assign("data",$data);
 
@@ -1127,7 +1142,7 @@ class OrderController extends CommonController {
             }
         }
     }
-    public function hostelshow(){
+   public function hostelshow(){
         $orderid=I('orderid');
         $field=array('a.uid,a.orderid,a.discount,a.couponsid,a.money,a.total,a.inputtime,a.paytype,c.*,a.ordertype');
         $data=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")->where(array('a.orderid'=>$orderid))->field($field)->find();
@@ -1154,7 +1169,7 @@ class OrderController extends CommonController {
             # code...
             
             $money=$data['productinfo']['nomal_money'];
-            $week=date("w",$value['value']);
+            $week=date("w",$starttime);
             if(in_array($week, array(0,6))) {
                 $money=$data['productinfo']['week_money'];
                 $flag=1;
@@ -1264,7 +1279,7 @@ class OrderController extends CommonController {
         );
         $notify_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/alipaynotify'); 
         $return_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Home/Order/returnurl'); 
-        $total_fee = 0.01; 
+        $total_fee = 0.1; 
         //$total_fee = $money; 
         $parameter = array(
             "service" => "create_direct_pay_by_user",
@@ -1449,7 +1464,7 @@ class OrderController extends CommonController {
 
         $notify = new \NativePay();
         // $url = $notify->GetPrePayUrl($orderid);
-        $total_fee = 1; 
+        $total_fee = 10; 
         //$total_fee = $money*100; 
         $input = new \WxPayUnifiedOrder();
         $input->SetBody($body);
@@ -1505,7 +1520,7 @@ class OrderController extends CommonController {
                     ->join("left join zz_hostel b on c.hid=b.id")
                     ->join("left join {$sqlI} d on a.id=d.value")
                     ->where(array('a.orderid'=>$data['orderid']))
-                    ->field("a.rid,c.title,b.id as hid,b.thumb,b.title as hostel,b.area,b.address,a.money,a.realname,a.phone,a.num,a.days,a.discount,a.couponsid,a.starttime,a.endtime,a.paystatus,d.reviewnum")
+                    ->field("a.rid,c.title,b.id as hid,b.thumb,b.title as hostel,b.area,b.address,a.money,a.realname,a.phone,a.num,a.days,a.discount,a.couponsid,a.starttime,a.endtime,a.paystatus,d.reviewnum,c.score as evaluation,c.scorepercent as evaluationpercent")
                     ->find();
 
                 break;
@@ -1604,38 +1619,19 @@ class OrderController extends CommonController {
                 'waitmoney'=>$account['waitmoney']+floatval($money),
                 ));
             if($mid){
-                switch ($type)
-                {
-                    case "ac":
-                        M('account_log')->add(array(
-                          'uid'=>$data['houseownerid'],
-                          'type'=>'paysuccess',
-                          'money'=>$money,
-                          'total'=>$account['total']+floatval($money),
-                          'usemoney'=>$account['usemoney'],
-                          'waitmoney'=>$account['waitmoney']+floatval($money),
-                          'status'=>1,
-                          'dcflag'=>1,
-                          'remark'=>'用户活动报名成功支付订单',
-                          'addip'=>get_client_ip(),
-                          'addtime'=>time()
-                          ));
-                        break;
-                    case "hc":
-                        M('account_log')->add(array(
-                          'uid'=>$data['houseownerid'],
-                          'type'=>'paysuccess',
-                          'money'=>$money,
-                          'total'=>$account['total']+floatval($money),
-                          'usemoney'=>$account['usemoney'],
-                          'waitmoney'=>$account['waitmoney']+floatval($money),
-                          'status'=>1,
-                          'dcflag'=>1,
-                          'remark'=>'用户预定房间成功支付订单',
-                          'addip'=>get_client_ip(),
-                          'addtime'=>time()
-                          ));
-                }
+                M('account_log')->add(array(
+                  'uid'=>$data['houseownerid'],
+                  'type'=>'paysuccess',
+                  'money'=>$money,
+                  'total'=>$account['total']+floatval($money),
+                  'usemoney'=>$account['usemoney'],
+                  'waitmoney'=>$account['waitmoney']+floatval($money),
+                  'status'=>1,
+                  'dcflag'=>1,
+                  'remark'=>'用户预定房间成功支付订单',
+                  'addip'=>get_client_ip(),
+                  'addtime'=>time()
+                  ));
             }
             M('vouchers_order')->where(array('id'=>$order['couponsid']))->setField('status',1);
             \Api\Controller\UtilController::addmessage($order['uid'],"订单支付成功","恭喜您，您有一笔预定订单支付成功！","恭喜您，您有一笔预定订单支付成功！","payordersuccess",$orderid);

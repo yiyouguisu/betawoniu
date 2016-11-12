@@ -48,11 +48,24 @@
                    
                 </div>
                 <div class="Chat_details_mian4 pr">
-                    <textarea class="content"></textarea>
+                    <textarea class="content" id="chat_words" ></textarea>
                     <input type="button" class="bjy-cbh-send" value="发送" />
-                    <div class="Chat_details_mian5">
-                        <img src="__IMG__/Icon/img32.png" />
-                        <img src="__IMG__/Icon/img31.png" />
+                    <div class="Chat_details_mian5" id="img_container">
+                        <img src="__IMG__/Icon/img32.png" id="img_picker" />
+                        <div class="fl pr">
+                            <img class="Expression_img" src="__IMG__/Icon/img31.png" />
+                            <div class="Expression hide">
+                                <div class="mask_f"></div>
+                                <div class="Expression_gif">
+                                    <div class="Expression_show">
+                                        <i>常用表情</i>
+                                        <div style="font-size:0px;" id="rongyun_emoji">
+                                        </div>
+                                    </div>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!-- <div id="emoj"></div> -->
                 </div>
@@ -61,16 +74,24 @@
     </div>
     <script type="text/javascript">
         $(function () {
-            
+            $(".Expression_img").click(function () {
+                $(this).siblings().show();
+            })
+            $(".mask_f,.Expression_show span").click(function () {
+                $(".Expression").hide();
+            })
         })
     </script>
 <include file="public:foot" />
-<script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
-<script src="http://cdn.ronghub.com/RongEmoji-2.2.2.min.js"></script>
+<script src="https://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script>
+<script src="https://cdn.ronghub.com/RongEmoji-2.2.4.min.js"></script> 
+<script src="https://cdn.ronghub.com/RongUploadLib-2.2.4.min.js"></script> 
     <!-- <script src="assets/js/RongIMLib-2.1.3.js"></script> -->
     
 
     <script>
+    var chatInput = $('#chat_words');
+    var tuid="";
         xbUserInfo = {
             id: "{$user.id}",
             nickname: "{$user.nickname}",
@@ -78,18 +99,29 @@
         };
 
         RongIMClient.init("cpj2xarljz3ln");
+        //融云emoji表情
         RongIMLib.RongIMEmoji.init();
+        var emojis = RongIMLib.RongIMEmoji.emojis; 
+        for(var i = 0; i < emojis.length; i++) {
+          var emoji = $(emojis[i]);
+          emoji.click(function(evt) {
+            var that = $(this);
+            evt.preventDefault();
+            var name = that.children()[0].getAttribute('name');
+            var txt = chatInput.val() ? chatInput.val() : '';
+            txt += name;
+            chatInput.val(txt);
+          });
+          $('#rongyun_emoji').append(emoji);
+        }
 
-        var emojis = RongIMLib.RongIMEmoji.emojis;
-        for (var i = 0;i <= emojis.length - 1;  i++) {
-            $("#emoj").append(emojis[i])
-        };
 
         var token = "{$user.rongyun_token}";
 
     RongIMClient.connect(token, {
         onSuccess: function(userId) {
           console.log("Login successfully." + userId);
+          initUploadPlugins();
         },
         onTokenIncorrect: function() {
           console.log('token无效');
@@ -124,8 +156,6 @@
                   //链接成功
                   case RongIMLib.ConnectionStatus.CONNECTED:
                       console.log('链接成功');
-                      // rongSendMessage("89","asdfadsfasdf");
-                      // rongSendMessage("84","asdf ewrqeasfasgad");
                       RongIMClient.getInstance().getConversationList({
                         onSuccess: function(list) {
                             console.log(list);
@@ -227,7 +257,7 @@
                             // 发消息的用户id
                             var sendMessageUid=message.senderUserId;
                             // 接收到的消息
-                            var receiveMessage=message.content.content;
+                            var receiveMessage=RongIMLib.RongIMEmoji.emojiToHTML(message.content.content);
                             // 判断好友列表中是否有此用户
                             var htmlObj=rongGetFriendListObj(sendMessageUid);
                             if (!htmlObj) {
@@ -244,7 +274,7 @@
                                             'head': data['head'],
                                             'nickname':val['nickname'],
                                             'showurl':val['showurl'],
-                                            'message':list[index]['latestMessage']['content']['content'],
+                                            'message':RongIMLib.RongIMEmoji.emojiToHTML(list[index]['latestMessage']['content']['content']),
                                             'date': new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds(),
                                         };
                                         htmlObj=$(rongCreateFriendInfo(userInfo));
@@ -286,6 +316,59 @@
                       // do something...
                       // message.content.content => 图片缩略图 base64。
                       // message.content.imageUri => 原图 URL。
+                      if(message.senderUserId!=xbUserInfo['id']){
+                            // 发消息的用户id
+                            var sendMessageUid=message.senderUserId;
+                            // 接收到的消息
+                            var receiveMessage = '<img data-src="' + message.content.imageUri + '" src="data:image/png;base64,' + message.content.content + '" style="width:40%">';
+                            // 判断好友列表中是否有此用户
+                            var htmlObj=rongGetFriendListObj(sendMessageUid);
+                            if (!htmlObj) {
+                                $.ajax({
+                                    url: "{:U('Home/Woniu/get_user_info')}",
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    data: {uids: sendMessageUid},
+                                    async : false,
+                                    success: function(data){
+                                        var data=data['data'][0];
+                                        var userInfo={
+                                            'id': data['id'],
+                                            'head': data['head'],
+                                            'nickname':val['nickname'],
+                                            'showurl':val['showurl'],
+                                            'message':RongIMLib.RongIMEmoji.emojiToHTML(list[index]['latestMessage']['content']['content']),
+                                            'date': new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds(),
+                                        };
+                                        htmlObj=$(rongCreateFriendInfo(userInfo));
+                                        $('.Chat_details_main1_bottom3_ul').append(htmlObj);
+                                    }
+                                })
+                            }
+    
+                            // 如果正在聊天 则将消息追加到聊天框中 否则好友列表插入一条
+                            if (htmlObj.hasClass('Chat_details_main1_bottom3_chang')) {
+                                // 将消息插入对话框中
+                                var messageContent={
+                                    'direction':'left',
+                                    'head': htmlObj.attr('data-head'),
+                                    'content':receiveMessage,
+                                    'date': new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds()
+                                };
+                                // 创建消息对象html
+                                var messageStr=rongCreateMessage(messageContent);
+                                $('.Chat_details_m2_center').append(messageStr);
+                                //rongRecountMessage(sendMessageUid,0);
+                                rongChangeScrollHeight(99999);
+                            }else{
+                                // 重新计算未读数量
+                                //rongRecountMessage(sendMessageUid,1);    
+                            }
+                            
+                            // 弹框提示
+                            // alertStr=htmlObj.attr('data-username')+'：'+receiveMessage;
+                            // alert(alertStr);
+                        }
                       break;
                   case RongIMClient.MessageType.DiscussionNotificationMessage:
                       // do something...
@@ -323,6 +406,63 @@
               }
           }
         });
+//初始化融云upload插件.
+    function initUploadPlugins() {
+      var conversationtype = RongIMLib.ConversationType.PRIVATE; // 私聊
+      //图片上传配置
+      var imgArray = [];
+      var imageOpts = {
+        drop_element: 'img_container',
+        container: 'img_container',
+        browse_button: 'img_picker'
+      };
+
+      //文件上传配置
+      var fileOpts = {
+        drop_element: 'image_container',
+        container: 'image_container',
+        browse_button: 'chat_file_picker'
+      }
+
+      //初始化upload插件.
+      RongIMLib.RongUploadLib.init(imageOpts, fileOpts);
+
+      RongIMLib.RongUploadLib.getInstance().setListeners({
+        onFileAdded: function(file) {
+          //imgArray.push(file);
+          RongIMLib.RongUploadLib.getInstance().start(conversationtype, tuid+'');
+        },
+        onBeforeUpload: function(file) {
+          console.log('before upload');
+        },
+        onUploadProgress: function(file) {
+          console.log('upload progress.'); 
+        },
+        onFileUploaded: function(file, message, type) {
+          console.log('img uploaded.'); 
+          console.log(message);
+          rongSendImageMessage(tuid+'',message.content.content,message.content.imageUri);
+          var text = '<img data-src="' + message.content.imageUri + '" src="data:image/png;base64,' + message.content.content + '" style="width:40%">';
+          // 将消息插入对话框中
+          var messageContent={
+              'direction':'right',
+              'head':"{$user.head|default='/default_head.png'}",
+              'content':text,
+              'date':new Date().getFullYear()+'-'+(new Date().getMonth()+1)+'-'+new Date().getDate()+'   '+new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds()
+          };
+          var messageStr=rongCreateMessage(messageContent);
+          $('.Chat_details_m2_center').append(messageStr);
+          // 调整滚动轴到底部
+          rongChangeScrollHeight(99999);
+        },
+        onError: function(err, errTip) {
+          console.log('error occur.'); 
+        },
+        onUploadComplete: function() {
+          console.log('all imgs uploaded.'); 
+        }
+      });
+    };
         /**
          * 创建好友列表的html
          * @param  {obj} userInfo 用户的数据
@@ -400,6 +540,17 @@
                 onSuccess: function (message) {
                     //message 为发送的消息对象并且包含服务器返回的消息唯一Id和发送消息时间戳
                     console.log("Send successfully");
+                    // 将消息插入对话框中
+                    var messageContent={
+                        'direction':'right',
+                        'head':"{$user.head|default='/default_head.png'}",
+                        'content':RongIMLib.RongIMEmoji.emojiToHTML(message.content.content),
+                        'date':new Date().getFullYear()+'-'+(new Date().getMonth()+1)+'-'+new Date().getDate()+'   '+new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds()
+                    };
+                    var messageStr=rongCreateMessage(messageContent);
+                    $('.Chat_details_m2_center').append(messageStr);
+                    // 调整滚动轴到底部
+                    rongChangeScrollHeight(99999);
                 },
                 onError: function (errorCode,message) {
                     var info = '';
@@ -517,7 +668,14 @@
                                 messageContent['direction']='right';
                                 messageContent['head']=xbUserInfo['head'];
                             }
-                            messageContent['content']=val['content']['content'];
+                            switch (val.content.messageName) {
+                              case 'TextMessage':
+                                messageContent['content'] =  RongIMLib.RongIMEmoji.emojiToHTML(val.content.content);
+                                break;
+                              case 'ImageMessage':
+                                messageContent['content'] = '<img data-src="' + val.content.imageUri + '" src="data:image/png;base64,' + val.content.content+ '">';
+                                break;
+                            }
                             messageContent['date']=new Date(val['receivedTime']).getFullYear()+'-'+(new Date(val['receivedTime']).getMonth()+1)+'-'+new Date(val['receivedTime']).getDate()+'   '+new Date(val['receivedTime']).getHours()+':'+new Date(val['receivedTime']).getMinutes()+':'+new Date(val['receivedTime']).getSeconds();
                             str +=rongCreateMessage(messageContent);
                         });
@@ -558,6 +716,7 @@
                 // 获取消息内容和uid
                 var str=$('.content').val(),
                     uid=$(this).data("uid");
+                    tuid=uid;
                 if (uid=='') {
                     alert('请选择聊天的好友');
                     return false;
@@ -566,21 +725,11 @@
                     alert('请输入聊天内容');
                     return false;
                 }
-                // 将消息插入对话框中
-                var messageContent={
-                    'direction':'right',
-                    'head':"{$user.head|default='/default_head.png'}",
-                    'content':str,
-                    'date':new Date().getFullYear()+'-'+(new Date().getMonth()+1)+'-'+new Date().getDate()+'   '+new Date().getHours()+':'+new Date().getMinutes()+':'+new Date().getSeconds()
-                };
-                var messageStr=rongCreateMessage(messageContent);
-                $('.Chat_details_m2_center').append(messageStr);
-                // 调整滚动轴到底部
-                rongChangeScrollHeight(99999);
                 // 发送消息
-                rongSendMessage(uid+'',str);
+                rongSendMessage(uid+'',RongIMLib.RongIMEmoji.symbolToEmoji(str));
                 // 清空消息框中的内容
                 $('.content').val('');
+                $(".Expression").addClass('hide');
                 //rongClearnMessage(uid)
             });
 

@@ -62,7 +62,7 @@
                 <script type="text/javascript">
                     function checkform() {
                         var phone = $("input[name='phone']").val();
-                        var verify = $("input[name='特；verify']").val();
+                        var verify = $("input[name='verify']").val();
                         var password = $("input[name='password']").val();
                         var pwdconfirm = $("input[name='pwdconfirm']").val();
                         if (!/^1[3|4|5|7|8][0-9]{9}$/.test(phone)) {

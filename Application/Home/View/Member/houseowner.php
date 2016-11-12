@@ -63,7 +63,7 @@
             </div>
             <div class="activity2_main2_01">
                 <span class="middle">支付宝账号 : </span>
-                <input class="middle text4" style="width:185px;" type="text" name="alipayaccount" value="{$data.alipayaccount}" readonly />
+                <input class="middle text4" style="width:185px;" type="text" name="alipayaccount" value="{$data.alipayaccount}" />
             </div>
             <div class="activity2_main2_01">
                 <span class="middle">美宿名称 : </span>
@@ -76,6 +76,7 @@
             <div class="landlord1 hidden">
                 <span>上传相关执照 :<em>（非必填）</em> </span>
                 <ul class="landlord1_ul">
+                    <i style="font-size:14px;margin-bottom:0px;">请上传600*330像素尺寸的JPEG、PNG图片;</i>
                     <li>
                         <span>
                             <input type="button" value="选择上传" id="uploadify">
@@ -89,7 +90,7 @@
                 </ul>
                 <div class="landlord2"></div>
                 <input type="hidden" name="thumb" value="{$data['thumb']}" />
-                <input class="lan_sub" type="submit" value="提交认证信息" />
+                <input class="lan_sub" type="submit" value="{$data['btnstatus']}" <if condition="($data.btnstatus eq '请等待后台审核')"> disabled </if>  />
             </div>
         </div>
     </div>

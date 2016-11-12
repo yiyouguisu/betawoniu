@@ -4,7 +4,7 @@
     <div class="header center z-index112 pr f18 fix-head">
         活动详细
         <div class="head_go pa">
-            <a href="javascript:history.go(-1)">
+            <a href="{:U('party/index')}">
                 <img src="__IMG__/go.jpg">
             </a><span>&nbsp;</span>
         </div>

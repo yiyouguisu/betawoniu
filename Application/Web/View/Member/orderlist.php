@@ -199,30 +199,36 @@
 	          <div class="vertical" style="margin:0 5px">
 						<div class="land_f1 f16">{$vo.title}</div>
 						<div class="land_f2 f13">
-							<div class="land_money ft18" style="padding:5px 0"><em>￥</em>{$vo.money}<span>起</span>
+              <div class="land_money ft18" style="padding:5px 0">
+                <em>￥</em>{$vo.money}<span></span>
 							</div>
 						</div>
 						<div class="land_f3 pa f0">
-						  	<if condition='$vo.paystatus eq 0'>
+						  	<if condition='$vo.status eq 1'>
 						  		<div class="land_f4 my_tra1 vertical" style="width:100%"><span class="my_span">未付款</span></div>
-						  	<else/>
-						  		<div class="land_f4 my_tra1 vertical" style="width:100%"><span>已完成</span></div>
+						  	<elseif condition="$vo.status eq 4"/>
+                  <eq name="vo.checkin" value="1">
+                    <div class="land_f4 my_tra1 vertical" style="width:100%">
+                      <span>待参加</span>
+                    </div>
+                  </eq>
+                  <eq name="vo.finished" value="1">
+                    <div class="land_f4 my_tra1 vertical" style="width:100%">
+                      <span>已完成</span>
+                    </div>
+                  </eq>
 						  	</if>
 						  </div>
 	          </div>
-						<if condition='$vo.paystatus eq 0'>
+						<if condition='$vo.status eq 0'>
               <div class="rev_btn" style="float:right">
                 <a class="ft14" href="{:U('Web/Order/partyPay',array('orderid'=>$vo['orderid']))}">去支付</a>
               </div>
-						<else/>
-              <if condition="$vo.status eq 4">
-                <if condition="$vo.review_status eq 0">
-                  <div class="rev_btn rev_btn1" style="float:right">
-                    <a href="#" class="ft14">我要点评{$vo.review_status}</a>
-                  </div>
-                <else />
-
-                </if>
+						<elseif condition="$vo.status eq 4"/>
+              <if condition="$vo.finished eq 1">
+                <div class="rev_btn rev_btn1" style="float:right">
+                  <a href="#" class="ft14">我要点评</a>
+                </div>
               </if>
 						</if>
 	        </div>

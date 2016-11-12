@@ -137,7 +137,7 @@ $('.jk_click').click(function(evt){
     if(res.code==500){
       alert('联系人已存在，请从常用联系人中添加');
     } else {
-      history.back();
+      self.location = document.referrer;
     }
   });
 });

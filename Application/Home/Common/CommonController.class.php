@@ -32,21 +32,21 @@ class CommonController extends Controller {
             session("city",$city);
             $cityname=M('area')->where(array('id'=>$city))->getField("name");
         }else{
-            $Map=A("Api/Map");
-            $locationset=$Map->get_localtion_complex();
+            // $Map=A("Api/Map");
+            // $locationset=$Map->get_localtion_complex();
             // if($locationset['province']==$locationset['city']){
             //     cookie("location",$locationset['province'].",".$locationset['district']);
             // }else{
             //     cookie("location",$locationset['province'].",".$locationset['city'].",".$locationset['district']);
             // }
             
-            if(in_array($locationset['province'],array(2,3,4,5))){
-                $city=$locationset['province'];
-            }else{
-                $city=$locationset['city'];
-            }
+            // if(in_array($locationset['province'],array(2,3,4,5))){
+            //     $city=$locationset['province'];
+            // }else{
+            //     $city=$locationset['city'];
+            // }
             session("city",null);
-            $cityname=M('area')->where(array('id'=>$city))->getField("name");
+            //$cityname=M('area')->where(array('id'=>$city))->getField("name");
         }
         $this->assign("cityname",$cityname);
         $uid=session('uid');

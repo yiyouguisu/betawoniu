@@ -76,6 +76,7 @@
                     <span>上传证件照 : </span>
                     <i>正面 :</i>
                     <ul class="landlord1_ul">
+                        <i style="font-size:14px;margin-bottom:0px;">请上传600*330像素尺寸的JPEG、PNG图片;</i>
                         <li>
                             <span>
                                 <input type="button" value="选择上传" id="uploadify">
@@ -86,9 +87,11 @@
                                 <img src="{$data['idcard_front']}" width='298px' height='169px' />
                             </notempty>
                         </li>
+
                     </ul>
                     <i>反面 :</i>
                     <ul class="landlord1_ul">
+                        <i style="font-size:14px;margin-bottom:0px;">请上传600*330像素尺寸的JPEG、PNG图片;</i>
                         <li>
                             <span>
                                 <input type="button" value="选择上传" id="uploadify1">

@@ -14,6 +14,13 @@
                             <div class="fr legend_main2">
                                 <a href="{:U('Home/Party/edit',array('id'=>$vo['id']))}">编辑</a>
                                 <input type="button" class="party_delete" data-id="{$vo.id}" value="删除" />
+                                <if condition="$vo['status'] eq '2' ">
+                                    <if condition="$vo['isoff'] eq '0' ">
+                                        <input type="button" class="party_switchoff" data-isoff="{$vo.isoff}" data-id="{$vo.id}" value="下架" /> 
+                                    <else/>
+                                        <input type="button" class="party_switchoff" data-isoff="{$vo.isoff}" data-id="{$vo.id}" value="启用" /> 
+                                    </if>
+                                </if>
                             </div>
                         </div>
                         <div class="order_main3_list2_bottom hidden">
@@ -40,6 +47,13 @@
                             <div class="fr legend_main2">
                                 <a href="{:U('Home/Hostel/edit',array('id'=>$vo['id']))}">编辑</a>
                                 <input type="button" class="hostel_delete" data-id="{$vo.id}" value="删除" />
+                                <if condition="$vo['status'] eq '2' ">
+                                    <if condition="$vo['isoff'] eq '0' ">
+                                        <input type="button" class="hostel_switchoff" data-isoff="{$vo.isoff}" data-id="{$vo.id}" value="下架" /> 
+                                    <else/>
+                                        <input type="button" class="hostel_switchoff" data-isoff="{$vo.isoff}" data-id="{$vo.id}" value="启用" /> 
+                                    </if>
+                                </if>
                             </div>
                         </div>
                         <div class="order_main3_list2_bottom hidden">

@@ -51,7 +51,7 @@
                 <span onclick="window.location.href='{:U('Home/Note/index',array('type'=>1))}'" <eq name="_GET['type']" value="1"> class="activity_span"</eq>>热门游记</span>
                 <span onclick="window.location.href='{:U('Home/Note/index',array('type'=>2))}'" <notempty name="_GET['type']"><eq name="_GET['type']" value="2"> class="activity_span"</eq><else />class="activity_span"</notempty>>最新发布</span>
                 <a href="{:U('Home/Note/add')}">
-                    <img src="__IMG__/Icon/img19.png" />
+                    <img src="__IMG__/Icon/pen.png" />
                     发布游记
                 </a>
             </div>

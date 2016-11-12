@@ -44,7 +44,7 @@ class PartyController extends CommonController {
                 if(!empty($_GET['town'])){
                     $area=$_GET['province'] . ',' . $_GET['city'] . ',' . $_GET['town'];
                 }else{
-                    $area=$_GET['province'] . ',' . $_GET['city'];
+                    $area=array('like',$_GET['province'] . ',' . $_GET['city'] . ','."%");
                 } 
             }else{
                 $where['a.area']=array('like',$_GET['province'] . ','."%");
@@ -148,6 +148,22 @@ class PartyController extends CommonController {
         $result = M("area")->where(array("parentid" => $parentid,'status'=>1))->select();
         $result = json_encode($result);
         echo $result;
+    }
+    /**
+     * 启用关闭
+     * @return void
+     * @author yiyouguisu<741459065@qq.com> time|20151219
+     */
+    public function ajax_switchoff() {
+        $id = $_POST['id'];
+        $offtime=time();
+        $did=M()->execute("update zz_activity set isoff={$_POST['isoff']}, offtime={$offtime} where id={$id}");
+        //$did=M("Activity")->where(array('id'=>$id))->save(array('isoff'=>$_GET['isoff'],'offtime'=>time()));
+        if ($did) {
+            $this->success("更新状态成功！");
+        } else {
+            $this->error("更新状态失败！");
+        }
     }
     public function add() {
         if ($_POST) {

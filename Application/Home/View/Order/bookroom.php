@@ -21,6 +21,7 @@
                     onHide:function(){
                         var starttime=$(".starttime").val();
                         var endtime=$(".endtime").val();
+                        var roomnum=$("input[name='roomnum']").val();
                         var nowdate="{:date('Y-m-d')}";
                         if(Date.parse(starttime)-Date.parse(nowdate)<0){
                             alert("请填写正确日期");
@@ -34,7 +35,7 @@
                                 return false;
                             }else{
                                 var rid="{$data.rid}";
-                                $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime},function(d){
+                                $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
                                     if(d.code==200){
                                         var days=DateDiff(starttime,endtime);
                                         console.log(days)
@@ -253,7 +254,7 @@
                         <div class="payment_main4 hidden">
                             <div class="fl payment_main4_1">
                                 <span>￥<em id="totalmoney">{$totalmoney|default="0.00"}</em></span>
-                                <i>（房费 x <i id="roomnum">{$roomnum|default="0"}</i>间）</i>
+                                <i>（房费 x <i id="roomnum_1">{$roomnum|default="0"}</i>间）</i>
                                 <label>—</label>
                                 <span>￥<em id="discount">0.00</em></span>
                                 <i>（优惠券）</i>
@@ -485,6 +486,26 @@
                 }else if($(this).hasClass("roomnum")){
                     $("input[name='roomnum']").val(i);
                     $("#roomnum").text(i);
+                    $("#roomnum_1").text(i);
+                    var starttime=$(".starttime").val();
+                    var endtime=$(".endtime").val();
+                    var roomnum=i;
+                    if(starttime!=''&&endtime!=''){
+                        if(Date.parse(endtime) - Date.parse(starttime)==0){
+                            alert("请填写正确日期");
+                            $(".endtime").val();
+                            return false;
+                        }else{
+                            var rid="{$data.productinfo.rid}";
+                            $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
+                                if(d.code==200){
+                                    $("#totalmoney").text(d.totalmoney);
+                                    $("input[name='totalmoney']").val(d.totalmoney);
+                                }
+                            });
+                        }
+
+                    }
                 }
                 aa();
             })
@@ -501,6 +522,26 @@
                     }else if($(this).hasClass("roomnum")){
                         $("input[name='roomnum']").val(i);
                         $("#roomnum").text(i);
+                        $("#roomnum_1").text(i);
+                        var starttime=$(".starttime").val();
+                        var endtime=$(".endtime").val();
+                        var roomnum=i;
+                        if(starttime!=''&&endtime!=''){
+                            if(Date.parse(endtime) - Date.parse(starttime)==0){
+                                alert("请填写正确日期");
+                                $(".endtime").val();
+                                return false;
+                            }else{
+                                var rid="{$data.productinfo.rid}";
+                                $.post("{:U('Home/Room/ajax_checkdate')}",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
+                                    if(d.code==200){
+                                        $("#totalmoney").text(d.totalmoney);
+                                        $("input[name='totalmoney']").val(d.totalmoney);
+                                    }
+                                });
+                            }
+
+                        }
                     }
                 }
                 aa();

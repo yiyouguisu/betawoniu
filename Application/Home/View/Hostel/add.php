@@ -297,7 +297,7 @@
                 <span class="middle">房间面积 : </span>
                 <div class="middle activity2_main2_text2">
                     <input type="text" class="room" value="" name="roomarea" id="roomarea" />
-                    <i>m2</i>
+                    <i>m²</i>
                 </div>
                 <span class="middle">床型 : </span>
                 <div class="middle activity2_main2_text3">

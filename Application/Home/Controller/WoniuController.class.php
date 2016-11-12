@@ -100,7 +100,7 @@ class WoniuController extends CommonController {
         }
         $this->ajaxReturn($data,'json');
     }
-    public function morefriend(){
+    public function morefriend(){ 
         $where=array();
         $where['a.status']=1;
         $Map=A("Api/Map");
@@ -125,6 +125,7 @@ class WoniuController extends CommonController {
         $this->assign("data",$josnlist);
         $this->display();
     }
+
     public function show(){
         $mid=$_GET['id'];
         if(!$mid){

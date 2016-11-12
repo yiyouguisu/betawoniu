@@ -258,7 +258,7 @@
                     <li>
                         <div class="main4_bottom_list pr">
                             <a href="{:U('Home/Hostel/show',array('id'=>$vo['id']))}">
-                                <img class="pic" data-original="{$vo.thumb}" src="__IMG__/default.jpg" style="width:399px;height:250px"  onclick="window.location.href='{:U('Home/Hostel/show',array('id'=>$vo['id']))}'"/>
+                                <img src="{$vo.thumb}" style="width:399px;height:250px"  onclick="window.location.href='{:U('Home/Hostel/show',array('id'=>$vo['id']))}'"/>
                                 <div class="pa main4_bottom_list1"></div>
                             </a>
                             <eq name="vo['type']" value="1">

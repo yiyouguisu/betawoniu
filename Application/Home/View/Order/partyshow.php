@@ -39,26 +39,37 @@
                 	<eq name="data['status']" value="2">等待支付</eq>
                     <eq name="data['status']" value="3">
                         <eq name="data['refund_status']" value="2">
-                            退订成功
+                            取消报名成功
                             <else />
                             已取消
                         </eq>
                     </eq>
                 	<eq name="data['status']" value="4">
                         <if condition="$data['productinfo']['endtime'] lt time()">
-                            已完成
+                            <eq name="data['refund_status']" value="0">
+                                    已完成
+                                </eq>
+                                <eq name="data['refund_status']" value="1">
+                                    取消报名申请中
+                                </eq>
+                                <eq name="data['refund_status']" value="2">
+                                    取消报名成功
+                                </eq>
+                                <eq name="data['refund_status']" value="3">
+                                    取消报名审核失败
+                                </eq>
                             <else />
                             <eq name="data['refund_status']" value="0">
                                 待参加
                             </eq>
                             <eq name="data['refund_status']" value="1">
-                                退订中
+                                取消报名申请中
                             </eq>
                             <eq name="data['refund_status']" value="2">
-                                退订成功
+                                取消报名成功
                             </eq>
                             <eq name="data['refund_status']" value="3">
-                                退订审核失败
+                                取消报名审核失败
                             </eq>
                         </if>
                     </eq>

@@ -135,16 +135,16 @@
    </div>
 
     <div class="wrap">
-        <form action="{:U('Home/Party/add')}" method="post">
+        <form action="{:U('Home/Party/add')}" method="post" onsubmit="return checkForm();">
             <div class="activity2_main2">
                 <div class="activity2_main2_01">
                     <span class="middle">活动标题 : </span>
-                    <input class="middle text4" style="width:670px;" type="text" name="title" value="" required/>
+                    <input class="middle text4 required" style="width:670px;" type="text" name="title" value="" data-content="活动标题"/>
                 </div>
                 <div class="activity2_main2_01">
                     <span class="middle">适用美宿 : </span>
                     <div class="activity2_main2_select middle">
-                        <select name="hid">
+                        <select name="hid" class="required" data-content="美宿">
                             <option value="">请选择适用美宿</option>
                             <volist name="hostel" id="vo">
                                 <option value="{$vo.id}">{$vo.title}</option>
@@ -157,12 +157,12 @@
                     <span class="middle">活动时间 : </span>
                     <div class="activity2_main2_text1 middle">
                         <i>开始时间 :</i>
-                        <input id="d5221" class="J_date starttime" type="text" name="starttime" required/>
+                        <input id="d5221" class="required J_date starttime" type="text" name="starttime" data-content="开始时间"/>
                     </div>
                     <i><input type="text" id="days" value="0" style="    width: 20px;border: none;color: #21a7bb;">天</i>
                     <div class="activity2_main2_text1 middle">
                         <i>结束时间 :</i>
-                        <input id="d5222" class="J_date endtime" type="text" name="endtime" required/>
+                        <input id="d5222" class="required J_date endtime" type="text" name="endtime" data-content="结束时间"/>
                     </div>
                     <div class="middle" style="margin-right:76px;"></div>
                     <span class="middle">活动人数</span>
@@ -181,13 +181,13 @@
                 <div class="activity2_main2_01">
                     <span class="middle">活动费用 : </span>
                     <div class="middle activity2_main2_text2">
-                        <input type="text" value="" name="money" value="" required/>
+                        <input type="text" class="required" value="" name="money" value="" data-content="活动费用"/>
                         <i>元/人</i>
                     </div>
                     <div class="middle activity2_a">免费活动</div>
                     <span class="middle">特色 : </span>
                     <div class="middle activity2_main2_text3">
-                        <select class="sc-wd chosen-select-no-single" name="catid" required>
+                        <select class="sc-wd required chosen-select-no-single" name="catid" data-content="特色">
                             <option value="">请选择特色</option>
                             <volist name="partycate" id="vo">
                             	<option value="{$vo.id}">{$vo.catname}</option>
@@ -199,7 +199,7 @@
                     </div>
                     <span class="middle">类型 : </span>
                     <div class="middle activity2_main2_text3">
-                        <select class="sc-wd chosen-select-no-single" name="partytype" required>
+                        <select class="sc-wd chosen-select-no-single required" name="partytype" data-content="类型">
                             <option value="">请选择类型</option>
                             <option value="1">亲子类</option>
                             <option value="2">情侣类</option>
@@ -211,16 +211,16 @@
                 <div class="activity2_main2_01">
                     <span class="middle">活动地址 : </span>
                     <div class="middle activity2_main2_text3" style="width: 45%;">
-                        <select class="middle activity2_main2_text3 sc-wd chosen-select-no-single" required name="province" id="province" onchange="load(this.value,'city')">
+                        <select class="middle activity2_main2_text3 sc-wd chosen-select-no-single required" name="province" id="province" onchange="load(this.value,'city')" data-content="省">
                             <option value="">选择省</option>
                             <volist name="province" id="vo"> 
                                 <option value="{$vo.id}">{$vo.name}</option>
                             </volist>
                         </select>
-                        <select class="middle activity2_main2_text3 sc-wd chosen-select-no-single" required name="city" id="city" onchange="load(this.value,'town')">
+                        <select class="middle activity2_main2_text3 sc-wd chosen-select-no-single required" name="city" id="city" onchange="load(this.value,'town')" data-content="市">
     						<option value="">选择市</option>
                         </select>
-                        <select class="middle activity2_main2_text3 sc-wd chosen-select-no-single" name="town" id="town">
+                        <select class="middle activity2_main2_text3 sc-wd chosen-select-no-single" name="town" id="town" data-content="区">
     						<option value="">选择区</option>
                         </select>
                     </div>
@@ -233,12 +233,12 @@
                     <div class="middle Release_of_legend_y">
                         <span>活动报名满</span>
                         <div>
-                            <input type="text" name="vouchersrange" required />
+                            <input type="text" name="vouchersrange" />
                             <i>元</i>
                         </div>
                         <span>金额送</span>
                         <div>
-                            <input type="text" name="vouchersdiscount" required/>
+                            <input type="text" name="vouchersdiscount"/>
                             <i>元</i>
                         </div>
                         <span>金额的抵用券</span>
@@ -318,5 +318,26 @@
             });
         });
     </script>
-
+    <script>
+      function checkForm() {
+        var pass = true;
+        var notice = '';
+        $('.required').each(function(i, t) {
+          var val = $(t).val(); 
+          if(val == '' || val == undefined || val == null) {
+            if(!notice) {
+              notice += '表单未完成！\n';
+            }
+            var content = $(t).data('content');
+            var id = $(t).attr('id');
+            notice += '请正确填写/选择：' + content + '！' + '\n'; 
+            pass = false;
+          }
+        });
+        if(notice) {
+          alert(notice); 
+        }
+        return pass;
+      }
+    </script>
 <include file="public:foot" />

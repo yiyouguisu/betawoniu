@@ -37,7 +37,20 @@
                                 <eq name="vo['status']" value="4">
                                     <div class="fr order_main3_list2_bottom2 ">
                                         <if condition="$vo['endtime'] lt time()">
-                                            <i>已完成</i>
+                                            <eq name="vo['refund_status']" value="0">
+                                                <i>已完成</i>
+                                            </eq>
+                                            <eq name="vo['refund_status']" value="1">
+                                                <i>退订</i>
+                                                <a href="{:U('Home/Woniu/refundorderreview',array('orderid'=>$vo['orderid']))}">去审核</a>
+                                            </eq>
+                                            <eq name="vo['refund_status']" value="2">
+                                                <i>退订成功</i>
+                                            </eq>
+                                            <eq name="vo['refund_status']" value="3">
+                                                <i>审核失败</i>
+                                                <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                            </eq>
                                             <else />
                                             <eq name="vo['refund_status']" value="0">
                                                 <i>待参加</i>
@@ -74,7 +87,20 @@
                                 <eq name="vo['status']" value="4">
                                     <div class="fr order_main3_list2_bottom2 ">
                                         <if condition="$vo['endtime'] lt time()">
-                                            <i>已完成</i>
+                                            <eq name="vo['refund_status']" value="0">
+                                                <i>已完成</i>
+                                            </eq>
+                                            <eq name="vo['refund_status']" value="1">
+                                                <i>退订</i>
+                                                <a href="javascript:;">待审核</a>
+                                            </eq>
+                                            <eq name="vo['refund_status']" value="2">
+                                                <i>退订成功</i>
+                                            </eq>
+                                            <eq name="vo['refund_status']" value="3">
+                                                <i>审核失败</i>
+                                                <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                            </eq>
                                             <else />
                                             <eq name="vo['refund_status']" value="0">
                                                 <i>待参加</i>

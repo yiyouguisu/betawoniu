@@ -422,7 +422,6 @@ var data={};
             };
         }, "json");
         pullDownEl.querySelector('.pullDownLabel').innerHTML = '无数据...';
-        
     }
 
     function refresh() {

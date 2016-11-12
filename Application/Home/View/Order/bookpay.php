@@ -41,9 +41,9 @@
                             <a href="{:U('Home/Room/show',array('id'=>$data['id']))}" class="f28 c333">{$data.title}</a>
                             <div class="my_home7_list3_01 hidden">
                                 <ul class="hidden my_home7_list3_01_ul fl">
-                                    {:getevaluation($data['productinfo']['evaluationpercent'])}
+                                    {:getevaluation($data['evaluationpercent'])}
                                 </ul>
-                                <span class="fl"><em class="">{$data.productinfo.evuation|default="10.0"}</em>分</span>
+                                <span class="fl"><em class="">{$data.evuation|default="10.0"}</em>分</span>
                                 <div class="my_home7_list3_02 fl">
                                     <img src="__IMG__/Icon/img10.png" />
                                     <i class="f15 c999"><em class="f16">{$data.reviewnum|default="0"}</em>条评论</i>

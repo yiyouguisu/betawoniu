@@ -39,6 +39,13 @@
     <script src="__PUBLIC__/Public/js/jquery.Jcrop.js"></script>
     <link rel="stylesheet" href="__PUBLIC__/Public/css/jquery.Jcrop.css" type="text/css" />
     <script type="text/javascript">
+
+        function checkCoords() {  
+              if (parseInt(jQuery('#w').val())>0) return true;  
+              alert('请选择需要裁切的图片区域.');  
+              return false; 
+            }; 
+
         $(function(){
             $("#uploadify").uploadify({
                 'uploader'  : '__PUBLIC__/Public/uploadify/uploadify.swf',//所需要的flash文件
@@ -107,11 +114,7 @@
                 $("#image").val(content);
             };
             
-            function checkCoords() {  
-              if (parseInt(jQuery('#w').val())>0) return true;  
-              alert('请选择需要裁切的图片区域.');  
-              return false; 
-            }; 
+            
             function showPreview(coords){
               var CutJson = {};
               var img_width = $('#upfileResult').width();

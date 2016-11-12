@@ -21,7 +21,7 @@
                     onHide:function(){
                         var starttime=$(".starttime").val();
                         var endtime=$(".endtime").val();
-                        var roomnum=$("input[name='roomnum']").val();
+                        var roomnum=1;
                         var nowdate="{:date('Y-m-d')}";
                         if(Date.parse(starttime)-Date.parse(nowdate)<0){
                             alert("请填写正确日期");
@@ -43,6 +43,9 @@
                                         $("#day").text(Number(days));
                                         $("input[name='days']").val(Number(days));
                                         $("#totalmoney").text(d.totalmoney);
+                                        $("#nomalnum").text(d.nomalnum);
+                                        $("#weeknum").text(d.weeknum);
+                                        $("#holidaynum").text(d.holidaynum);
                                         aa();
                                     }else{
                                         alert("您选择的日期包含不合法日期");
@@ -267,7 +270,7 @@
                         </div>
                         <div style="height:25px;border-bottom: 1px solid #e5e5e5;"></div>
                         <div class="payment_main4 hidden">
-                            <div class="fl payment_main4_1">
+                            <!-- <div class="fl payment_main4_1">
                                 <span>￥<em id="totalmoney">{$data.totalmoney|default="0.00"}</em></span>
                                 <i>（房费 x <i id="roomnum_1">{$data.productinfo.roomnum|default="0"}</i>间）</i>
                                 <label>—</label>
@@ -275,6 +278,26 @@
                                 <i>（优惠券）</i>
                                 <div>=</div>
                                 <span>￥<em id="total">{$data.money|default="0.00"}</em></span>
+                            </div> -->
+                            <div class="fl payment_main4_1">
+                                <span>总价房价￥<em id="totalmoney">{$data.totalmoney|default="0.00"}</em></span>
+                                <i>（
+                                <gt name="nomalnum" value="0">
+                                平日房费{$data.productinfo.nomal_money|default="0.00"}元*<i id="roomnum_1">{$data.productinfo.roomnum|default="0"}</i>间*<i id="nomalnum">{$nomalnum|default="0"}</i>晚
+                                </gt>
+                                <gt name="weeknum" value="0">
+                                +周末房费{$data.productinfo.week_money|default="0.00"}元*<i id="roomnum_1">{$data.productinfo.roomnum|default="0"}</i>间*<i id="weeknum">{$weeknum|default="0"}</i>晚
+                                </gt>
+                                <gt name="holidaynum" value="0">
+                                +法假房费{$data.productinfo.holiday_money|default="0.00"}元*<i id="roomnum_1">{$data.productinfo.roomnum|default="0"}</i>间*<i id="holidaynum">{$holidaynum|default="0"}</i>晚
+                                </gt>
+                                ）</i>
+                                <label>—</label>
+                                <span>￥<em id="discount">{$data.discount|default="0.00"}</em></span>
+                                <i>（优惠券）</i>
+                                <div>=</div>
+                                <span>￥<em id="total">{$data.money|default="0.00"}</em></span>
+
                             </div>
                             <div class="payment_main4_3 fr">
                                 <span class="f16 c666">应付金额 : </span>
@@ -496,7 +519,7 @@
                     $("#roomnum_1").text(i);
                     var starttime=$(".starttime").val();
                     var endtime=$(".endtime").val();
-                    var roomnum=i;
+                    var roomnum=1;
                     if(starttime!=''&&endtime!=''){
                         if(Date.parse(endtime) - Date.parse(starttime)==0){
                             alert("请填写正确日期");
@@ -532,7 +555,7 @@
                         $("#roomnum_1").text(i);
                         var starttime=$(".starttime").val();
                         var endtime=$(".endtime").val();
-                        var roomnum=i;
+                        var roomnum=1;
                         if(starttime!=''&&endtime!=''){
                             if(Date.parse(endtime) - Date.parse(starttime)==0){
                                 alert("请填写正确日期");

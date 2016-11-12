@@ -20,9 +20,9 @@
                     </div>
                 </div>
                 <div class="center2">
-                    <span>房间面积：<em>{$vo.area|default="0.0"}m2 </em></span>
+                    <span>房间面积：<em>{$vo.area|default="0.0"}平米 </em></span>
                     <span>床型信息：<em>{$vo.bedtype}</em></span>
-                    <span>最多入住：<em>{$vo.mannum|default="0"}人</em></span>
+                    <span>房间数量：<em>{$vo.mannum|default="0"}间</em></span>
                 </div>
                 <div class="bottom">
                     <volist name="vo['support']" id="v">

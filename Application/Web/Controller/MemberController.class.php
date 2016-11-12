@@ -704,17 +704,27 @@ class MemberController extends CommonController {
         }
 
         $this->assign('ht',array_merge($myOrder, $otherOrder));
-        // 活动
-        $actorder=M('order a')
+        //我参加的活动
+        $actorders=M('order a')
         ->join('left join zz_activity_apply b on a.orderid=b.orderid')
         ->join('left join zz_activity d on d.id=b.aid')
+        ->join('left join zz_order_time e on e.orderid = a.orderid')
         ->join('left join zz_member c on c.id=b.uid')
         ->where(array('c.id'=>$uid,'a.ordertype'=>2))
         ->order(array('a.inputtime'=>'desc'))
-        ->getField('a.orderid,b.paystatus,d.title,d.money,d.thumb,d.id');
-
-        $this->assign('act',$actorder);
-        $this->assign('now', time());
+        ->field('a.orderid,b.paystatus,d.title,a.money,d.thumb,d.id,d.starttime,d.endtime,e.cancel_status,e.refund_status,e.status')
+        ->select();
+        foreach($actorders as $key => $actorder) {
+          if($actorder['status'] == 4) {
+            if($actorder['endtime'] > time()) {
+              $actorders[$key]['checkin'] = 1;
+            } else {
+              $actorders[$key]['finished'] = 1;
+            }
+          }
+        }
+        $this->assign('act',$actorders);
+        $this->assign('now_time', time());
         $this->assign('uid', $uid);
         $this->display();
     }

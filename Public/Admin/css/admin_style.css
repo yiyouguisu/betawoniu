@@ -570,8 +570,9 @@ select[size]{
 	color:#ff0000;
 	margin-top:3px;
 	margin-left:-13px; 
-	position:absolute;
+	/*position:absolute;*/
 	font-size:14px;
+	    float: left;
 }
 
 /*

@@ -1,7 +1,7 @@
 @charset "utf-8";
 /* CSS Document */
 /**{ -webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-tap-highlight-color: transparent; /* For some Androids  }
-html {font-size:10px;min-height:100%;}	
+html {font-size:10px;min-height:100%;}	11
 body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre,
 form, fieldset, input, textarea, p, blockquote, th, td, img, span { padding: 0; margin: 0; }
 body { max-width: 750px;margin:0 auto; font-family:"方正兰亭黑_GBK",Arial;font-size:10px;min-height:100%;}
@@ -164,7 +164,7 @@ label {
     font-weight: bold;}
 
 img { border: 0; vertical-align: middle; }
-a { text-decoration: none;color:#fff; }
+a { text-decoration: none; color: #fff }
 a:hover{text-decoration:none;}
 .fl { float: left; }
 .fr { float: right; }
@@ -178,6 +178,7 @@ a:hover{text-decoration:none;}
 	display:inline-block;
 	vertical-align:middle;}
 .center {text-align:center;}
+.left { text-align:left;}
 .right { text-align:right;}
 .hidden {overflow:hidden;}
 
@@ -237,9 +238,3 @@ a:hover{text-decoration:none;}
 
 /*padding*/
 .padding_0 { padding-bottom:0!important;}
-
-/*特殊字体*/
-@font-face {
-	font-family:"方正兰亭黑_GBKRegular";
-	src:url('../font/_gbk-webfont.eot');
-	src:local('方正兰亭黑_GBK Regular'),local('方正兰亭黑_GBK'),url('../font/方正兰亭黑_GBK.ttf') format('truetype'),url('../font/_gbk-webfont.svg') format('svg') }

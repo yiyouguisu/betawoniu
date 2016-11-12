@@ -1,0 +1,48 @@
+.calendar { line-height: 2rem;overflow:hidden }
+.calendar .clndr .clndr-controls { display: block; display: inline-block; width: 100%; margin-bottom: 3px; 
+    padding-bottom:1rem;border-bottom: 1px solid #ff5f4b;
+}
+.calendar .clndr .clndr-controls .clndr-previous-button, .calendar .clndr .clndr-controls .clndr-next-button { float: left; width: 20%; text-align: left; cursor: pointer; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; background: url(../images/prev.png) no-repeat left center; background-size: 8px auto; display: block; height: 2rem; }
+.calendar .clndr .clndr-controls .month { float: left; width: 60%; text-align: center; font-size:1.6rem;}
+.calendar .clndr .clndr-controls .clndr-next-button { text-align: right; background-image: url(../images/next.png); background-position: right center; }
+
+.calendar .clndr .clndr-grid { text-align: center; }
+.calendar .clndr .clndr-grid .header-day { float: left; width: 14.28%;line-height:3.2rem;  }
+.calendar .clndr .clndr-grid .day { float: left; width: 14.28%;line-height:1.6rem;padding:.2rem 0;font-size:1.6rem;
+   color:#000;box-sizing:border-box;height:3.6rem;
+ }
+
+.calendar .clndr .clndr-grid .day p { font-size:1rem;
+   color:#dfdfdf;
+ } 
+ 
+ 
+.calendar .clndr .clndr-grid .day.event { background-color: #B4E09F; }
+.calendar .clndr .clndr-grid .day.today { background-color: #ff5f4b; color:#fff ;line-height:3.2rem;}
+.calendar .clndr .clndr-grid  { background-color: #ff5f4b; color:#fff ;}
+.calendar .clndr .clndr-grid .day.inactive { color: gray; }
+.day.selected { background-color: #56c3cf }
+
+.calendar .clndr .clndr-grid .day.scheduled {  background-color: #e2e2e2; color:#656565; }
+.calendar .clndr .clndr-grid .day.scheduled p {  color:#656565; }
+
+.calendar .clndr .clndr-grid .empty,
+.calendar .clndr .clndr-grid .adjacent-month { float: left;  }
+.calendar .clndr .clndr-today-button { width: 100%; text-align: center; cursor: pointer; }
+.calendar .clndr .clndr-today-button:hover { background-color: #ddd; }
+.calendar .multi-month-controls .quarter-button { display: inline-block; width: 25%; }
+.calendar .multi-month-controls .quarter-button:hover { cursor: pointer; background-color: #f4f4f4; }
+.calendar .day.inactive { background-color: #aaa; }
+.clndr-next-button,
+.clndr-previous-button,
+.clndr-next-year-button,
+.clndr-previous-year-button { -webkit-user-select: none; /* Chrome/Safari */ -moz-user-select: none; /* Firefox */ -ms-user-select: none; /* IE10+ */ }
+.clndr-next-button.inactive,
+.clndr-previous-button.inactive,
+.clndr-next-year-button.inactive,
+.clndr-previous-year-button.inactive { opacity: 0.5; cursor: default; }
+
+
+.last-month,.next-month {
+  opacity:0;
+}

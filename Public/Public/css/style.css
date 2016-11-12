@@ -314,14 +314,4 @@ display:inline-block; width:149px; height:75px; overflow:hidden; margin-top:15px
 .fr1 { background-position:-201px -225px;}
 .fr2 { background-position:-261px -224px;}
 .fr3 { background-position:-322px -225px;}
-
-
-
-
-
-
-
-
-
-
-
+.fix-head {position:fixed;top:0;left:0;right:0;z-index:9999 }

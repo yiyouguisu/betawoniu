@@ -1,6 +1,6 @@
 (function () {
   var domain = window.location.host;
-  var es = new EventSource('http://' + domain + '/index.php/Admin/Autopush/today_weblog');
+  var es = new EventSource('http://' + domain + '/index.php/Autopush/today_weblog');
   es.onmessage = function(e) {
     var obj = JSON.parse(e.data);
     console.log(obj);

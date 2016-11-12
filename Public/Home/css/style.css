@@ -1,9 +1,9 @@
 ﻿.wrap { max-width: 1240px; min-width: 1240px; margin: 0 auto; }
 .main { background: url('../images/img1.jpg') no-repeat center center; background-size: 1920px; }
-.main_top { height: 57px; background: #21a7bb; border-radius: 0 0 5px 5px; }
+.main_top { height: 57px; background: #21a7bb; border-radius: 0 0 5px 5px; font-size: 0; }
 .main_top1 { margin-left: 14px; margin-top: 3px; width: 250px; }
 .main_top2 { display: inline-block; vertical-align: middle; *display: inline; *zoom: 1; }
-.main3_03span { margin-top: 14px; left: 0px; top: 0px; display: block; color: #fff; border: 1px solid #fff; background: url('../images/Icon/img1.png') no-repeat 95% center; padding-left: 8px; padding-right: 22px; border-radius: 1px; }
+.main3_03span { margin-top: 14px; left: 0px; top: 0px; display: block; color: #fff; border: 1px solid #fff; background: url('../images/Icon/img1.png') no-repeat 95% center; padding-left: 8px; padding-right: 22px; border-radius: 1px; font-size: 16px; }
 .main3_03span:hover { cursor: pointer; }
 .main3_05 { height: 50px; margin-top: 3px; padding-right: 3px; }
 .main3_03span_float { background: #fff; width: 445px; padding: 0 15px; box-shadow: 0 6px 9px #ddd; }
@@ -2630,6 +2630,191 @@ Top_contacts.html
 .About_us_right_head img {
 	width: 100%
 }
+
+/*8-31添加*/
+.main4_bottom_list_x { left: 0px; top: 0px; z-index: 3; }
+
+/*8-31添加*/
+.foot1_li1 a { margin-right: 5px; }
+
+/*8-31修改*/
+.foot1_li1 span { font-size: 14px; color: #fff; display: block; margin-bottom: 3px; }
+.foot1_li1 i { display: block; font-size: 14px; color: #fff; margin-bottom: 4px; }
+
+/*9-1添加*/
+.Event_details6_04 > div > img { margin-left: 30px; line-height: 55px; }
+.com_form { width: 100%; position: relative; }
+.com_form .input { width: 99%; height: 60px; border: 1px solid #ccc; }
+.com_form .emotion_x { width: 42px; height: 20px; background: url(http://www.16code.com/cache/demos/user-say/img/icon.gif) no-repeat 2px 2px; padding-left: 20px; cursor: pointer; }
+.com_form .emotion_x:hover { background-position: 2px -28px; }
+
+/*9-1 17添加*/
+.mask_f { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; z-index: 3; }
+.Expression_gif { position: absolute; right: 8px; bottom: 25px; width: 390px; z-index: 4; }
+.Expression_gif > span { display: block; background: url('../images/Icon/bottom.png') no-repeat 344px center; height: 13px; margin-top: -1px; }
+.Expression_show { border: 1px solid #cccccc; width: 100%; min-height: 200px; background: #fff; }
+.Expression_show i { display: block; font-size: 14px; color: #666666; height: 40px; line-height: 40px; padding: 0 12px; border-bottom: 1px solid #cccccc; }
+.Expression_show span { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; width: 30px; height: 30px; text-align: center; line-height: 30px; border-right: 1px solid #ccc; border-bottom: 1px solid #ccc; box-sizing: border-box; font-size: 14px; cursor: pointer; }
+.Expression_show span:nth-of-type(13n) { border-right: 0px; }
+
 /*9-2添加*/
 .Common_problem_main span { display: block; font-size: 18px; color: #333333; border-bottom: 1px solid #e5e5e5; line-height: 31px; margin-top: 12px; padding-bottom: 8px; }
 .Common_problem_main p { font-size: 14px; color: #666666; line-height: 28px; margin-bottom: 5px; margin-top: 5px; }
+
+
+/*9-9添加*/
+.landlord_p{
+    font-size:14px;
+    color:#f76f5e;
+}
+
+/*9-13添加*/
+.main_x { padding: 8px; left:0px; top:0px; background:#fff; margin-top:3px; }
+.main_x select { width: 110px; height: 30px; border: 1px solid #d4d4d4; box-sizing: border-box; line-height: 30px; font-size: 12px; color: #666; background: #fff; margin-right: 10px; padding: 0 0 0 5px; }
+.main_x select option { height: 30px; line-height: 30px; color: #999; background: #fff; border-bottom: 1px solid #999; }
+.main_x select option:hover { background: #666; }
+.main_x select:hover { cursor: pointer; }
+.main_x input { width: 67px; height: 30px; background: #ff715f; border: 0px; border-radius: 3px; color: #fff; font-size: 12px; line-height: 30px; }
+.main_x input:hover { cursor: pointer; }
+
+/*9-23修改*/
+.Fill_in_order_main3 { background: #fff; padding: 18px; border-radius: 3px; box-shadow: 0 0 8px #d1d1d1; }
+.Inn_introduction_main_bottom3 .a1 > img { cursor: pointer; }
+.legend_main2 { margin-top: 5px; width: auto; }
+.legend_main2 > a { display: inline-block; width: 56px; height: 23px; border: 1px solid #f4a69e; border-radius: 3px; color: #f16453; font-size: 12px; text-align: center; line-height: 23px; box-sizing: border-box; vertical-align: top; margin-right: 8px; margin-bottom: 8px; }
+.order_main3_list2_bottom { /*margin-top: -27px; */}
+
+/*9-23添加*/
+.h_d { top: 20px; left: 0px; top: 64px; left: -41px; width: 200px; }
+
+/*10-18修改*/
+.Inn_introduction_main_bottom2 { width: 705px; }
+.Inn_introduction_main_bottom3 { width: 530px; text-align: right; }
+
+/*10-18添加*/
+.my_cou_right { width: 932px; }
+.my_cou_left { width: 244px; margin-right: 55px; }
+.my_cou { background: #fff; padding: 22px 55px 22px 0px; margin-bottom: 30px; }
+.my_cou_ul { padding-top: 11px; }
+.img_icon { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; width: 37px; height: 52px; overflow: hidden; margin-left: 48px; margin-right: 15px; }
+.img_icon img { width: auto; max-width: 37px; height: 31px; }
+.img_icon span { display: block; }
+.my_cou_ul li { background: #f0f0f0; height: 52px; width: 242px; border-radius: 5px; line-height: 52px; margin-bottom: 15px; }
+.my_cou_ul li:hover { background: #21a7bb !important; cursor: pointer; }
+.my_cou_ul li:hover i { color: #fff; }
+.my_cou_ul li:hover .img_icon span { display: none; }
+.my_cou_ul a { display: block; }
+.my_cou_ul i { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; font-size: 20px; color: #999999; }
+.my_cou_list { background: #21a7bb !important; }
+.my_cou_list .img_icon span { display: none; }
+.my_cou_list i { color: #fff; }
+.my_wallet_title span { display: block; font-size: 24px; color: #333333; line-height: 58px; height: 58px; }
+.my_wallet_mon { background: #f4f4f4 url('../images/Icon/img72.png') no-repeat 826px center; min-height: 102px; }
+.my_wallet_ul { padding-top: 18px; overflow: hidden; }
+.my_wallet_ul li { width: 224px; margin-right: 75px; float: left; text-align: center; }
+.my_wallet_ul p { font-size: 16px; color: #999999; text-align: center; margin-bottom: 5px; }
+.orange { color: #f76f5e; }
+.blue { color: #21a7bb; }
+.green { color: #1ea959; }
+.my_wallet_ul span { display: block; text-align: center; font-size: 21px; }
+.my_wallet_ul span em { font-size: 38px; }
+.my_wallet_ul a { display: inline-block; *display: inline; *zoom: 1; width: 84px; height: 30px; line-height: 30px; font-size: 16px; color: #fff; border-radius: 3px; background: #dadada; text-align: center; margin: 5px 0; }
+.bg_color { background: #21a7bb !important; }
+.balance_list { overflow: hidden; }
+.balance_list li { width: 50%; float: left; border-bottom: 1px solid #d2d2d2; text-align: center; font-size: 16px; color: #333333; height: 45px; line-height: 45px; cursor: pointer; }
+.balance_list .bor_list { border-bottom: 2px solid #21a7bb !important; color: #21a7bb !important; height: 44px !important; line-height: 45px !important; }
+.wallet_text { margin: 60px 0 10px 220px; }
+.wallet_text input[type=text] { border: 1px solid #d2d2d2; border-radius: 3px; width: 306px; height: 38px; line-height: 38px; padding: 0 16px; font-size: 14px; color: #333; vertical-align: middle; }
+.wallet_text div { margin-bottom: 16px; }
+.wallet_text input[type=submit] { width: 140px; font-size: 16px; color: #fff; text-align: center; height: 40px; line-height: 40px; border: 0px; cursor: pointer; vertical-align: middle; background: #f76f5e; border-radius: 3px; margin-left: 3px; }
+.wallet_rule { min-height: 200px; padding-bottom: 25px; }
+.wallet_rule p { color: #999999; font-size: 12px; }
+.wallet_tab { width: 100%; }
+.wallet_tab thead tr td { border-radius: 5px; padding-right: 3px; background: #dadada; text-align: center; height: 30px; line-height: 30px; border-right: 3px solid #fff; border-left: 3px solid #fff; color: #3f3f3f; font-size: 12px; }
+.w25 { width: 25%; }
+.w12_5 { width: 12.5%; }
+.w37_5 { width: 37.5%; }
+.wallet_tab tbody tr td { padding: 8px; font-size: 12px; color: #3f3f3f; text-align: center; line-height: 18px; }
+.wallet_tab tbody tr td a { color: #f53737; font-size: 12px; }
+.wallet_h { min-height: 300px; margin-bottom: 40px; }
+.wallet_tips { color: #999999; font-size: 12px; display: block; margin-bottom: 15px; }
+.Statistics_ul { overflow: hidden; background: #f4f4f4; padding: 27px 0 34px 0; }
+.Statistics_ul li { width: 25%; text-align: center; float: left; }
+.Statistics_ul p { text-align: center; font-size: 19px; color: #555454; line-height: 33px; height: 33px; }
+.Statistics_ul span { display: block; text-align: center; line-height: 33px; height: 33px; font-size: 12px; color: #555454; }
+.Stat_tab { width: 100%; }
+.Stat_tab thead tr td { border-radius: 5px; padding-right: 3px; background: #dadada; text-align: center; height: 30px; line-height: 30px; border-right: 3px solid #fff; border-left: 3px solid #fff; color: #3f3f3f; font-size: 12px; }
+.Stat_tab tbody tr td { padding: 8px; font-size: 12px; color: #3f3f3f; text-align: center; line-height: 18px; }
+.Stat_tab tbody tr td a { color: #f53737; font-size: 12px; }
+
+.points_left { margin-left: 33px; margin-right: 70px; }
+.f38 { font-size: 38px; }
+.points_left span { line-height: 102px; display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; font-size: 16px; color: #999999; }
+.points_left span em { color: #f76f5e; }
+.points_right a { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; width: 84px; height: 30px; line-height: 30px; text-align: center; border-radius: 3px; color: #fff; font-size: 16px; background: #dadada; margin-right: 14px; }
+.points_bg { background: #21a7bb !important; }
+.points_ul { padding: 12px 17px; }
+.points_ul li { border: 1px solid #dfdfdf; box-shadow: 0 0 1px #ccc; margin-bottom: 6px; overflow: hidden; }
+.points_list_left { width: 114px; height: 114px; background: url('../images/Icon/img76.png') no-repeat center center; background-size: 114px 114px; text-align: center; line-height: 114px; color: #fff; font-size: 27px; }
+.points_list_left em { font-size: 45px; }
+.points_list_conten { padding: 0 20px; width: 636px; }
+.points_list_right { width: 95px; padding: 14px 0; }
+.points_list_right a { background: #f76f5e; width: 95px; display: block; text-align: center; border-radius: 5px; padding: 13px 0; *padding: 10px 0; }
+.points_list_right span { display: block; color: #fff; font-size: 22px; }
+.points_list_title { display: block; font-size: 24px; color: #333333; margin-top: 14px; }
+.points_list_syy { font-size: 14px; color: #333333; line-height: 24px; margin-top: 5px; display: block; }
+.points_list_time { margin-top: 6px; }
+.points_list_time span { color: #999999; display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; }
+.points_list_time i { color: #333333; display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; margin-right: 48px; }
+
+.points_p { margin-top: 26px; padding-bottom: 35px; }
+.points_p p { font-size: 12px; color: #999999; }
+.night_title span { display: block; border-bottom: 1px solid #d2d2d2; font-size: 24px; color: #333333; padding: 9px 0 16px 0; }
+.night_list { margin-top: 13px; }
+.night_span { display: inline-block; *display: inline; *zoom: 1; vertical-align: top; font-size: 16px; color: #999; width: 92px; text-align: right; line-height: 40px; }
+.night_text { font-size: 14px; color: #333333; width: 250px; height: 38px; line-height: 40px; border: 1px solid #d9d9d9; border-radius: 3px; padding: 0 12px; vertical-align: middle; }
+.night_list select { margin-right: 10px; border: 1px solid #d9d9d9; border-radius: 3px; width: 116px; padding: 0 12px; height: 40px; line-height: 48px; cursor: pointer; vertical-align: middle; }
+.night_upload { margin-left: 96px; }
+.night_img { overflow: hidden; }
+.night_img li { width: 135px; height: 100px; overflow: hidden; margin-right: 20px; float: left; margin-bottom: 8px; }
+.night_img li img { width: 135px; height: 100px; }
+.night_area { border: 1px solid #d9d9d9; padding: 10px; width: 580px; border-radius: 5px; display: inline-block; *display: inline; *zoom: 1; vertical-align: top; }
+.night_area textarea { font-size: 14px; color: #333333; border: 0px; width: 100%; height: 30px; }
+.night_to { border: 1px solid #d9d9d9; border-radius: 5px; padding: 0 10px; height: 38px; line-height: 38px; width: 96px; font-size: 0px; }
+.night_to input { border: 0px; height: 36px; *height: 34px; line-height: 40px; font-size: 13px; color: #333; width: 76px; vertical-align: middle; }
+.night_to span { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; width: 20px; text-align: right; font-size: 16px; color: #666; }
+.night_i { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; margin: 0 10px; font-size: 16px; color: #999999; }
+.night_sub { text-align: right; }
+.night_sub input { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; width: 140px; height: 40px; line-height: 40px; font-size: 16px; color: #fff; text-align: center; border-radius: 3px; background: #f76f5e; cursor: pointer; border: 0px; margin: 37px 40px 28px 0; }
+
+.hotel_share { width: 193px; height: 53px; display: inline-block; *display: inline; *zoom: 1; margin-right: 25px; }
+.hotel_share img { width: 193px; height: 53px; cursor: pointer; }
+.hotel_mask { background: url('../images/Icon/bg_62.png') center center; position: fixed; top: 0px; width: 100%; height: 100%; z-index: 50; left: 0px; }
+.hotel_content { position: fixed; left: 50%; top: 50%; margin-left: -362px; margin-top: -240px; width: 725px; height: 500px; background: #fff; z-index: 53; }
+.hotel_head { height: 56px; line-height: 56px; border-bottom: 1px solid #b0b0b0; padding: 0 45px; text-align: center; position: relative; }
+.hotel_head span { display: block; text-align: center; color: #262626; font-size: 22px; }
+.hotel_head span img { margin-top: -55px; height: 99px; width: 95px; }
+.hotel_head > img { position: absolute; right: 8px; top: 8px; cursor: pointer; }
+.hotel_box { width: 550px; margin: 0 auto; padding: 10px 0; }
+.hotel_box p { font-size: 18px; color: #262626; text-align: center; line-height: 38px; }
+.hotel_qr img { margin-top: 25px; width: 172px; height: 172px; margin-bottom: 16px; }
+.hotel_ul { margin-bottom: 25px; }
+.hotel_ul li { display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; margin: 0 25px; text-align: center; width: 50px; }
+.hotel_ul li img { width: 50px; height: 50px; }
+.hotel_ul li a { display: block; font-size: 12px; }
+.hotel_ul li a span { display: block; margin-top: 8px; text-align: center; }
+.hotel_ul li:nth-of-type(1) a span { color: #6ac400; }
+.hotel_ul li:nth-of-type(2) a span { color: #eb2020; }
+.hotel_ul li:nth-of-type(3) a span { color: #208eeb; }
+.hotel_a { font-size: 18px; margin-bottom: 20px; }
+.hotel_a a { color: #146470; }
+.home_Sign { right: 34px; bottom: 14px; padding: 2px; border: 1px solid #f0f0f0; width: 82px; height: 82px; border-radius: 50%; z-index: 3; overflow: hidden; }
+.home_ring { background: #f0f0f0; width: 82px; height: 82px; border-radius: 50%; overflow: hidden; text-align: center; }
+.Sign_front { cursor: pointer; text-align: center; border-radius: 50%; overflow: hidden; }
+.Sign_front img { width: 100%; height: 100%; }
+.sign_after { width: 82px; height: 72px; border-radius: 50%; overflow: hidden; text-align: center; color: #1b0401; line-height: 20px; padding-top: 10px; cursor: pointer; background: url('../images/Icon/Line.png') no-repeat center 49px; }
+.sign_after span { font-size: 14px; display: block; text-align: center; }
+.sign_after i { font-size: 12px; text-align: center; display: block; }
+.home_popup { text-align: center; }
+.home_popup p { font-size: 16px; color: #262626; line-height: 34px; text-align: center; }
+.home_popup img { width: 174px; height: 152px; }

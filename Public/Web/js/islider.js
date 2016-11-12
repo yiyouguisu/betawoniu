@@ -14,6 +14,7 @@ var iSlider = function (opts) {
         throw new Error("dom element can not be empty!");
     }
 
+    console.log(opts);
     if (!opts.data || !opts.data.length) {
         throw new Error("data must be an array and must have more than one element!");
     }

@@ -1,11 +1,16 @@
 <include file="public:head" />
 <link href="__CSS__/Style.css" rel="stylesheet" />
 <link href="__CSS__/base.css" rel="stylesheet" />
+<style>
+    html{
+        overflow-x: hidden;
+    }
+</style>
 <div class="body_bg">
     <div class="wrap">
         <div class="WeChat_list1_main">
             <span>{$data.title}</span>
-            <i>{$data.inputtime|date="Y-m-d",###}</i><a href="javascript:;">蜗牛慢生活</a>
+            <i>{$data.inputtime|date="Y-m-d",###}</i><a href="http://mp.weixin.qq.com/s?__biz=MzIzNTI4ODEyNg==&mid=100001017&idx=1&sn=bc71b7305eb6010602cd696ff71b5216">{$data.nickname} 蜗牛客慢生活</a>
         </div>
         <div class="binding"></div>
     </div>
@@ -16,9 +21,15 @@
             <img class="close" src="__IMG__/tele_share.jpg" />
         </div>
     </div>
+
     <div class="details_main3 wrap">
         <div class="details_main3_02">
-            <p>{$data.content}</p>
+            {$data.content}
+        </div>
+    </div>
+    <div class="hidden"></div>
+    <div class="details_main3 wrap">
+        <div class="details_main3_02">
             <img src="{$site.vote_image}" />
             <p>{$site.vote_description}</p>
         </div>
@@ -28,10 +39,16 @@
         <div class="WeChat_list1_main3">
             <div class="WeChat_list1_main4">
                 <span>阅读<em>{$data.view|default="0"}</em></span>
-                <label>
-                    <img src="__IMG__/WeChat_list/img1.jpg" class="hit" />赞(<span style="width: 10px;" id="hitnum">{$data.hit|default="0"}</span>)</label>
+                <label style="font-weight: normal; margin-bottom: 0; ">
+                    <img src="__IMG__/WeChat_list/img3.png" class="hit" />赞(<span style="width: auto;    margin-top: -2px;" id="hitnum">{$data.hit|default="0"}</span>)</label>
                 <!--<i onclick="window.location.href='{:U('Wx/Member/reward',array('type'=>6))}'">立即报名</i>-->
-                <i class="join">立即报名</i>
+                <div class="" style="display:inline-block;vertical-align:middle; width:37%;overflow:hidden; margin: 2.5% 0;">
+                    <eq name="data['isjoin']" value="0">
+                        <a href="javascript:;" class="join">参与抽奖</a>
+                        <else />
+                        <a href="{:U('Wx/News/backshow',array('nid'=>$data['id']))}" class="join">获取更多抽奖码</a>
+                    </eq>
+                </div>
             </div>
         </div>
 
@@ -45,9 +62,7 @@
             var nid = '{$data.id}';
             var uid = "{$user.id}";
             if (uid == '') {
-                $.alert("请先成为会员", function () {
-                    window.location.href = "{:U('Wx/Public/wxlogin')}";
-                })
+                $.alert("请先清除微信缓存；方法：手机后台关闭微信应用，再重新打开微信。");
                 return false;
             }
 
@@ -92,6 +107,7 @@
     </script>  
 <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script>
+$(function(){
     wx.config({
         debug: false,
         appId: '<?php echo $signPackage["appId"];?>',
@@ -104,152 +120,35 @@
           'onMenuShareQQ',
           'onMenuShareWeibo',
           'onMenuShareQZone',
-          'hideMenuItems'
+          'hideMenuItems',
+          'hideAllNonBaseMenuItem',
         ]
     });
+    
     wx.ready(function () {
-
-
-        // 2.1 监听“分享给朋友”，按钮点击、自定义分享内容及分享结果接口
-        wx.onMenuShareAppMessage({
-            title: '{$share.title}',
-            desc: '{$share.content}',
-            link: '{$share.link}',
-            imgUrl: '{$share.image}',
-            trigger: function (res) {
-
-            },
-            success: function (res) {
-                alert('已分享');
-                ajax_share('{$share.id}','ShareAppMessage','success');
-            },
-            cancel: function (res) {
-                alert('已取消');
-                ajax_share('{$share.id}','ShareAppMessage','cancel');
-            },
-            fail: function (res) {
-                alert(JSON.stringify(res));
-                ajax_share('{$share.id}','ShareAppMessage','error');
-            }
-        });
-
-
-        // 2.2 监听“分享到朋友圈”按钮点击、自定义分享内容及分享结果接口
-        wx.onMenuShareTimeline({
-            title: '{$share.content}',
-            desc: '{$share.content}',
-            link: '{$share.link}',
-            imgUrl: '{$share.image}',
-            trigger: function (res) {
-                // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
-            },
-            success: function (res) {
-                alert('已分享');
-                ajax_share('{$share.id}','ShareTimeline','success');
-            },
-            cancel: function (res) {
-                alert('已取消');
-                ajax_share('{$share.id}','ShareTimeline','cancel');
-            },
-            fail: function (res) {
-                alert(JSON.stringify(res));
-                ajax_share('{$share.id}','ShareTimeline','error');
-            }
-        });
-
-
-        // 2.3 监听“分享到QQ”按钮点击、自定义分享内容及分享结果接口
-
-        wx.onMenuShareQQ({
-            title: '{$share.title}',
-            desc: '{$share.content}',
-            link: '{$share.link}',
-            imgUrl: '{$share.image}',
-            trigger: function (res) {
-            },
-            complete: function (res) {
-            },
-            success: function (res) {
-                alert('已分享');
-                ajax_share('{$share.id}','ShareQQ','success');
-            },
-            cancel: function (res) {
-                alert('已取消');
-                ajax_share('{$share.id}','ShareQQ','cancel');
-            },
-            fail: function (res) {
-                alert(JSON.stringify(res));
-                ajax_share('{$share.id}','ShareQQ','error');
-            }
-        });
-
-
-        // 2.4 监听“分享到微博”按钮点击、自定义分享内容及分享结果接口
-        wx.onMenuShareWeibo({
-            title: '{$share.title}',
-            desc: '{$share.content}',
-            link: '{$share.link}',
-            imgUrl: '{$share.image}',
-            trigger: function (res) {
-            },
-            complete: function (res) {
-            },
-            success: function (res) {
-                alert('已分享');
-                ajax_share('{$share.id}','ShareWeibo','success');
-            },
-            cancel: function (res) {
-                alert('已取消');
-                ajax_share('{$share.id}','ShareWeibo','cancel');
-            },
-            fail: function (res) {
-                alert(JSON.stringify(res));
-                ajax_share('{$share.id}','ShareWeibo','error');
-            }
-        });
-
-
-        // 2.5 监听“分享到QZone”按钮点击、自定义分享内容及分享接口
-
-        wx.onMenuShareQZone({
-            title: '{$share.title}',
-            desc: '{$share.content}',
-            link: '{$share.link}',
-            imgUrl: '{$share.image}',
-            trigger: function (res) {
-            },
-            complete: function (res) {
-            },
-            success: function (res) {
-                alert('已分享');
-                ajax_share('{$share.id}','ShareQZone','success');
-            },
-            cancel: function (res) {
-                alert('已取消');
-                ajax_share('{$share.id}','ShareQZone','cancel');
-            },
-            fail: function (res) {
-                alert(JSON.stringify(res));
-                ajax_share('{$share.id}','ShareQZone','error');
-            }
+        wx.hideAllNonBaseMenuItem({
+          success: function () {
+          }
         });
     });
 
     wx.error(function (res) {
         //alert(res.errMsg);
     });
+    })
+
     function ajax_share(mid,sharetype,sharestatus){
-        $.ajax({
-            type: "POST",
-            url: "{:U('Wx/Member/ajax_share')}",
-            data: {'sharetype':sharetype,'sharestatus':sharestatus,'mid':mid},
-            dataType: "json",
-            success: function(data){
-                if(sharestatus=='success'){
-                    window.location.href="{:U('Wx/Member/reward',array('type'=>6))}";
-                }
-            }
-        });
+        // $.ajax({
+        //     type: "POST",
+        //     url: "{:U('Wx/Member/ajax_share')}",
+        //     data: {'sharetype':sharetype,'sharestatus':sharestatus,'mid':mid},
+        //     dataType: "json",
+        //     success: function(data){
+        //         if(sharestatus=='success'){
+        //             window.location.href="{:U('Wx/Member/waitreward')}";
+        //         }
+        //     }
+        // });
     }
 </script>
 </body>

@@ -116,7 +116,7 @@ class MemberModel extends Model {
         if ($data) {
             $data['reg_time']=time();
             $data['reg_ip']=get_client_ip();
-
+            $data['group_id']=1;
             //生成随机认证码
             $data['verify'] = \Api\Common\CommonController::genRandomString(6);
             $data['tuijiancode'] = \Api\Common\CommonController::genNumberString(7);//推荐邀请码

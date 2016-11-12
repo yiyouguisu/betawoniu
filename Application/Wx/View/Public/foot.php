@@ -44,7 +44,7 @@
 
   // 2.2 监听“分享到朋友圈”按钮点击、自定义分享内容及分享结果接口
     wx.onMenuShareTimeline({
-      title: '{$share.content}',
+      title: '{$share.title}',
       desc: '{$share.content}',
       link: '{$share.link}',
       imgUrl: '{$share.image}',
@@ -146,7 +146,7 @@
 wx.error(function (res) {
   //alert(res.errMsg);
 });
-function ajax_share(mid,sharetype,sharestatus){
+// function ajax_share(mid,sharetype,sharestatus){
     //$.ajax({
     //    type: "POST",
     //    url: "{:U('Home/Index/ajax_share')}",
@@ -159,7 +159,7 @@ function ajax_share(mid,sharetype,sharestatus){
 
     //    }
     //});
-}
+// }
 </script>
 </body>
 </html>

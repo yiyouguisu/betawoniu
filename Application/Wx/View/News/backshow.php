@@ -1,26 +1,43 @@
 <include file="public:head" />
 <link href="__CSS__/Style.css" rel="stylesheet" />
 <link href="__CSS__/base.css" rel="stylesheet" />
+<link href="__CSS__/AddStyle.css" rel="stylesheet" />
+<style>
+    html{
+        overflow-x: hidden;
+    }
+</style>
 <div class="body_bg">
     <div class="wrap">
         <div class="WeChat_list1_main">
             <span>{$data.title}</span>
-            <i>{$data.inputtime|date="Y-m-d",###}</i><a href="javascript:;">蜗牛慢生活</a>
+            <i>{$data.inputtime|date="Y-m-d",###}</i><a href="http://mp.weixin.qq.com/s?__biz=MzIzNTI4ODEyNg==&mid=100001017&idx=1&sn=bc71b7305eb6010602cd696ff71b5216">{$data.nickname} 蜗牛客慢生活</a>
         </div>
-        <div class="binding"></div>
-        <div class="tele_share5">
-            <img class="close" src="__IMG__/img1.png" />
-            <div class="tele_share2">
-                <p>
-                    点击右上角，选择【发送给朋友】邀请好友，好友点击文章底部的【立即报名】并成功分享到朋友圈，您即可额外获【一个抽奖码】数量没有上限！
-                </p>
-                <img src="__IMG__/tele_share2.jpg" />
+        <div class="add_float2 hide">
+            <div class="add_float2_bg2"></div>
+            <div class="add_botom pa">
+                <img class="close" src="__IMG__/image/icon/img8.png" />
+                <div class="add_botom2">
+                    <div class="add_botom3">
+                        <p>点击右上角，选择【发送给朋友】，好友点击文章底部【参与抽奖】并成功分享朋友圈，您即可额外获得一个抽奖码。抽奖码越多中奖机率越高哦！</p>
+                    </div>
+                    <div class="add_botom4">
+                        <img src="__IMG__/image/img4.jpg" />
+                    </div>
+                </div>
+                <span>发送给朋友或者发送到 好友群</span>
+                <img src="__IMG__/image/icon/img3.png" />
             </div>
         </div>
     </div>
     <div class="details_main3 wrap">
         <div class="details_main3_02">
-            <p>{$data.content}</p>
+            {$data.content}
+        </div>
+    </div>
+    <div class="hidden"></div>
+    <div class="details_main3 wrap">
+        <div class="details_main3_02">
             <img src="{$site.vote_image}" />
             <p>{$site.vote_description}</p>
         </div>
@@ -30,26 +47,28 @@
         <div class="WeChat_list1_main3">
             <div class="WeChat_list1_main4">
                 <span>阅读<em>{$data.view|default="0"}</em></span>
-                <label>
-                    <img src="__IMG__/WeChat_list/img1.jpg" class="hit" />赞(<span style="width: 10px;" id="hitnum">{$data.hit|default="0"}</span>)</label>
+                <label style="font-weight: normal; margin-bottom: 0; ">
+                    <img src="__IMG__/WeChat_list/img3.png" class="hit" />赞(<span style="width: auto;margin-top: -2px;" id="hitnum">{$data.hit|default="0"}</span>)</label>
                 <!--<i onclick="window.location.href='{:U('Wx/Member/reward',array('type'=>6))}'">立即报名</i>-->
-                <i class="join">更多民宿</i>
+                <div class="" style="display:inline-block;vertical-align:middle; width:37%;overflow:hidden; margin: 2.5% 0;">
+                    <a href="javascript:;" class="join">更多民宿</a>
+                </div>
             </div>
         </div>
-
     </div>
 
+    
 </div>
 
 <script type="text/javascript">
     $(function () {
+        $(".add_float2").height($(window).height());
+        $(".add_float2").show();
         $(".hit").click(function () {
             var nid = '{$data.id}';
             var uid = "{$user.id}";
             if (uid == '') {
-                $.alert("请先成为会员", function () {
-                    window.location.href = "{:U('Wx/Public/wxlogin')}";
-                })
+                $.alert("请先清除微信缓存；方法：手机后台关闭微信应用，再重新打开微信。");
                 return false;
             }
 
@@ -85,9 +104,8 @@
         $(".main").css({
             "background-size": "100% " + $(window).height() + ""
         })
-        $(".binding,.tele_share5").show();
-        $(".tele_share5 .close").click(function(){
-            $(".binding,.tele_share5").hide()
+        $(".close").click(function(){
+            $(".add_float2").hide();
         })
     })
 
@@ -106,11 +124,15 @@
           'onMenuShareQQ',
           'onMenuShareWeibo',
           'onMenuShareQZone',
-          'hideMenuItems'
+          'hideMenuItems',
+          'showAllNonBaseMenuItem',
         ]
     });
     wx.ready(function () {
-
+        wx.showAllNonBaseMenuItem({
+          success: function () {
+          }
+        });
 
         // 2.1 监听“分享给朋友”，按钮点击、自定义分享内容及分享结果接口
         wx.onMenuShareAppMessage({
@@ -138,8 +160,8 @@
 
         // 2.2 监听“分享到朋友圈”按钮点击、自定义分享内容及分享结果接口
         wx.onMenuShareTimeline({
-            title: '{$share.content}',
-            desc: '{$share.content}',
+            title: '【{$share.title}】{$share.content}',
+            desc: '【{$share.title}】{$share.content}',
             link: '{$share.link}',
             imgUrl: '{$share.image}',
             trigger: function (res) {

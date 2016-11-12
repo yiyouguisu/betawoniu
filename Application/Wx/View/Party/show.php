@@ -2,7 +2,11 @@
 <link href="__CSS__/Style.css" rel="stylesheet" />
 <link href="__CSS__/base.css" rel="stylesheet" />
 
-
+<style>
+    html{
+        overflow-x: hidden;
+    }
+</style>
 <div class="details_main wrap">
     
     <div class="details_top1 wrap2">
@@ -72,11 +76,17 @@
 
 <div class="details_main3 wrap">
     <div class="details_main3_02">
-        <p>{$data.content}</p>
+        {$data.content}
+    </div>
+</div>
+<div class="hidden"></div>
+<div class="details_main3 wrap">
+    <div class="details_main3_02">
         <img src="{$site.vote_image}" />
         <p>{$site.vote_description}</p>
     </div>
 </div>
+
 
 <div class="details_main3_03 hide">
     <div class="details_main3_04">
@@ -106,9 +116,7 @@
             var hid = '{$data.id}';
             var uid = "{$user.id}";
             if (uid == '') {
-                $.alert("请先成为会员", function () {
-                    window.location.href = "{:U('Wx/Public/wxlogin')}";
-                })
+                $.alert("请先清除微信缓存；方法：手机后台关闭微信应用，再重新打开微信。");
                 return false;
             }
 

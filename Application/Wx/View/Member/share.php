@@ -1,6 +1,11 @@
 <include file="public:head" />
 <link href="__CSS__/Style.css" rel="stylesheet" />
 <link href="__CSS__/base.css" rel="stylesheet" />
+<style>
+    body {
+        background: #252c3f;
+    }
+    </style>
 <div class="Buddy_share wrap">
     <div class="Buddy_share_main">
         <ul class="Buddy_share_ul">
@@ -49,9 +54,11 @@
 </script>
 <include file="public:foot" />
 <script>
-    function closeframe(obj, uid,nickname,head) {
+    function closeframe(obj, uid,nickname,head,phone) {
         var text = $(obj).find(".infor_a").html();
-        $(window.parent.document).find(".username").text(nickname);
+        $(window.parent.document).find(".username").val(nickname);
+        $(window.parent.document).find(".nickname").val(nickname);
+        $(window.parent.document).find(".phone").val(phone);
         $(window.parent.document).find(".head").attr("src", head);
         $(window.parent.document).find("#uid").val(uid);
         window.parent.CloseIframe();

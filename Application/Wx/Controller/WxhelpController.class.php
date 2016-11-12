@@ -9,7 +9,7 @@ class WxhelpController extends CommonController {
         $this->appid = C('WEI_XIN_INFO.APP_ID');
         $this->appsecret = C("WEI_XIN_INFO.APP_SECRET");
     }
-
+	
 	public function GetOpenid()
 	{
 		//通过code获得openid
@@ -56,48 +56,6 @@ class WxhelpController extends CommonController {
         $user_info_obj = json_decode($res, true);
 		return $user_info_obj;
 	}
-    public function GetUserInfoForUnionid(){
-        if (!isset($_GET['code'])){
-			//触发微信返回code码
-			$baseUrl = urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].$_SERVER['QUERY_STRING']);
-			$url = $this->__CreateOauthUrlForCode($baseUrl,'snsapi_base');
-			Header("Location: $url");
-			exit();
-		} else {
-            $code = $_GET['code'];
-			$get_openid_url = $this->__CreateOauthUrlForOpenid($code);
-            $res = file_get_contents($get_openid_url);
-            $user_obj = json_decode($res, true);
-            $openId=$user_obj["openid"];
-
-            $get_access_token_url = $this->__CreateAccess_tokenUrl();
-            $res1 = file_get_contents($get_access_token_url);
-            $user_obj1 = json_decode($res1, true);
-            $access_token=$user_obj1["access_token"];
-
-            $get_user_info_url=$this->__CreateGetUserInfoUrlForUnionid($access_token,$openId);
-            $user_info = file_get_contents($get_user_info_url);
-            $user_info_obj = json_decode($user_info, true);
-            return $user_info_obj;
-        }
-    }
-    public function GetUserInfoForAccessToken(){
-        $openId=cookie("openid");
-        $access_token=S("access_token");
-        if(empty($access_token)){
-            $get_access_token_url = $this->__CreateAccess_tokenUrl();
-            $res1 = file_get_contents($get_access_token_url);
-            $user_obj1 = json_decode($res1, true);
-            $access_token=$user_obj1["access_token"];
-            S("access_token",$access_token,7200);
-        }
-
-        $get_user_info_url=$this->__CreateGetUserInfoUrlForUnionid($access_token,$openId);
-        $user_info = file_get_contents($get_user_info_url);
-        $user_info_obj = json_decode($user_info, true);
-        return $user_info_obj;
-
-    }
 	public function GetOpenidFromMp($code)
 	{
 		$url = $this->__CreateOauthUrlForOpenid($code);
@@ -118,7 +76,7 @@ class WxhelpController extends CommonController {
 		$openid = $data['openid'];
 		return $openid;
 	}
-
+	
 	private function ToUrlParams($urlObj)
 	{
 		$buff = "";
@@ -128,11 +86,11 @@ class WxhelpController extends CommonController {
 				$buff .= $k . "=" . $v . "&";
 			}
 		}
-
+		
 		$buff = trim($buff, "&");
 		return $buff;
 	}
-
+	
 	private function __CreateOauthUrlForCode($redirectUrl,$scope='snsapi_base')
 	{
 		$urlObj["appid"] = $this->appid;
@@ -143,7 +101,7 @@ class WxhelpController extends CommonController {
 		$bizString = $this->ToUrlParams($urlObj);
 		return "https://open.weixin.qq.com/connect/oauth2/authorize?".$bizString;
 	}
-
+	
 	private function __CreateOauthUrlForOpenid($code)
 	{
 		$urlObj["appid"] = $this->appid;
@@ -159,20 +117,5 @@ class WxhelpController extends CommonController {
         $urlObj["lang"] = "zh_CN";
         $bizString = $this->ToUrlParams($urlObj);
 		return "https://api.weixin.qq.com/sns/userinfo?".$bizString;
-    }
-    private function __CreateAccess_tokenUrl()
-	{
-		$urlObj["appid"] = $this->appid;
-		$urlObj["secret"] = $this->appsecret;
-		$urlObj["grant_type"] = "client_credential";
-		$bizString = $this->ToUrlParams($urlObj);
-		return "https://api.weixin.qq.com/cgi-bin/token?".$bizString;
-	}
-    private function __CreateGetUserInfoUrlForUnionid($access_token,$openId){
-        $urlObj["access_token"] = $access_token;
-		$urlObj["openid"] = $openId;
-        $urlObj["lang"] = "zh_CN";
-        $bizString = $this->ToUrlParams($urlObj);
-		return "https://api.weixin.qq.com/cgi-bin/user/info?".$bizString;
     }
 }

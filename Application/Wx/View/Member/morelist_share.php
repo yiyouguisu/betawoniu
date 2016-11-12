@@ -1,5 +1,5 @@
 <volist name="data" id="vo">
-    <li class="hidden item" <notempty name="type">  onclick="closeframe(this,{$vo.tuid},'{$vo.nickname}','{$vo.head}')" </notempty>>
+    <li class="hidden item" <notempty name="type">  onclick="closeframe(this,{$vo.id},'{$vo.nickname}','{$vo.head}','{$vo.phone}')" </notempty>>
         <div class="fl">
             <img src="/default_head.png" data-original="{$vo.head}" class="pic"/>
         </div>
@@ -7,7 +7,7 @@
             {$vo.nickname|default="未填写"}
         </div>
         <div class="fr">
-            {$vo.inputtime|date="Y-m-d",###}
+            {$vo.reg_time|date="Y-m-d",###}
         </div>
     </li>
 </volist>

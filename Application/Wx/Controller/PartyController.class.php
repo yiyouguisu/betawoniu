@@ -115,9 +115,15 @@ class PartyController extends CommonController {
             if($id){
                 M('house')->where(array('id'=>$hid))->setInc("votenum");
                 $coupons=M('coupons')->where(array('id'=>4))->find();
+                $code="000000";
                 if($votenum%2==0){
-                    $code=\Api\Common\CommonController::genNumberString(8);
-                    $voteparty=M('voteparty')->order(array('id'=>'desc'))->find();
+                    $pool=M('pool')->where(array('hid'=>$hid))->order(array('id'=>'desc'))->find();
+                    if($pool){
+                        $code=(int)$pool['code']+1;
+                        $code=sprintf("%06d", $code);//生成4位数，不足前面补0   
+                    }
+                    //$code=\Api\Common\CommonController::genNumberString(8);
+                    $voteparty=M('voteparty')->where(array('hid'=>$hid))->order(array('id'=>'desc'))->find();
                     M('pool')->add(array(
                         'uid'=>$uid,
                         'code'=>$code,
@@ -146,14 +152,23 @@ class PartyController extends CommonController {
                     ));
                 if(!empty($user['groupid_id'])){
                     if($votenum%4==0){
-                        $code=\Api\Common\CommonController::genNumberString(8);
-                        $voteparty=M('voteparty')->order(array('id'=>'desc'))->find();
+                        $pool=M('pool')->where(array('hid'=>$hid))->order(array('id'=>'desc'))->find();
+                        if($pool){
+                            $code=(int)$pool['code']+1;
+                        }else{
+                            $code=(int)$code+1;
+                        }
+                        
+                        $code=sprintf("%06d", $code);//生成4位数，不足前面补0   
+                        //$code=\Api\Common\CommonController::genNumberString(8);
+                        $voteparty=M('voteparty')->where(array('hid'=>$hid))->order(array('id'=>'desc'))->find();
                         M('pool')->add(array(
                             'uid'=>$user['groupid_id'],
                             'code'=>$code,
                             'hid'=>$hid,
                             'vaid'=>$voteparty['id'],
                             'status'=>0,
+                            'isowner'=>0,
                             'inputtime'=>time()
                             ));
                     }

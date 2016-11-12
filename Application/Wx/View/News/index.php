@@ -11,6 +11,18 @@
         </ul>
     </div>
 </div>
+<eq name="user['subscribestatus']" value="0">
+    <div class="details_main4">
+        <div class="details_main4_01 hidden">
+            <div class="details_main4_02">
+                <span>鐐瑰嚮鍏虫敞鎴戜滑鐨勫井淇℃湇鍔″彿</span>
+            </div>
+            <div class="details_main4_03">
+                <a href="http://mp.weixin.qq.com/s?__biz=MzIzNTI4ODEyNg==&mid=100001017&idx=1&sn=bc71b7305eb6010602cd696ff71b5216">鍏虫敞寰俊</a>
+            </div>
+        </div>
+    </div>
+</eq>
 <script type="text/javascript">
     $(function(){
         $('img.pic').lazyload({
@@ -24,7 +36,7 @@
             itemSelector  : ".item",
             loading:{
                 msgText: ' ',
-                finishedMsg: '没有更多数据',
+                finishedMsg: '娌℃湁鏇村鏁版嵁',
                 finished: function(){
                     sp++;
                     if(sp>=120){

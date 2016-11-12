@@ -57,53 +57,58 @@ class CommonController extends Controller {
                     cookie('unionid', $unionid, C('AUTO_TIME_LOGIN'));
                     session('uid', $user['id']);
                     session('username', $user['username']);
-                    $access_token=S("access_token");
-                    if(empty($access_token)){
-                        $get_access_token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appid . '&secret=' . $secret;
-                        $res1 = file_get_contents($get_access_token_url);
-                        $user_obj1 = json_decode($res1, true);
-                        $access_token=$user_obj1["access_token"];
-                        S("access_token",$access_token,7200);
-                    }
-                    $get_user_info_url="https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$access_token."&openid=".$openId."&lang=zh_CN";
-                    $user_info = file_get_contents($get_user_info_url);
-                    $user_info_obj = json_decode($user_info, true);
-                    $data=array(
-                            'nickname'=>$user_info_obj['nickname'],
-                            'sex'=>intval($user_info_obj['sex']),
-                            'head'=>$user_info_obj['headimgurl'],
-                            'subscribe_time'=>$user_info_obj['subscribe_time'],
-                            'subscribestatus'=>$user_info_obj['subscribe']
-                            );
-                    M('member')->where(array('id'=>$user['id']))->save($data);
-                    $user=array_merge($user,$data);
+                    // $access_token=S("access_token");
+                    // if(empty($access_token)){
+                    //     $get_access_token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appid . '&secret=' . $secret;
+                    //     $res1 = file_get_contents($get_access_token_url);
+                    //     $user_obj1 = json_decode($res1, true);
+                    //     $access_token=$user_obj1["access_token"];
+                    //     S("access_token",$access_token,7200);
+                    // }
+                    // $get_user_info_url="https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$access_token."&openid=".$openId."&lang=zh_CN";
+                    // $user_info = file_get_contents($get_user_info_url);
+                    // $user_info_obj = json_decode($user_info, true);
+
+                    // if($user_info_obj['subscribe']==1){
+                    //     $data=array(
+                    //             'nickname'=>$user_info_obj['nickname'],
+                    //             'sex'=>intval($user_info_obj['sex']),
+                    //             'head'=>$user_info_obj['headimgurl'],
+                    //             'subscribe_time'=>$user_info_obj['subscribe_time'],
+                    //             'subscribestatus'=>$user_info_obj['subscribe']
+                    //             );
+                    //     M('member')->where(array('id'=>$user['id']))->save($data);
+                    // }
+                    // $user=array_merge($user,$data);
                     $this->assign("user",$user);
                 }
             }
         }else{
             $uid=session("uid");
-            if($uid){
-                $access_token=S("access_token");
-                if(empty($access_token)){
-                    $get_access_token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appid . '&secret=' . $secret;
-                    $res1 = file_get_contents($get_access_token_url);
-                    $user_obj1 = json_decode($res1, true);
-                    $access_token=$user_obj1["access_token"];
-                    S("access_token",$access_token,7200);
-                }
-                $openId=cookie("openid");
-                $get_user_info_url="https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$access_token."&openid=".$openId."&lang=zh_CN";
-                $user_info = file_get_contents($get_user_info_url);
-                $user_info_obj = json_decode($user_info, true);
-                $data=array(
-                        'nickname'=>$user_info_obj['nickname'],
-                        'sex'=>intval($user_info_obj['sex']),
-                        'head'=>$user_info_obj['headimgurl'],
-                        'subscribe_time'=>$user_info_obj['subscribe_time'],
-                        'subscribestatus'=>$user_info_obj['subscribe']
-                        );
-                M('member')->where(array('id'=>$uid))->save($data);
-            }
+            // if($uid){
+            //     $access_token=S("access_token");
+            //     if(empty($access_token)){
+            //         $get_access_token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appid . '&secret=' . $secret;
+            //         $res1 = file_get_contents($get_access_token_url);
+            //         $user_obj1 = json_decode($res1, true);
+            //         $access_token=$user_obj1["access_token"];
+            //         S("access_token",$access_token,7200);
+            //     }
+            //     $openId=cookie("openid");
+            //     $get_user_info_url="https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$access_token."&openid=".$openId."&lang=zh_CN";
+            //     $user_info = file_get_contents($get_user_info_url);
+            //     $user_info_obj = json_decode($user_info, true);
+            //     if($user_info_obj['subscribe']==1){
+            //         $data=array(
+            //                 'nickname'=>$user_info_obj['nickname'],
+            //                 'sex'=>intval($user_info_obj['sex']),
+            //                 'head'=>$user_info_obj['headimgurl'],
+            //                 'subscribe_time'=>$user_info_obj['subscribe_time'],
+            //                 'subscribestatus'=>$user_info_obj['subscribe']
+            //                 );
+            //         M('member')->where(array('id'=>$uid))->save($data);
+            //     }
+            // }
             $user = M('member')->where(array('id'=>$uid))->find();
             if ($user) {
                 session('uid', $user['id']);

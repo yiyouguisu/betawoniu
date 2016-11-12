@@ -10,71 +10,44 @@
         z-index: 99999;
         display: none;
     }
+    body{
+        background:#252c3f;
+    }
 </style>
-<link href="__CSS__/Style.css" rel="stylesheet" />
+
 <link href="__CSS__/base.css" rel="stylesheet" />
-<!--<div class="wrap">
-    <div class="Coupon_gift hidden">
-        <div class="Coupon_gift_l fl">
-            赠送优惠券金额 :
-        </div>
-        <div class="Coupon_gift_r fr">
-            <span class="add">
-                +
-            </span>
-            <label>280</label><em class="fich_em">元</em>
-            <span class="reduce">—</span>
-        </div>
-    </div>
-</div>
-<script type="text/javascript">
-        $(function () {
-            $(".add").click(function () {
-                var label1 = parseInt($(".Coupon_gift_r label").text());
-                label1+=1 ;
-                $(".Coupon_gift_r label").text(label1);
-            })
-            $(".reduce").click(function () {
-                var label1 = parseInt($(".Coupon_gift_r label").text());
-                label1 -= 1;
-                $(".Coupon_gift_r label").text(label1);
-            })
-        })
-</script>-->
-<div class="wrap">
-    <div class="Coupon_gift2 hidden">
-        <div class="Coupon_gift2_l fl">
-            被赠送好友 :
-        </div>
-        <div class="Coupon_gift2_r fr">
-            <a href="javascript:ShowIframe('{:U('Wx/Member/share',array('type'=>1))}')" class="hidden">
-                <div class="fl Coupon_gift2_r_1">
-                    <img class="head" src="/default_head.png" />
-                </div>
-                <span class="fl username">
-                    请选择好友
-                </span>
-                <div class="fl Coupon_gift2_r_2">
-                    <img src="__IMG__/Coupon gift/img2.png"/>
-                </div>
-            </a>
+<link href="__CSS__/AddStyle.css" rel="stylesheet" />
+    <div class="wrap">
+        <div class="Gift_friends">
+            <div class="Gift_friends_top">
+                <img src="__IMG__/image/icon/Gift_friends.png"     width="100%;"/>
+            </div>
+            <div class="Gift_friends_top2">
+                <a href="javascript:ShowIframe('{:U('Wx/Member/share',array('type'=>1))}')" class="hidden">
+                    <span class="fl middle username">请选择点亮过的好友</span>
+                    <img src="__IMG__/image/icon/img6.png" />
+                </a>
+            </div>
+            <div class="Gift_friends_bottom">
+                <p>如果好友没有被点亮，那被赠送的好友必须参与活动才能查看所得抵用券。</p>
+                <input class="text3 nickname" type="text" name="nickname" placeholder="好友姓名"/>
+                <input class="text3 phone" type="text" name="phone" placeholder="好友联系方式" />
+                <input type="hidden" name="id" value="{$id}" />
+                <input type="hidden" id="uid" name="uid" value="" />
+                <input class="sub2 save" type="button" value="确定赠送" />
+            </div>
+           
         </div>
     </div>
-</div>
-<div class="wrap">
-    <div class="Coupon_gift3">
-        <input type="hidden" name="id" value="{$id}" />
-        <input type="hidden" id="uid" name="uid" value="" />
-        <a href="javascript:void(0);" class="save">立即赠送</a>
-    </div>
-</div>
 <include file="public:foot" />
 <script>
     $(function () {
         $(".save").click(function () {
             var coupons_orderid = $("input[name='id']").val();
             var uid = $("input[name='uid']").val();
-            if (uid == '') {
+            var nickname = $("input[name='nickname']").val();
+            var phone = $("input[name='phone']").val();
+            if (nickname=='' || phone=='') {
                 alert("请选择赠送好友");
                 return false;
             }
@@ -82,7 +55,7 @@
             $.ajax({
                 type: "POST",
                 url: "{:U('Wx/Member/ajax_given')}",
-                data: { 'uid': uid, 'coupons_orderid': coupons_orderid },
+                data: { 'uid': uid,'nickname':nickname,'phone':phone, 'coupons_orderid': coupons_orderid },
                 dataType: "json",
                 success: function (data) {
                     if (data.status == 1) {
@@ -96,6 +69,15 @@
                     } else if (data.status == -2) {
                         $.hideLoading();
                         $.alert("该优惠券过期了");
+                    } else if(data.status == -3){
+                        $.hideLoading();
+                        $.alert("友情提示:您赠送的好友还不是蜗牛客的小伙伴，请先邀请其参与任意抽奖活动！");
+                    } else if(data.status == -4){
+                        $.hideLoading();
+                        $.alert("用户名不能为空！");
+                    } else if(data.status == -5){
+                        $.hideLoading();
+                        $.alert("手机不能为空！");
                     } else {
                         $.hideLoading();
                         $.alert("赠送失败");

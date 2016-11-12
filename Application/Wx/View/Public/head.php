@@ -12,11 +12,11 @@
 
 <link rel="stylesheet" href="__PUBLIC__/Public/css/weui.css">
 <link rel="stylesheet" href="__PUBLIC__/Public/css/jquery-weui.css">
-<link rel="stylesheet" href="__CSS__/base.css">
-<link rel="stylesheet" href="__CSS__/style.css">
+<link rel="stylesheet" href="__PUBLIC__/Wx/css/layer.css">
 <script src="__JS__/jquery-1.11.1.min.js"></script>
 <script src="__PUBLIC__/Public/js/jquery-weui.js"></script>
 <script type="text/javascript" src="__PUBLIC__/public/js/jquery.infinitescroll.js"></script>
 <script src="__PUBLIC__/public/js/jquery.lazyload.min.js" type="text/javascript"></script> 
+<script src="__PUBLIC__/Wx/js/layer.js" type="text/javascript"></script> 
 </head>
 <body>

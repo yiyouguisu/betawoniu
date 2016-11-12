@@ -48,6 +48,30 @@ class NewsController extends CommonController {
     //    }
         
     //}
+
+    //用户点开分享的页面时访问
+    public function bridge(){
+        // session(null);
+        // echo 123;
+        $nid=I('nid');
+        $invitecode = session('invitecode');
+        // \Think\Log::write("invitecode111:".$invitecode,'WARN');
+        if(empty($nid)){
+            $innid = I('innid');
+            if(!empty($innid)){
+                $this->redirect("Wx/Vote/show",array('id'=>$innid));
+            }else{
+                $this->redirect("Wx/Vote/index");
+            }
+        } else {
+            // $data=M('house')->where(array('id'=>$id))->find();
+            $house = M('house')->where(array('id' => $nid))->find();
+            header("Location: {$house['link']}");
+            exit;
+        }
+
+    }
+
     public function index() {
         if (!session('uid')) {
             $returnurl=urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
@@ -55,14 +79,16 @@ class NewsController extends CommonController {
             $this->redirect("Wx/Public/wxlogin");
         } else{
             $uid=session("uid");
-            $where['status']=2;
-            $where['isdel']=0;
-            $count = M('house')->where($where)->count();
+            $where['b.status']=2;
+            $where['b.isdel']=0;
+            $where['a.ischoujiang']=0;
+            $count = M('voteparty a')->join("left join zz_house b on a.hid=b.id")->where($where)->count();
             $page = new \Think\Page($count,6);
-            $data = M('house')->where($where)->order(array('id'=>'desc'))->limit($page->firstRow . ',' . $page->listRows)->select();
+            $data = M('voteparty a')->join("left join zz_house b on a.hid=b.id")->where($where)->order(array('b.id'=>'desc'))->limit($page->firstRow . ',' . $page->listRows)->select();
             foreach ($data as $key => $value)
             {
-                $data[$key]['description']=$this->str_cut(trim(strip_tags($value['content'])), 50);
+                $data[$key]['nickname']=M('Member')->where(array('id'=>$value['uid']))->getField("nickname");
+                //$data[$key]['description']=$this->str_cut(trim(strip_tags($value['content'])), 50);
                 $hitstatus=M("hit")->where(array('uid'=>$uid,'value'=>$value['id'],'varname'=>'voteparty'))->find();
                 if($hitstatus){
                     $data[$key]['ishit']=1;
@@ -92,6 +118,7 @@ class NewsController extends CommonController {
             session("nid",$id);
             $uid=session("uid");
             $data=M('house')->where(array('id'=>$id))->find();
+            $data['nickname']=M('Member')->where(array('id'=>$data['uid']))->getField("nickname");
             M('house')->where(array('id'=>$id))->setInc("view");
             $hitstatus=M("hit")->where(array('uid'=>$uid,'value'=>$id,'varname'=>'voteparty'))->find();
             if($hitstatus){
@@ -99,10 +126,18 @@ class NewsController extends CommonController {
             }else{
                 $data['ishit']=0;
             }
+            $joinstatus=M("pool")->where(array('uid'=>$uid,'hid'=>$id,'isowner'=>1))->find();
+            if($joinstatus){
+                $data['isjoin']=1;
+            }else{
+                $data['isjoin']=0;
+            }
+
             $this->assign("data",$data);
             $share['id']=$data['id'];
             $share['title']=$data['title'];
-            $share['content']=$this->str_cut(trim(strip_tags($data['content'])), 100);
+           // $share['content']=$this->str_cut(trim(strip_tags($data['content'])), 100);
+            $share['content']=$data['description'];
             $uid = session('uid');
             if($uid){
                 $tuijiancode = M('member')->where(array('id'=>$uid))->getField("tuijiancode");
@@ -125,7 +160,10 @@ class NewsController extends CommonController {
             $id=I('nid');
             session("nid",$id);
             $uid=session("uid");
+
+
             $data=M('house')->where(array('id'=>$id))->find();
+            $data['nickname']=M('Member')->where(array('id'=>$data['uid']))->getField("nickname");
             M('house')->where(array('id'=>$id))->setInc("view");
             $hitstatus=M("hit")->where(array('uid'=>$uid,'value'=>$id,'varname'=>'voteparty'))->find();
             if($hitstatus){
@@ -136,7 +174,8 @@ class NewsController extends CommonController {
             $this->assign("data",$data);
             $share['id']=$data['id'];
             $share['title']=$data['title'];
-            $share['content']=$this->str_cut(trim(strip_tags($data['content'])), 100);
+            //$share['content']=$this->str_cut(trim(strip_tags($data['content'])), 100);
+            $share['content']=$data['description'];
             $uid = session('uid');
             if($uid){
                 $tuijiancode = M('member')->where(array('id'=>$uid))->getField("tuijiancode");
@@ -170,12 +209,12 @@ class NewsController extends CommonController {
                 ));
             if($id){
                 M('house')->where(array('id'=>$nid))->setInc("hit");
-                $this->ajaxReturn(array('status'=>1,'msg'=>"点赞成功"),'json');
+                $this->ajaxReturn(array('status'=>1,'msg'=>"碌茫脭脼鲁脡鹿娄"),'json');
             }else{
-                $this->ajaxReturn(array('status'=>0,'msg'=>"点赞失败"),'json');
+                $this->ajaxReturn(array('status'=>0,'msg'=>"碌茫脭脼脢搂掳脺"),'json');
             }
         }else{
-            $this->ajaxReturn(array('status'=>0,'msg'=>"请求非法"),'json');
+            $this->ajaxReturn(array('status'=>0,'msg'=>"脟毛脟贸路脟路篓"),'json');
         }
     }
 }

@@ -221,9 +221,7 @@
             e.preventDefault();
             var uid = "{$user.id}";
             if (uid == '') {
-                $.alert("请先成为会员", function () {
-                    window.location.href = "{:U('Wx/Public/wxlogin')}";
-                })
+                $.alert("请先清除微信缓存；方法：手机后台关闭微信应用，再重新打开微信。")
                 return false;
             }
             var couponsid = $("input[name='couponsid']").val();

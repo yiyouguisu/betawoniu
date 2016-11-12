@@ -54,10 +54,16 @@ class CouponsexchangeController extends CommonController {
         $page->setConfig("next","下一页");
         $page->setConfig("first","第一页");
         $page->setConfig("last","最后一页");
-        $data = D("coupons_exchangelog a")->join("left join zz_coupons b on a.catid=b.id")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("a.id" => "desc"))->field("a.*,b.title,b.validity_starttime,b.validity_endtime")->select();
+        $data = D("coupons_exchangelog a")->join("left join zz_coupons b on a.catid=b.id")->join("left join zz_coupons_order c on a.couponsid=c.id")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("a.id" => "desc"))->field("a.*,b.title,b.validity_starttime,b.validity_endtime,c.vaid")->select();
         foreach ($data as $key => $value) {
             # code...
-            $data[$key]['house']=M('house a')->join("left join zz_coupons_order b on a.id=b.hid")->where(array('b.id'=>$value['couponsid']))->getField("a.title");
+            if($value["vaid"] != 0){
+                $data[$key]['house']=M('house a')->join("left join zz_coupons_order b on a.id=b.hid")->where(array('b.id'=>$value['couponsid']))->getField("a.title");
+                $data[$key]['source'] = '文章抽奖';
+            }else{
+                $data[$key]['house']=M('inn a')->join("left join zz_coupons_order b on a.id=b.hid")->where(array('b.id'=>$value['couponsid']))->getField("a.name");
+                $data[$key]['source'] = '评选大转盘';
+            }
         }
         $show = $page->show();
         $this->assign("data", $data);

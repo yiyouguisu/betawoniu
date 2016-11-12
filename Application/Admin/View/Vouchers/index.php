@@ -25,15 +25,15 @@
                     <thead>
                         <tr>
                             <td><label><input type="checkbox" class="J_check_all" data-direction="x" data-checklist="J_check_x"></label></td>
-                            <td width="5%" align="center">排序</td>
-                            <td width="5%" align="center" >ID</td>
+                            <td width="3%" align="center">排序</td>
+                            <td width="3%" align="center" >ID</td>
                             <td width="12%" align="left" >标题</td>
-                           <!--  <td width="10%" align="left" >图片</td> -->
+                            <td width="8%" align="center" >兑换积分</td>
                             <td width="8%" align="center" >价格</td>
-                            <td width="20%"  align="center" >有效时间</td>
+                            <td width="18%"  align="center" >有效时间</td>
                             <td width="12%"  align="center" >适用范围</td>
-                            <td width="12%"  align="center" >发布时间</td>
-                            <td width="10%"  align="center" >状态</td>
+                            <td width="10%"  align="center" >发布时间</td>
+                            <td width="8%"  align="center" >状态</td>
                             <td width="15%" align="center" >管理操作</td>
                         </tr>
                     </thead>
@@ -45,6 +45,7 @@
                             <td align="center" >{$vo.id}</td>
                             <td align="left" >{$vo.title}</td>
                             <!-- <td align="left" ><img src="{$vo.thumb}" height="30" ></td> -->
+                            <td align="center" >{$vo.exchange_integral|default="0"}</td>
                             <td align="center" >{$vo.price|default="0.00"}</td>
                             <td align="center" >{$vo.validity_starttime|date="Y-m-d",###}--{$vo.validity_endtime|date="Y-m-ds",###}</td>
                             <td align="center" >消费满{$vo.range|default="0.00"}元可使用</td>

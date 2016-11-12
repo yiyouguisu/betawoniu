@@ -113,7 +113,7 @@ function kilobit($num) {
     return $num;
 }
 function isMobile($num) {
-    return preg_match('#^13[\d]{9}$|14^[0-9]\d{8}|^15[0-9]\d{8}$|^18[0-9]\d{8}$#', $num) ? true : false;
+  return strlen($num) == 11 ? true : false;
 }
 function getaddress($uid) {
     $arealist=array();

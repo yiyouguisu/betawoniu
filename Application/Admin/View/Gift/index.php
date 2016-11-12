@@ -10,7 +10,7 @@
                             <td width="5%" align="center" >ID</td>
                             <td width="10%" align="center" >奖品等级</td>
                             <td width="15%" align="center" >奖品名称</td>
-                            <td width="10%" align="center" >中奖概率</td>
+                            <td width="10%" align="center" >中奖权重</td>
                             <td width="10%" align="center" >最小角度</td>
                             <td width="10%" align="center" >最大角度</td>
                             <!-- <td width="10%" align="center" >奖品数量</td>
@@ -33,7 +33,7 @@
                                 <if condition="$vo['rank'] eq 6">六等奖</if>
                             </td>
                             <td align="center" >{$vo.prize}</td>
-                            <td align="center" >{$vo.v}%</td>
+                            <td align="center" >{$vo.v}</td>
                             <td align="center" >{$vo.min}°</td>
                             <td align="center" >{$vo.max}°</td>
                             <!-- <td align="center" >

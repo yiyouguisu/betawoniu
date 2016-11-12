@@ -14,7 +14,6 @@ class MessageController extends CommonController {
         $p=intval(trim($ret['p']));
         $num=intval(trim($ret['num']));
         $uid=intval(trim($ret['uid']));
-
         $where['id']=$uid;
         $user=M('Member')->where($where)->find();
         

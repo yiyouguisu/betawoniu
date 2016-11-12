@@ -122,8 +122,10 @@
                                 <th>用户类型</th>
                                 <td>
                                     <select name="houseowner_status">
-                                        <option value="0" selected>个人</option>
-                                        <option value="1">房东</option>
+                                        
+                                        <option value="0" <if condition="'0' eq $data['houseowner_status']">selected</if>>个人</option>
+                                        <option value="1" <if condition="'1' eq $data['houseowner_status']">selected</if>>房东</option>
+                                    
                                     </select>
                                 </td>
                             </tr>

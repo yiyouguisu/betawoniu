@@ -52,19 +52,37 @@ class AutoUpdateAccountController extends CommonController {
                     'waitmoney'=>$account['waitmoney']-floatval($money),
                     ));
                 if($mid){
-                    M('account_log')->add(array(
-                      'uid'=>$productinfo['houseownerid'],
-                      'type'=>'updateaccount',
-                      'money'=>$money,
-                      'total'=>$account['total'],
-                      'usemoney'=>$account['usemoney']+floatval($money),
-                      'waitmoney'=>$account['waitmoney']-floatval($money),
-                      'status'=>1,
-                      'dcflag'=>1,
-                      'remark'=>'用户成功离店获取房费',
-                      'addip'=>get_client_ip(),
-                      'addtime'=>time()
-                      ));
+                  switch ($value['ordertype']) {
+                    case '1':
+                        M('account_log')->add(array(
+                          'uid'=>$productinfo['houseownerid'],
+                          'type'=>'updateaccount',
+                          'money'=>$money,
+                          'total'=>$account['total'],
+                          'usemoney'=>$account['usemoney']+floatval($money),
+                          'waitmoney'=>$account['waitmoney']-floatval($money),
+                          'status'=>1,
+                          'dcflag'=>1,
+                          'remark'=>'用户成功离店获取房费',
+                          'addip'=>get_client_ip(),
+                          'addtime'=>time()
+                          ));
+                         break;
+                    case '2':
+                        M('account_log')->add(array(
+                          'uid'=>$productinfo['houseownerid'],
+                          'type'=>'updateaccount',
+                          'money'=>$money,
+                          'total'=>$account['total'],
+                          'usemoney'=>$account['usemoney']+floatval($money),
+                          'waitmoney'=>$account['waitmoney']-floatval($money),
+                          'status'=>1,
+                          'dcflag'=>1,
+                          'remark'=>'用户成功参加活动获取报名费',
+                          'addip'=>get_client_ip(),
+                          'addtime'=>time()
+                          ));
+                        break;
                 }
 
                 $id=M('order_time')->where(array('orderid'=>$value['orderid']))->save(array(

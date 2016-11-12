@@ -302,7 +302,7 @@
             $("#uploadify").uploadify({
                 'uploader': '__PUBLIC__/Public/uploadify/uploadify.swf',//所需要的flash文件
                 'cancelImg': '__PUBLIC__/Public/uploadify/cancel.gif',//单个取消上传的图片
-                // 'script'	: '__PUBLIC__/Public/uploadify/uploadify.php',//实现上传的程序
+                // 'script' : '__PUBLIC__/Public/uploadify/uploadify.php',//实现上传的程序
                 'script': "{:U('Admin/Public/uploadone')}",//实现上传的程序
                 'method': 'post',
                 'folder': '/Uploads/images/',//服务端的上传目录
@@ -330,7 +330,7 @@
             $("#uploadify1").uploadify({
                 'uploader': '__PUBLIC__/Public/uploadify/uploadify.swf',//所需要的flash文件
                 'cancelImg': '__PUBLIC__/Public/uploadify/cancel.gif',//单个取消上传的图片
-                //'script'	: '__PUBLIC__/Public/uploadify/uploadify.php',//实现上传的程序
+                //'script'  : '__PUBLIC__/Public/uploadify/uploadify.php',//实现上传的程序
                 'script': "{:U('Admin/Public/upload')}",//实现上传的程序
                 'method': 'get',
                 'folder': '/Uploads/images',//服务端的上传目录

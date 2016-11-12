@@ -39,15 +39,15 @@ class RongyunController extends CommonController {
     }
 
     public function savetoken($uid) {
-		$member=M('member')->where(array('id'=>$uid))->find();
-		$tokenStr = $this->Rongyun->getToken($uid, $member['username'], C("WEB_URL").$member['head']);
-		$token = json_decode($tokenStr, true);
-		M('Member')->where(array('id'=>$uid))->setField("rongyun_token",$token['token']);
-        return $token;
+		  $member=M('member')->where(array('id'=>$uid))->find();
+		  $tokenStr = $this->Rongyun->getToken($uid, $member['username'], C("WEB_URL").$member['head']);
+		  $token = json_decode($tokenStr, true);
+		  M('Member')->where(array('id'=>$uid))->setField("rongyun_token",$token['token']);
+      return $token;
     }
     public function token(){
-    	# code...
-    	$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+    # code...
+    $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
 		$ret=json_decode($ret,true);
 		$uid=intval(trim($ret['uid']));
 		$member=M('Member')->where(array('id'=>$uid))->find();

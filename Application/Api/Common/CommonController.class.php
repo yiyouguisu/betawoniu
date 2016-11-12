@@ -565,5 +565,23 @@ class CommonController extends Controller {
         return M('attachment')->add($data);
     }
 
+    protected function jsonSuccessResponse($res, $code = 200) {
+      echo json_encode(array('code' => $code, 'data' => $res));
+    }
+
+    protected function jsonFailedResponse($res = null, $code = -200, $msg = '') {
+      echo json_encode(array('code' => $code, 'data' => $res, 'msg' => $msg)); 
+    }
+
+    protected function getInputs() {
+      $inputs = file_get_contents("php://input");
+      $jsonData = json_decode($inputs, true);
+      if(empty($jsonData)) {
+        $this->jsonFailedResponse('Empty input data.');
+        exit;
+      } else {
+        return $jsonData;  
+      }
+    }
 
 }

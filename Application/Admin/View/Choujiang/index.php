@@ -31,10 +31,11 @@
                             <td width="5%" align="center">排序</td>
                             <td width="10%" align="center" >ID</td>
                             <td width="15%"  align="center" >中奖用户</td>
+                            <td width="15%"  align="center" >客栈名称</td>
                             <td width="20%" align="center" >奖品名称</td>
-                            <td width="20%" align="center" >奖品等级</td>
+                            <td width="10%" align="center" >奖品等级</td>
                             <td width="20%"  align="center" >抽奖时间</td>
-                            <td width="15%" align="center" >管理操作</td>
+                            <!-- <td width="10%" align="center" >管理操作</td> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -44,19 +45,20 @@
                             <td align="center" ><input name='listorders[{$vo.id}]' class="input length_1 mr5"  type='number' size='3' value='{$vo.listorder}' align="center"></td>
                             <td align="center" >{$vo.id}</td>
                             <td align="center" >{:getuserinfo($vo['uid'])}</td> 
+                            <td align="center">{$vo.innname}</td>
                             <td align="center" >{$vo.prize}</td>
                             <td align="center" >
-                                <if condition="$vo['rid'] eq 1">一等奖</if>
-                                <if condition="$vo['rid'] eq 2">二等奖</if>
-                                <if condition="$vo['rid'] eq 3">三等奖</if>
-                                <if condition="$vo['rid'] eq 4">四等奖</if>
-                                <if condition="$vo['rid'] eq 5">五等奖</if>
-                                <if condition="$vo['rid'] eq 6">六等奖</if>
+                                <if condition="$vo['voteresult'] eq 1">一等奖</if>
+                                <if condition="$vo['voteresult'] eq 2">二等奖</if>
+                                <if condition="$vo['voteresult'] eq 3">三等奖</if>
+                                <if condition="$vo['voteresult'] eq 4">四等奖</if>
+                                <if condition="$vo['voteresult'] eq 5">五等奖</if>
+                                <if condition="$vo['voteresult'] eq 6">六等奖</if>
                             </td>
                             <td align="center" >{$vo.inputtime|date="Y-m-d H:i:s",###}</td>
                             
-                            <td align="center" > 
-                                <if condition="authcheck('Admin/Choujiang/edit')">
+                            <!-- <td align="center" >  -->
+                               <!--  <if condition="authcheck('Admin/Choujiang/edit')">
               <a href="{:U('Admin/Choujiang/edit',array('id'=>$vo['id']))}" >修改</a> 
                 <else/>
                  <font color="#cccccc">修改</font>
@@ -65,10 +67,10 @@
               <a href="{:U('Admin/Choujiang/delete',array('id'=>$vo['id']))}"  class="del">删除</a> 
                 <else/>
                  <font color="#cccccc">删除</font>
-              </if> 
+              </if>  -->
                                 
                                
-                            </td>
+                            <!-- </td> -->
                         </tr>
                     </volist>
                     </tbody>
@@ -90,7 +92,7 @@
                             <input type="hidden"  name="status" value="{$Think.post.status}" >
                             <input type="hidden"  name="dailiid" value="{$Think.post.dailiid}" >
                             <input type="hidden"  name="keyword" value="{$Think.post.keyword}" > -->
-                            <button class="btn btn_submit mr10 " type="submit" name="submit" value="del">导出所有数据</button>
+                            <!-- <button class="btn btn_submit mr10 " type="submit" name="submit" value="del">导出所有数据</button> -->
                         </form> 
                     </if>
 

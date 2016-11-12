@@ -60,7 +60,7 @@ class HostelController extends CommonController {
      *美宿列表
      */
     public function get_hostel(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret= file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $uid=intval(trim($ret['uid']));
         $p=intval(trim($ret['p']));
@@ -152,8 +152,6 @@ class HostelController extends CommonController {
                 }else{
                     $data[$key]['iscollect']=0;
                 }
-                $distance=$Map->get_distance_baidu_simple("driving",$lat.",".$lng,$value['lat'].",".$value['lng']);
-                $data[$key]['distance']=!empty($distance)?$distance:0.00;
             }
             $hostelnum=M("Hostel a")
                 ->join("left join zz_member b on a.uid=b.id")
@@ -190,7 +188,8 @@ class HostelController extends CommonController {
      *美宿列表
      */
     public function get_hostel_map(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $uid=intval(trim($ret['uid']));
         $area=trim($ret['area']);
@@ -480,7 +479,7 @@ class HostelController extends CommonController {
      *查看美宿
      */
     public function show(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret = file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $id=intval(trim($ret['id']));
         $uid=intval(trim($ret['uid']));
@@ -496,12 +495,12 @@ class HostelController extends CommonController {
             ->join("left join zz_member b on a.uid=b.id")
             ->join("left join {$sqlI} c on a.id=c.value")
             ->where(array('a.id'=>$id))
-            ->field('a.id,a.title,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.money,a.description,a.imglist,a.content,a.bookremark,a.support,a.score as evaluation,a.scorepercent as evaluationpercent,a.bookremark,a.vouchersrange,a.vouchersdiscount,a.status,a.remark,a.uid,b.nickname,b.head,b.realname_status,b.realname_status,b.houseowner_status,b.rongyun_token,a.inputtime,c.reviewnum')
+            ->field('a.id,a.title,a.thumb,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.money,a.description,a.imglist,a.content,a.bookremark,a.support,a.score as evaluation,a.scorepercent as evaluationpercent,a.bookremark,a.vouchersrange,a.vouchersdiscount,a.status,a.remark,a.uid,b.nickname,b.head,b.realname_status,b.realname_status,b.houseowner_status,b.rongyun_token,a.inputtime,c.reviewnum')
             ->find();
+            $city = M('area')->where(array('id' => $data['city']))->getField('name');
+            $data['cityname'] = $city;
             if(empty($data['reviewnum'])) $data['reviewnum']=0;
             $evaluation=gethouse_evaluation($data['id']);
-            // $house['evaluation']=!empty($evaluation['evaluation'])?$evaluation['evaluation']:0.0;
-            // $house['evaluationpercent']=!empty($evaluation['percent'])?$evaluation['percent']:0.00;
             $data['evaluationset']=$evaluation;
 
             $data['imglist']=json_decode($data['imglist'],true);
@@ -676,11 +675,12 @@ class HostelController extends CommonController {
             }
         }
     }
-    /**
+    /*T
      *评论列表
      */
     public function get_review(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $hid=intval(trim($ret['hid']));
         $p=intval(trim($ret['p']));
@@ -709,6 +709,7 @@ class HostelController extends CommonController {
             }
         }
     }
+
     /**
      *收藏
      */
@@ -892,7 +893,8 @@ class HostelController extends CommonController {
      *美宿附近推荐活动列表
      */
     public function get_hostel_nearactivity(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret = file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $uid=intval(trim($ret['uid']));
         $hid=intval(trim($ret['hid']));

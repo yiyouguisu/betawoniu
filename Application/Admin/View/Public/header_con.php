@@ -1,4 +1,5 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="renderer" content="webkit">
 <title>网站后台管理系统</title>
 <meta name="keywords" content="" />
 <meta name="description" content="" />

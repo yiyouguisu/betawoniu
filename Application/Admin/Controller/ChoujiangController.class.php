@@ -37,12 +37,14 @@ class ChoujiangController extends CommonController {
                 }
             }
         }
-    
-        $count = D("Choujianglog")->where($where)->count();
+        $where['voteresult'] = array('neq', 6);
+        $count = D("innvotelog")->where($where)->count();
         $page = new \Think\Page($count, 10);
-        $data = D("Choujianglog")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "desc"))->select();
+        $data = D("innvotelog")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "desc"))->select();
         foreach ($data as $k => $r) {
-            $data[$k]["prize"] = M('gift')->where('rank=' . $r['rid'])->getField("prize");
+            $data[$k]["prize"] = M('gift')->where(array('rank'=>$r['voteresult']))->getField("prize");
+            $data[$k]['innname'] = M('inn')->where(array('id'=>$r['innid']))->getField('name');
+            // $data[$k]['username'] = M('member')->where(array('id'=>$value['uid']))->getField('nickname');
         }
         $show = $page->show();
         $this->assign("data", $data);

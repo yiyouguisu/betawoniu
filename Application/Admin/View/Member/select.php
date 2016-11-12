@@ -13,7 +13,7 @@
 <body class="J_scroll_fixed">
     <div class="wrap J_check_wrap">
         <div class="h_a">搜索</div>
-        <form method="post" action="{:U('Admin/Member/select')}">
+        <form method="post" action="{:U('Admin/Member/select',array('type'=>1))}">
             <input type="hidden" value="1" name="search">
             <div class="search_type cc mb10">
                 <div class="mb10">
@@ -34,6 +34,10 @@
                                                      <option value='4' <if condition=" $searchtype eq '4' "> selected</if>>ID</option>-->
                         </select>
                         <input type="text" class="input length_2" name="keyword" value="" placeholder="请输入关键字...">
+                        搜索类别：
+                        <select class="select_3" name="type" style="display:none;">                          
+                            <option value="1" selected>1</option>
+                        </select>
                         <button class="btn">搜索</button>
                     </span>
                 </div>

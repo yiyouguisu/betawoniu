@@ -50,6 +50,14 @@ class MapController extends CommonController {
         return $data;
 
     }
+    public function get_distance_for_web() {
+      $origin_lat  = $_GET['o_lat'];
+      $origin_lng  = $_GET['o_lng'];
+      $dest_lat  = $_GET['d_lat'];
+      $dest_lng  = $_GET['d_lng'];
+      $distance = $this->get_distance_baidu_simple('driving', $origin_lat . ',' . $origin_lng, $dest_lat . ',' . $dest_lng); 
+      echo $distance; 
+    }
     public function get_distance_baidu_simple($mode="driving",$origins,$destinations){
         $url="http://api.map.baidu.com/direction/v1/routematrix?output=json&origins=".$origins."&destinations=".$destinations;
         $url.="&ak=".$this->ConfigData['baidumap_key'];
@@ -62,7 +70,6 @@ class MapController extends CommonController {
         }
         $distance=sprintf("%.2f",$data['distance']['value']/1000);
         return $distance;
-
     }
     public function get_addressinfo_baidu($latlng){
         $url="http://api.map.baidu.com/geocoder/v2/?output=json&pois=1";
@@ -78,10 +85,8 @@ class MapController extends CommonController {
     }
     public function get_position_complex($area,$addresss){
         $location=array();
-        
         $arealist=self::getarealist($area);
         $address=urlencode($arealist.$addresss);
-
         $url="http://api.map.baidu.com/geocoder/v2/?output=json&pois=1";
         $url.="&ak=".$this->ConfigData['baidumap_key'];
         $url.="&address=".$address;
@@ -90,7 +95,6 @@ class MapController extends CommonController {
         if($data['status']==0){
             $location=$data['result']['location'];
         }
-            
         return $location;
     }
     public function get_position_simple($addresss){
@@ -244,7 +248,7 @@ class MapController extends CommonController {
         $data=json_decode($data,true);
         $point=array();
         if($data['status']==0){
-            $point=$data['content']['result'];
+            $point=$data['result'];
         }
         return $point;
     }

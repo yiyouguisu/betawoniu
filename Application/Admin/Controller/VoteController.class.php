@@ -83,7 +83,7 @@ class VoteController extends CommonController {
                     M('gift_voteparty')->where(array('vaid'=>$_POST['id']))->delete();
                     foreach ($_POST['gift'] as $value)
                     {
-                    	M('gift_voteparty')->add(array(
+                        M('gift_voteparty')->add(array(
                             'vaid'=>$_POST['id'],
                             'rank'=>$value['rank'],
                             'v'=>$value['v'],
@@ -111,7 +111,7 @@ class VoteController extends CommonController {
             $gift_voteparty=M('gift_voteparty')->where(array('vaid'=>$id))->select();
             foreach ($gift_voteparty as $value)
             {
-            	$v[$value['rank']]=$value['v'];
+                $v[$value['rank']]=$value['v'];
             }
             $this->assign("v", $v);
 
@@ -143,7 +143,7 @@ class VoteController extends CommonController {
                     M('gift_voteparty')->where(array('vaid'=>$id))->delete();
                     foreach ($_POST['gift'] as $value)
                     {
-                    	M('gift_voteparty')->add(array(
+                        M('gift_voteparty')->add(array(
                             'vaid'=>$id,
                             'rank'=>$value['rank'],
                             'v'=>$value['v'],
@@ -357,8 +357,10 @@ class VoteController extends CommonController {
                     $data['hassms'] = 1;
                     $content = str_replace("{#house#}", $value["theme"] , $contentTL); 
                     $content = str_replace("{#house#}", $value["title"] , $content);         
-                    $ret = '{"phone":"18221265103","content":$content}';
-                    if($sms->sendbsmsapi($ret) == 0){ 
+                    // $ret = '{"phone":"18221265103","content":$content}';
+                    $ret = json_encode(array('phone' => $value["phone"], 'content' => $content));
+                    $res = $sms->sendbsmsapi($ret);
+                    if(strstr($res,"<response><error>0</error><message></message></response>")){ 
                         M('coupons_order')->where(array('id'=>$coid))->save($data);
                         $successSum ++;
                     }else{
@@ -373,18 +375,18 @@ class VoteController extends CommonController {
             $contentTL = M("config")->where(array("varname"=>"sms_votecontent"))->getField("value");
             $coupons_order = M('coupons_order')->where(array('id'=>$coid))->find();
             $house = M('house')->where(array('id'=>$coupons_order['hid']))->find();
-            // $member = M('member')->where(array('id'=>$coupons_order['uid']))->find();
+            $member = M('member')->where(array('id'=>$coupons_order['uid']))->find();
             $coupons = M('coupons')->where(array('id'=>$coupons_order['catid']))->find();
 
             $content = str_replace("{#house#}", $house["theme"], $contentTL);
             $content = str_replace("{#level#}", $coupons["title"], $content);       
             $sms = A('Api/Ymsms');
-            $ret = json_encode(array('phone' => '13816450228', 'content' => $content));
+            $ret = json_encode(array('phone' => $member["phone"], 'content' => $content));
             $res = $sms->sendbsmsapi($ret);
             \Think\Log::write("res:{$res}",'WARN');
-            if($res == "0"){
-                // $data['hassms'] = 1;
-                // M('coupons_order')->where(array('id'=>$coid))->save($data);
+            if(strstr($res,"<response><error>0</error><message></message></response>")){
+                $data['hassms'] = 1;
+                M('coupons_order')->where(array('id'=>$coid))->save($data);
                 $this->success("短信发送成功！");
             }else
                 $this->error("短信发送失败！");
@@ -481,7 +483,7 @@ class VoteController extends CommonController {
             foreach ($arr as $key => $value)
             {   
                 $value=$value+$j;
-            	for ($i = $j; $i < $value; $i++) {
+                for ($i = $j; $i < $value; $i++) {
                     $data[$i]['uid'] = $voteresult[$i]['uid'];
                     $data[$i]['hid']=$voteresult[$i]['hid'];
                     $data[$i]['code']=$voteresult[$i]['code'];

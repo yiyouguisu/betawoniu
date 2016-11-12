@@ -133,7 +133,6 @@ class PublicController extends CommonController {
     public function getcity(){
         $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
         $ret=json_decode($ret,true);
-
         $ids=M('area')->where(array('parentid'=>0,'id'=>array('not in','2,3,4,5')))->getField("id",true);
         $map['parentid']  = array("in",$ids);
         $map['id']  = array('in','2,3,4,5');
@@ -192,7 +191,8 @@ class PublicController extends CommonController {
      *发送验证码
      */
     public function sendchecknum_phone(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $phone=trim($ret['phone']);
         //$phone="15225071509";
@@ -449,5 +449,35 @@ class PublicController extends CommonController {
                 exit(json_encode(array('code'=>-200,'msg'=>"无符合要求数据")));
             }
         }
+    }
+
+    public function check_verify() {
+      $this->getInputs();   
+      $inputs = file_get_contents("php://input");
+      $jsonData = json_decode($inputs);
+      $phone = $jsonData->phone;
+      $num = $jsonData->num;
+      $veriCode = M('verify')->where(array('phone' => $phone, 'status' => 0))->find();
+      if($veriCode['verify'] == $num) {
+        if($veriCode['expiretime'] > time()) {
+          $this->jsonSuccessResponse(''); 
+        } else {
+          $this->jsonFailedResponse(null, -200, '验证码已过期，请重新发送！'); 
+        }
+      } else {
+        $this->jsonFailedResponse(null, -200, '验证码错误，请重新输入！');
+      }
+    }
+
+    public function checkPhoneExist() {
+      $this->getInputs(); 
+      $inputs = json_decode(file_get_contents("php://input"));
+      $phone = $inputs->phone;
+      $member = M('member')->where(array('phone' => $phone))->find();
+      if(!$member) {
+        $this->jsonFailedResponse(null, -200, 'empty'); 
+      } else {
+        $this->jsonSuccessResponse();   
+      }
     }
 }

@@ -35,7 +35,8 @@ class NoteController extends CommonController {
      *游记列表
      */
     public function get_note(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret = file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $uid=intval(trim($ret['uid']));
         $p=intval(trim($ret['p']));
@@ -251,7 +252,7 @@ class NoteController extends CommonController {
      *查看游记
      */
     public function show(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret= file_get_contents('php://input');
         $ret=json_decode($ret,true);
         $id=intval(trim($ret['id']));
         $uid=intval(trim($ret['uid']));
@@ -282,6 +283,7 @@ class NoteController extends CommonController {
 
             $note_hostel=M('tags_content a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.varname'=>'note','a.contentid'=>$data['id'],'a.type'=>'hostel'))->field("a.hostel as title,a.hid,a.place,b.city,'hostel' as type,b.uid")->select();
             $data['note_hostel']=!empty($note_hostel)?$note_hostel:null;
+            $data['cityname'] = M('area')->where(array('id' => $data['city']))->getField('name');
 
             $where=array();
             $where['a.status']=2;
@@ -506,7 +508,8 @@ class NoteController extends CommonController {
      *评论
      */
     public function review(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $nid=intval(trim($ret['nid']));
         $uid=intval(trim($ret['uid']));
@@ -678,7 +681,8 @@ class NoteController extends CommonController {
      *点赞
      */
     public function hit(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $nid=intval(trim($ret['nid']));
         $uid=intval(trim($ret['uid']));
@@ -714,7 +718,8 @@ class NoteController extends CommonController {
      *取消点赞
      */
     public function unhit(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $nid=intval(trim($ret['nid']));
         $uid=intval(trim($ret['uid']));
@@ -867,10 +872,16 @@ class NoteController extends CommonController {
         if($uid==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }else{
-            $data=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$uid,'b.status'=>2,'b.isdel'=>0,'a.paystatus'=>1))->order(array('b.listorder'=>'desc','b.id'=>'desc'))->group("a.hid")->field("b.id,b.title")->select();
+          /*
+            $data=M('book_room a')
+            ->join("left join zz_hostel b on a.hid=b.id")
+            ->order(array('b.listorder'=>'desc','b.id'=>'desc'))
+            ->group("a.hid")
+            ->field("b.id,b.title")->select();
             if(empty($data)){
-                $data=M('Hostel')->where(array('status'=>2,'isdel'=>0,'isoff'=>0,'type'=>'1'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
-            }
+            */
+            $data=M('Hostel')->where(array('status'=>2,'isdel'=>0,'isoff'=>0))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
+            //}
             if($data){
                 exit(json_encode(array('code'=>200,'msg'=>"加载成功",'data'=>$data)));
             }else{

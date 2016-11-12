@@ -1,85 +1,216 @@
 <include file="Common:Head" />
+<style>
+.pop_nav{
+  padding: 0px;
+}
+.pop_nav ul{
+  border-bottom:1px solid green;
+  padding:0 5px;
+  height:25px;
+  clear:both;
+}
+.pop_nav ul li.current a{
+  border:1px solid green;
+  border-bottom:0 none;
+  color:#333;
+  font-weight:700;
+  background:#F3F3F3;
+  position:relative;
+  border-radius:2px;
+  margin-bottom:-1px;
+}
+
+</style>
 <body class="J_scroll_fixed">
-<div class="wrap J_check_wrap">
+    <div class="wrap J_check_wrap">
 
-<include file="Common:Nav"/>
-
-   <div class="table_list">
-         <div class="h_a">搜索</div>
-        <form method="post" action="{:U('Admin/message/sms')}">
-            <input type="hidden" value="1" name="search">
-            <div class="search_type cc mb10">
-                <div class="mb10"> <span class="mr20">
-                            发送时间：
-                        <input type="text" name="start_time" class="input length_2 J_date" value="{$Think.post.start_time}" style="width:80px;">
-                       -
-                        <input type="text" class="input length_2 J_date" name="end_time" value="{$Think.post.end_time}" style="width:80px;">
-                        
-                        关键字：
-                        <select class="select_2" name="searchtype" >
-                        <option value='0' <if condition=" $searchtype eq '0' "> selected</if>>内容</option>
-                        <option value='1' <if condition=" $searchtype eq '1' "> selected</if>>手机号码</option>
-                         <option value='3' <if condition=" $searchtype eq '3' "> selected</if>>ID</option>
-                        </select>
-                        <input type="text" class="input length_2" name="keyword" value="" placeholder="请输入关键字...">
-                        <button class="btn">搜索</button>
-                    </span> </div>
-            </div>
-        </form> 
-    <form action="{:U('Admin/feedback/smsdel')}" method="post" >
-        <table width="100%" cellspacing="0">
-       <thead>
-          <tr>
-            <td width="4%" align="center"><label><input type="checkbox" class="J_check_all" data-direction="x" data-checklist="J_check_x"></label></td>
-            <td width="4%" align="center" >序号</td>
-            <td width="12%" align="center" >手机号码</td>
-            <td width="20%" align="center" >内容</td>
-            <td width="10%"  align="center" >发送时间</td>
-            <td width="10%" align="center" >操作</td> 
-          </tr>
-        </thead>
-        <tbody>
-     
-          
-        <foreach name="data" item="vo">
-          <tr>
-            <td align="center"><input type="checkbox" class="J_check" data-yid="J_check_y" data-xid="J_check_x" name="ids[]" value="{$vo.id}"></td>
-            <td align="center">{$vo.id}</td>
-            <td align="center">{$vo.phone}</td>
-            <td align="center">{$vo.content}</td>
-            <td align="center" >{$vo.inputtime|date="Y-m-d H:i:s",###}</td>
-            <td  align="center" >
-                  <!-- <if condition="authcheck('Admin/message/edit')">
-                            <a href="{:U('Admin/message/edit',array('id'=>$vo['id']))}" >修改 </a>  |
-                            <else/>
-                            <font color="#cccccc">修改</font> |
-                        </if>  --> 
-                        <if condition="authcheck('Admin/message/deletesms')">
-                            <a href="{:U('Admin/message/deletesms',array('id'=>$vo['id']))}"  class="del">删除 </a> 
-                            <else/>
-                            <font color="#cccccc">删除 </font> 
-                        </if> 
-            </td> 
-          </tr>
-         </foreach>
-        </tbody>
-      </table>
-            <div class="p10">
-                <div class="pages"> {$Page} </div>
-            </div>
-   </div>
-        <div class="btn_wrap">
-          <div class="btn_wrap_pd">
-              <label class="mr20">
-              <input type="checkbox" class="J_check_all" data-direction="y" data-checklist="J_check_y">全选</label>     
-            <if condition="authcheck('Admin/Message/smsdel')">
-              <button class="btn btn_submit mr10 " type="submit" name="submit" value="del">删除</button>
-            </if>
-          </div>
+        <include file="Common:Nav"/>
+         <div class="pop_nav">
+    <ul class="J_tabs_nav">
+      <li class="current"><a href="javascript:;;">邮件模版</a></li>
+      <li class=""><a href="javascript:;;">短信模版</a></li>
+      <li class=""><a href="javascript:;;">站内信模版</a></li>
+    </ul>
+  </div>
+  <form name="myform" id="myform" action="{:U('Admin/Config/template')}" method="post" enctype="multipart/form-data">
+  <div class="h_a">温馨提示</div>
+  <div class="prompt_text">
+    <p>1、<literal><font color="red">{#username#}</font> 代表用户名，<font color="red">{#link#}</font> 代表激活链接，<font color="red">{#code#}</font> 代表验证码，<font color="red">{#money#}</font> 代表操作金额，<font color="red">{#title#}</font> 代表项目名称</literal></p>
+    <p>2、短信模版不要太长，不要包含违法关键字，内容结尾请加网站签名，网站签名格式为：【网站名称】</p>
+  </div>
+    <div class="J_tabs_contents">
+      <div>
+        <div class="h_a">邮件模版</div>
+        <div class="table_full">
+          <table width="100%" class="table_form ">
+           
+            <tr>
+              <th width="150">用户注册成功：</th>
+              <td>
+              <textarea name="email_reg" style="width:500px;height:60px;">{$Site.email_reg}</textarea>
+                
+              </td>
+            </tr>
+            <tr>
+              <th width="150">密码找回提示：</th>
+              <td>
+                <textarea name="email_password" style="width:500px;height:60px;">{$Site.email_password}</textarea>
+              
+              </td>
+            </tr>
+                <tr>
+              <th width="150">充值提示：</th>
+              <td>
+                <textarea name="email_recharge" style="width:500px;height:60px;">{$Site.email_recharge}</textarea>
+              
+              </td>
+            </tr>
+            <tr>
+              <th width="150">提现提示：</th>
+              <td>
+                <textarea name="email_cash" style="width:500px;height:60px;">{$Site.email_cash}</textarea>
+              
+              </td>
+            </tr>
+             <tr>
+              <th width="150">投资提示：</th>
+              <td>
+                <textarea name="email_invest" style="width:500px;height:60px;">{$Site.email_invest}</textarea>
+              
+              </td>
+            </tr>
+              <tr>
+              <th width="150">借款提示：</th>
+              <td>
+                <textarea name="email_borrow" style="width:500px;height:60px;">{$Site.email_borrow}</textarea>
+              
+              </td>
+            </tr>
+            <tr>
+              <th width="150">还款提示：</th>
+              <td>
+                <textarea name="email_refund" style="width:500px;height:60px;">{$Site.email_refund}</textarea>
+              
+              </td>
+            </tr>
+            
+          </table>
         </div>
-    </form>
- </div>
-<script src="__JS__/common.js?v"></script>
-    
+      </div>
+      <div style="display:none">
+        <div class="h_a">短信模版</div>
+        <div class="table_full">
+          <table width="100%" class="table_form ">
+            <tr>
+              <th width="150">短信验证码提示：</th>
+              <td>
+                <textarea name="phone_code" style="width:500px;height:60px;">{$Site.phone_code}</textarea>
+              
+              </td>
+            </tr>
+            <tr>
+              <th width="150">充值提示：</th>
+              <td>
+                <textarea name="phone_recharge" style="width:500px;height:60px;">{$Site.phone_recharge}</textarea>
+              
+              </td>
+            </tr>
+            <tr>
+              <th width="150">提现提示：</th>
+              <td>
+                <textarea name="phone_cash" style="width:500px;height:60px;">{$Site.phone_cash}</textarea>
+              
+              </td>
+            </tr>
+             <tr>
+              <th width="150">投资提示：</th>
+              <td>
+                <textarea name="phone_invest" style="width:500px;height:60px;">{$Site.phone_invest}</textarea>
+              
+              </td>
+            </tr>
+              <tr>
+              <th width="150">借款提示：</th>
+              <td>
+                <textarea name="phone_borrow" style="width:500px;height:60px;">{$Site.phone_borrow}</textarea>
+              
+              </td>
+            </tr>
+            <tr>
+              <th width="150">还款提示：</th>
+              <td>
+                <textarea name="phone_refund" style="width:500px;height:60px;">{$Site.phone_refund}</textarea>
+              
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div style="display:none">
+        <div class="h_a">站内信模版</div>
+        <div class="table_full">
+          <table width="100%" class="table_form ">
+             <tr>
+              <th width="150">注册成功：</th>
+              <td>
+                <textarea name="mes_reg" style="width:500px;height:60px;">{$Site.mes_reg}</textarea>
+              </td>
+            </tr>
+              <tr>
+              <th width="150">认证提示：</th>
+              <td>
+                <textarea name="mes_attestation" style="width:500px;height:60px;">{$Site.mes_attestation}</textarea>
+              <span class="gray"><literal>{$attestation}代表认证类型，比如手机认证、实名认证...</literal></span>
+              </td>
+                   
+            </tr>
+          
+            <tr>
+              <th width="150">充值提示：</th>
+              <td>
+                <textarea name="mes_recharge" style="width:500px;height:60px;">{$Site.mes_recharge}</textarea>
+              
+              </td>
+            </tr>
+            <tr>
+              <th width="150">提现成功：</th>
+              <td>
+                <textarea name="mes_cesh" style="width:500px;height:60px;">{$Site.mes_cesh}</textarea>
+              </td>
+            </tr>
+             <tr>
+              <th width="150">投标成功：</th>
+              <td>
+                <textarea name="mes_invest" style="width:500px;height:60px;">{$Site.mes_invest}</textarea>
+              
+              </td>
+            </tr>
+             <tr>
+              <th width="150">发标初审提示：</th>
+              <td>
+                <textarea name="mes_firstreview" style="width:500px;height:60px;">{$Site.mes_firstreview}</textarea>
+              
+              </td>
+            </tr>
+            <tr>
+              <th width="150">发标复审提示：</th>
+              <td>
+                <textarea name="mes_retrial" style="width:500px;height:60px;">{$Site.mes_retrial}</textarea>
+              
+              </td>
+            </tr>
+            
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="btn_wrap">
+      <div class="btn_wrap_pd">
+        <button class="btn btn_submit mr10 " type="submit">提交</button>
+      </div>
+    </div>
+  </form>
+    </div>
+    <script src="__JS__/common.js?v"></script>
 </body>
 </html>

@@ -21,7 +21,8 @@ class ActivityController extends CommonController {
      *活动列表
      */
     public function get_activity(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret = file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $uid=intval(trim($ret['uid']));
         $hid=intval(trim($ret['hid']));
@@ -32,7 +33,6 @@ class ActivityController extends CommonController {
         $catid=trim($ret['catid']);
         $partytype=intval(trim($ret['partytype']));
         $partytime=intval(trim($ret['partytime']));
-
 
         if($p==''||$num==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
@@ -279,13 +279,12 @@ class ActivityController extends CommonController {
      *查看活动
      */
     public function show(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
-        $ret=json_decode($ret,true);
-        $id=intval(trim($ret['id']));
-        $uid=intval(trim($ret['uid']));
-        $lat=floatval(trim($ret['lat']));
-        $lng=floatval(trim($ret['lng']));
-
+        $ret = file_get_contents("php://input");
+        $ret=json_decode($ret);
+        $id=intval(trim($ret->id));
+        $uid=intval(trim($ret->uid));
+        $lat=floatval(trim($ret->lat));
+        $lng=floatval(trim($ret->lng));
         if($id==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }else{
@@ -295,7 +294,7 @@ class ActivityController extends CommonController {
             ->join("left join zz_member b on a.uid=b.id")
             ->join("left join {$sqlI} c on a.id=c.value")
             ->where(array('a.id'=>$id))
-            ->field('a.id,a.title,a.description,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.money,a.starttime,a.endtime,a.content,a.start_numlimit,a.end_numlimit,a.yes_num,a.cancelrule,a.vouchersrange,a.vouchersdiscount,a.status,a.remark,a.uid,b.nickname,b.head,b.realname_status,b.rongyun_token,a.inputtime,c.reviewnum')
+            ->field('a.id,a.title,a.description,a.city,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.money,a.starttime,a.endtime,a.content,a.start_numlimit,a.end_numlimit,a.yes_num,a.cancelrule,a.vouchersrange,a.vouchersdiscount,a.status,a.remark,a.uid,b.nickname,b.head,b.realname_status,b.rongyun_token,a.inputtime,c.reviewnum')
             ->find();
             if(empty($data['reviewnum'])) $data['reviewnum']=0;
             $reviewlist=M('review a')->join("left join zz_member b on a.uid=b.id")->where(array('a.value'=>$data['id'],'a.isdel'=>0,'a.varname'=>'party'))->field("a.id as vid,a.content,a.inputtime,b.id as uid,b.nickname,b.head,b.rongyun_token")->order(array('a.id'=>'desc'))->limit(4)->select();
@@ -325,8 +324,14 @@ class ActivityController extends CommonController {
             $Map=A("Api/Map");
             $distance=$Map->get_distance_baidu_simple("driving",$lat.",".$lng,$data['lat'].",".$data['lng']);
             $data['distance']=!empty($distance)?$distance:0.00;
+            $data['cityname'] = M('area')->where(array('id' => $data['city']))->getField('name');
 
-            $note_party=M('tags_content a')->join("left join zz_activity b on a.contentid=b.id")->where(array('a.varname'=>'party','a.contentid'=>$data['id'],'a.type'=>'party'))->field("a.title,a.hid,a.place,b.city,'party' as type")->find();
+            $note_party=M('tags_content a')
+              ->join("left join zz_activity b on a.contentid=b.id")
+              ->where(array('a.varname'=>'party','a.contentid'=> $data['id'],'a.type'=>'party'))
+              ->field("a.title,a.place as place,b.city as city,a.content as hid, a.type")
+              ->find();
+
             $data['note_party']=!empty($note_party)?$note_party:null;
 
             $where=array();
@@ -599,7 +604,8 @@ class ActivityController extends CommonController {
      *评论
      */
     public function review(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret = file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $aid=intval(trim($ret['aid']));
         $uid=intval(trim($ret['uid']));
@@ -665,7 +671,8 @@ class ActivityController extends CommonController {
      *收藏
      */
     public function collect(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret = file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $aid=intval(trim($ret['aid']));
         $uid=intval(trim($ret['uid']));
@@ -815,7 +822,8 @@ class ActivityController extends CommonController {
      *活动附近推荐活动列表
      */
     public function get_activity_nearactivity(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret = file_get_contents('php://input');
         $ret=json_decode($ret,true);
         $uid=intval(trim($ret['uid']));
         $aid=intval(trim($ret['aid']));
@@ -871,7 +879,7 @@ class ActivityController extends CommonController {
      *活动附近推荐美宿列表
      */
     public function get_activity_nearhostel(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents("php://input"); 
         $ret=json_decode($ret,true);
         $uid=intval(trim($ret['uid']));
         $aid=intval(trim($ret['aid']));

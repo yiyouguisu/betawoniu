@@ -65,7 +65,8 @@ class RoomController extends CommonController {
      *查看房间
      */
     public function show(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $id=intval(trim($ret['id']));
         $uid=intval(trim($ret['uid']));
@@ -103,14 +104,16 @@ class RoomController extends CommonController {
             }
             
 
-            //$reviewlist=M('review a')->join("left join zz_member b on a.uid=b.id")->where(array('a.value'=>$data['rid'],'a.isdel'=>0,'a.varname'=>'room'))->field("a.id as rid,a.content,a.inputtime,b.id as uid,b.nickname,b.head,b.rongyun_token")->limit(10)->select();
-            //$data['reviewlist']=!empty($reviewlist)?$reviewlist:null;
 
             $bookdate=getmonth();
             foreach ($bookdate as $key => $value) {
                 # code...
                 $bookdate[$key]['price']=$data['nomal_money'];
                 $week=date("w",$value['value']);
+                $date = date("d", $value['value']);
+                $bookdate[$key]['date'] = $date;
+                $mon = date("m", $value['value']);
+                $bookdate[$key]['month'] = $mon;
                 if(in_array($week, array(0,6))) {
                     $bookdate[$key]['isweek']=1;
                     $bookdate[$key]['price']=$data['week_money'];
@@ -141,6 +144,8 @@ class RoomController extends CommonController {
                 }
             }
             $data['bookdate']=!empty($bookdate)?$bookdate:null;
+            $info = M('hostel')->find($id);
+            $data['couponsinfo'] = "满" . $info['vouchersrange'] . "送" . $info['vouchersdiscount'] . "优惠券";
             if($data){
                 exit(json_encode(array('code'=>200,'msg'=>"加载成功",'data'=>$data)));
             }else{

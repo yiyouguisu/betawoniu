@@ -94,8 +94,14 @@ class PartyController extends CommonController {
                 if (!empty($id)) {
                     $aid=$_POST['id'];
                     $title=$_POST["title"];
-                    $hostel=M('hostel a')->join("left join zz_place b on a.place=b.id")->where(array('a.id'=>$_POST["hid"]))->field("a.id,a.title,b.title as place")->find();
-                    $tags_content=M('tags_content')->where(array('contentid'=>$aid,'varname'=>'party','type'=>'party'))->find();
+                    $hostel=M('hostel a')
+                      ->join("left join zz_place b on a.place=b.id")
+                      ->where(array('a.id'=>$_POST["hid"]))
+                      ->field("a.id,a.title,b.title as place")
+                      ->find();
+                    $tags_content=M('tags_content')
+                      ->where(array('contentid'=>$aid,'varname'=>'party','type'=>'party'))
+                      ->find();
                     if(empty($tags_content)){
                         M('tags_content')->add(array('contentid'=>$aid,'title'=>$title,'varname'=>'party','type'=>'party','hid'=>$hostel['id'],'hostel'=>$hostel['title'],'place'=>$hostel['place'],'updatetime'=>time()));
                     }

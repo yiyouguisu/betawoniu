@@ -162,6 +162,13 @@
                                     <input type="text" name="price" class="input length_2"  placeholder="请输入优惠券价格" id="price" value="{$data.price}">
                                 </td>
                             </tr>
+                            <tr id="pricestr">
+                                <th>兑换积分</th>
+                                <td>
+                                    <span class="must_red">*</span>
+                                    <input type="text" name="exchange_integral" class="input length_2"  placeholder="请输入兑换积分（不可兑换为－1）" id="exchange_integral" value="{$data.exchange_integral}">
+                                </td>
+                            </tr>
                             <tr>
                                 <th>优惠券适用规则</th>
                                 <td>消费满<input type="text" name="range" class="input length_2"  placeholder="请输入优惠券金额" id="range" value="{$data.range}">元可使用

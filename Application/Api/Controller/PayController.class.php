@@ -6,7 +6,7 @@ use Api\Common\CommonController;
 
 class PayController extends CommonController {
 
-    var $pay_config;
+  var $pay_config;
 	public function _initialize(){
         parent::_initialize();
         $this->Configobj = D("Config");
@@ -21,6 +21,10 @@ class PayController extends CommonController {
             }
         }
     }
+
+    public function testPay() {
+      $this->pay('testorder123456', '测试订单', '测试订单', '0.1', 'aliwap');
+    }
     public function pay($orderid,$title,$body,$money,$channel){
         $orderid=$orderid.rand(100000, 999999);
         switch ($channel)
@@ -31,10 +35,63 @@ class PayController extends CommonController {
             case "wxpay":
                 $this->weixin_apppay($orderid,$title,$body,$money);
                 break;
+            case "wxh5":
+                $this->wxMobileWebPay($orderid,$title,$body,$money);
+                break;
             case "unionpay":
                 $this->union_apppay($orderid,$title,$body,$money);
                 break;
+            case "aliwap":
+              $this->alipay_wappay($orderid,$title,$body,$money);
+              break;
         }
+    }
+    public function alipay_wappay($orderid,$title,$body,$money) {
+      require_once( VENDOR_PATH . "Alipay/alipay.config.php");
+      require_once( VENDOR_PATH . "Alipay/lib/alipay_submit.class.php");
+
+      //商户订单号，商户网站订单系统中唯一订单号，必填
+      $out_trade_no = $orderid;//$_POST['WIDout_trade_no'];
+      
+      //订单名称，必填
+      $subject = $title;//$_POST['WIDsubject'];
+     
+      //付款金额，必填
+      $total_fee = '0.01';//$_POST['WIDtotal_fee'];
+      
+      //收银台页面上，商品展示的超链接，必填
+      $show_url = "http://beta.nclouds.net/index.php/Web/Note/show/id/272.html";//$_POST['WIDshow_url'];
+     
+      //商品描述，可空
+      //$body = $body;//$_POST['WIDbody'];
+
+      $AliPayConfig=array(
+          'partner' => '2088221764898885',
+          'seller_id'=>'3221586551@qq.com'
+      );
+
+      $parameter = array(
+          "partner" => trim($AliPayConfig['partner']),
+          "seller_id" => $AliPayConfig['seller_id'],
+          "out_trade_no" => $orderid,
+          "subject" => "test",
+          "body" => "test",
+          "total_fee" => "0.01",
+          "notify_url" => 'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/alipaynotify'),
+          "service" => "alipay.wap.create.direct.pay.by.user",
+          "payment_type" => "1",
+          "_input_charset" => 'utf-8',
+      );
+
+      M('thirdparty_send')->add(array(
+          'data'=>serialize($parameter),
+          'type'=>"alipay",
+          'ispc'=>1,
+          'inputtime'=>time()
+          ));
+      $alipaySubmit = new \AlipaySubmit($alipay_config);
+      $html_txt = $alipaySubmit->buildRequestForm($parameter, "get", "确认");
+      echo $html_txt;
     }
     public function weixin_apppay($orderid,$title,$body,$money){
         Vendor('Wxpay.lib.WxPay#Api');
@@ -42,8 +99,8 @@ class PayController extends CommonController {
         $WxPayApi = new \WxPayApi();
         $WxPayConfig=array(
              'APPID' => 'wxea98c16a0c02eefa',
-	         'MCHID' => '1354896002',
-	         'KEY' => 'shanghainonglvxinxiwoniuke201606',
+	           'MCHID' => '1354896002',
+	           'KEY' => 'shanghainonglvxinxiwoniuke201606',
              'NOTIFY_URL'=>'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/weixinnotify')
             );
         $money="0.01";
@@ -174,8 +231,8 @@ class PayController extends CommonController {
             'ispc'=>0,
             'inputtime'=>time()
             ));
+        dump($params);
         $result = sendHttpRequest ( $params, $UnionPayConfig['App_Request_Url'] );
-        
         $result_arr = coverStringToArray ( $result );
         M('thirdparty_data')->add(array(
           'post'=>serialize($result_arr),
@@ -190,7 +247,7 @@ class PayController extends CommonController {
             $data['tn']=$result_arr['tn'];
         }else{
             $data['code']=-200;
-            $data['msg']="error";
+            $data['msg']=$result_arr;
         }
         echo json_encode($data);
     }
@@ -513,5 +570,64 @@ class PayController extends CommonController {
         $isSgin = (bool)openssl_verify($prestr, base64_decode($signarray['sign']), $res);
         openssl_free_key($res);     
         dump($isSgin);
+    }
+
+    public function wxMobileWebPay($orderid,$title,$body,$money) {
+        Vendor('Wxpay.lib.WxPay#Api');
+        Vendor('Wxpay.lib.WxPay#JsApiPay');
+        $WxPayApi = new \WxPayApi();
+        $WxPayConfig=array(
+             'APPID' => 'wxea98c16a0c02eefa',
+	           'MCHID' => '1354896002',
+	           'KEY' => 'shanghainonglvxinxiwoniuke201606',
+             'NOTIFY_URL'=>'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/weixinnotify')
+            );
+        $money = "0.1";
+        $tools = new \JsApiPay();
+        $input = new \WxPayUnifiedOrder();
+        $input->SetBody($body);
+        $input->SetAttach($body);
+        $input->SetOut_trade_no($orderid);
+        $input->SetTotal_fee($money*100);
+        $input->SetTime_start(date("YmdHis"));
+        $input->SetTime_expire(date("YmdHis", time() + 600));
+        $input->SetNotify_url($WxPayConfig['NOTIFY_URL']);
+        $input->SetAppid($WxPayConfig['APPID']);
+        $input->SetMch_id($WxPayConfig['MCHID']);
+        $input->SetTrade_type("MWEB");
+        $input->SetSpbill_create_ip($this->get_client_ip());
+        M('thirdparty_send')->add(array(
+            'data'=>serialize($input),
+            'type'=>"wxpay",
+            'ispc'=>1,
+            'inputtime'=>time()
+            ));
+        $order = $WxPayApi->unifiedOrder($input);
+        dump($order);
+        $jsApiParameters = $tools->GetAPPParameters($order);
+        $jsApiParameters=json_decode($jsApiParameters,true);
+        $data=array();
+        if(!empty($jsApiParameters['sign'])){
+            $data['code']=200;
+            $data['msg']="success";
+            $jsApiParameters['packageStr']=$jsApiParameters['package'];
+            unset($jsApiParameters['package']);
+            $data['data']=$jsApiParameters;
+
+        }else{
+            $data['code']=-200;
+            $data['msg']="error";
+        }
+        echo json_encode($data);
+    }
+
+    private function get_client_ip() {
+      $cip = "unknown";
+      if($_SERVERA['REMOTE_ADDR']) {
+        $cip = $_SERVER['REMOTE_ADDR'];
+      } elseif (getenv("REMOTE_ADDR")) {
+        $cip = getenv("REMOTE_ADDT"); 
+      }
+      return $cip; 
     }
 }

@@ -272,9 +272,6 @@ class OrderController extends CommonController {
 
         $houseowner=M('member')->where(array('id'=>$productinfo['houseownerid']))->field("id,head,nickname")->find();
         $this->assign("houseowner",$houseowner);
-
-        $ownid=session("uid");
-        $this->assign("ownid",$ownid);
         $this->display();
     }
     public function delete() {

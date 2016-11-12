@@ -66,11 +66,11 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>中奖概率</th>
+                                <th>权重</th>
                                 <td>
                                     <span class="must_red">*</span>
-                                    <input type="text" name="v" class="input length_6 input_hd" placeholder="请填写中奖概率" id="v" value="{$data.v}">%
-                                    <span class="gray">请填写中奖概率</span>
+                                    <input type="text" name="v" class="input length_6 input_hd" placeholder="请填写中奖概率" id="v" value="{$data.v}">
+                                    <span class="gray">请填写中奖权重</span>
                                 </td>
                             </tr>
                             <tr>

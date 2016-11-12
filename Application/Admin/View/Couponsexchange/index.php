@@ -38,16 +38,17 @@
                     <thead>
                         <tr>
                             <td><label><input type="checkbox" class="J_check_all" data-direction="x" data-checklist="J_check_x"></label></td>
-                            <td width="5%" align="center" >ID</td>
-                            <td width="10%" align="center" >用户</td>
+                            <td width="4%" align="center" >ID</td>
+                            <td width="8%" align="center" >用户</td>
                             <td width="8%" align="center" >姓名</td>
                             <td width="10%" align="center" >手机号码</td>
                             <td width="8%" align="center" >意向入住人数</td>
-                            <td width="10%" align="center" >意向入住时间</td>
+                            <td width="8%" align="center" >意向入住时间</td>
                             <td width="10%" align="center" >优惠券名称</td>
+                            <td width="8%" align="center" >来源</td>
                             <td width="10%" align="center" >所属美宿</td>
-                            <td width="12%"  align="center" >申请时间</td>
-                            <td width="8%" align="center" >状态</td>
+                            <td width="10%"  align="center" >申请时间</td>
+                            <td width="6%" align="center" >状态</td>
                             <td width="8%" align="center" >管理操作</td>
                         </tr>
                     </thead>
@@ -62,6 +63,7 @@
                             <td align="center" >{$vo.mannum|default="0"}人</td>
                             <td align="center" >{$vo.date}</td>
                             <td align="center" >{$vo.title}</td>
+                            <td align="center" >{$vo.source}</td>
                             <td align="center" >{$vo.house}</td>
                             <td align="center" >{$vo.inputtime|date="Y-m-d H:i:s",###}</td>
                             <td align="center" >{:getreviewstatus($vo['status'])}</td>

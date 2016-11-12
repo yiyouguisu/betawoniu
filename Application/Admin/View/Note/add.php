@@ -31,7 +31,7 @@
                 }
             }
         });
-                    getval();
+        getval();
     }
     function getval()
     {
@@ -106,12 +106,16 @@
 </style>
 <script type="text/javascript">
     var url = "{:U('Admin/Note/get_hostel')}";
+    $(function(){
+        get_hostel();
+    })
     function get_hostel() {
         var uid=$("input[name='uid']").val();
+        var hid="{$data.hid}";
         $.ajax({
             type: "POST",
             url: url,
-            data: { 'uid': uid },
+            data: { 'uid': uid,'hid':hid },
             dataType: "json",
             success: function (data) {
                 if(data!=null){
@@ -119,7 +123,11 @@
                     $.each(data, function (no, item) {
                         ahtml += "<li style=\"width: 260px;\">";
                         ahtml += "<label>";
-                        ahtml += "<input type='checkbox' name='hid[]' value='" + item.id + "'><span>" + item.title + "</span></label>";
+                        if (item.ischeck == 1) {
+                            ahtml += "<input type='checkbox' name='hid[]' value='" + item.id + "' checked><span>" + item.title + "</span></label>";
+                        }else{
+                            ahtml += "<input type='checkbox' name='hid[]' value='" + item.id + "'><span>" + item.title + "</span></label>";
+                        }
                         ahtml += "</li>";
                     });
                     $('#hostel').html(ahtml);
@@ -130,10 +138,8 @@
 </script>
 <body class="J_scroll_fixed">
     <div class="wrap jj">
-
         <include file="Common:Nav" />
         <div class="common-form">
-            <!---->
             <form method="post" action="{:U('Admin/Note/add')}">
                 <div class="h_a">游记信息</div>
                 <div class="table_full">
@@ -143,8 +149,8 @@
                                 <th width="80">游者</th>
                                 <td>
                                     <span class="must_red">*</span>
-                                    <input type="hidden" name="uid" id="uid" value="" />
-                                    <input type="text" class="input length_4 input_hd" placeholder="请选择游者" id="username" value="" readonly required>
+                                    <input type="hidden" name="uid" id="uid" value="{$data.uid}" />
+                                    <input type="text" class="input length_4 input_hd" placeholder="请选择游者" id="username" value="{$data.username}" readonly required>
                                     <input type="button" class="button" value="选择" onclick="omnipotent('selectid','{:U('Admin/Member/select',array('type'=>1))}','请选择游者',1,700,400)">
                                 </td>
                             </tr>
@@ -153,10 +159,10 @@
                                 <td>
                                     <ul class="switch_list cc ">
                                         <li>
-                                            <label><input type='radio' name='notetype' value='1' checked><span>游记</span></label>
+                                            <label><input type='radio' name='notetype' value='1' <eq name="data['notetype']" value="1"> checked</eq>><span>游记</span></label>
                                         </li>
                                         <li>
-                                            <label><input type='radio' name='notetype' value='2'><span>攻略</span></label>
+                                            <label><input type='radio' name='notetype' value='2' <eq name="data['notetype']" value="2"> checked</eq>><span>攻略</span></label>
                                         </li>
                                     </ul>
                                 </td>
@@ -165,13 +171,13 @@
                                 <th width="80">标题</th>
                                 <td>
                                     <span class="must_red">*</span>
-                                    <input type="text" name="title" class="input length_6 input_hd" placeholder="请输入标题" id="title" value="{$data.title}" required>
+                                    <input type="text" name="title" class="input length_6 input_hd" placeholder="请输入标题" id="title" value="{$data.title}">
                                 </td>
                             </tr>
                             <tr id="img">
-                                <th>游记图片：</th>
+                                <th>活动图片：</th>
                                 <td>
-                                    <div class="thumb" style="display:inline-block;"></div><input type="hidden" id="thumb" name="thumb" value="{$data.thumb}" style="float: left"  runat="server">&nbsp; <input type="button" class="button" value="选择上传" id="uploadify" ></td>
+                                    <div class="thumb" style="display:inline-block;"><img src="{$data.thumb}"  width='202px' height='152px'></div><input type="hidden" id="thumb" name="thumb" value="{$data.thumb}" style="float: left"  runat="server">&nbsp; <input type="button" class="button" value="选择上传" id="uploadify" ></td>
                                 </td>
                             </tr>
                             <tr>
@@ -187,16 +193,16 @@
                             <tr>
                                 <th>游记时间</th>
                                 <td>
-                                    <input type="text" name="begintime" class="input length_2 J_date" value="{$data.begintime}" style="width:120px;" required>
-                                    <input type="text" name="days" class="input length_2 input_hd" placeholder="请输入天数" id="days" value="{$data.days}" required>
-                                    <input type="text" class="input length_2 J_date" name="endtime" value="{$data.endtime}" style="width:120px;" required>
+                                    <input type="text" name="starttime" class="input length_2 J_date" value="{$data.begintime}" style="width:120px;">
+                                    <input type="text" name="days" class="input length_2 input_hd" placeholder="请输入天数" id="days" value="{$data.days}">
+                                    <input type="text" class="input length_2 J_date" name="endtime" value="{$data.endtime}" style="width:120px;">
                                 </td>
                             </tr>
                             <tr>
                                 <th width="80">人均费用</th>
                                 <td>
                                     <span class="must_red">*</span>
-                                    <input type="text" name="fee" class="input length_2 input_hd" placeholder="请输入人均费用" id="fee" value="{$data.fee}" required>
+                                    <input type="text" name="fee" class="input length_2 input_hd" placeholder="请输入人均费用" id="fee" value="{$data.fee}">
                                 </td>
                             </tr>
                             <tr>
@@ -204,9 +210,9 @@
                                 <td>
                                     <span class="must_red">*</span>
                                     <select class="select_2" name="man">
-                                        <option value="">请选择活动人物</option>
+                                        <option value="">请选择游记人物</option>
                                         <volist name="noteman" id="vo">
-                                            <option value="{$vo.id}">{$vo.catname}</option>
+                                            <option value="{$vo.id}" <if condition="$vo['id'] eq $data['man']">selected</if>>{$vo.catname}</option>
                                          </volist>
                                     </select>
                                 </td>
@@ -216,9 +222,9 @@
                                 <td>
                                     <span class="must_red">*</span>
                                     <select class="select_2" name="style">
-                                        <option value="">请选择活动形式</option>
+                                        <option value="">请选择游记形式</option>
                                         <volist name="notestyle" id="vo">
-                                            <option value="{$vo.id}">{$vo.catname}</option>
+                                            <option value="{$vo.id}" <if condition="$vo['id'] eq $data['style']">selected</if>>{$vo.catname}</option>
                                          </volist>
                                     </select>
                                 </td>
@@ -235,6 +241,7 @@
                                 <th>内容摘要</th>
                                 <td>
                                     <textarea name="description" id="description" class="valid" style="width:500px;height:80px;">{$data.description}</textarea>
+                                    <span class="gray">不填写会自动截取内容正文的前250个字符</span>
                                 </td>
                             </tr>
                             <!--<tr id="contenttr">
@@ -249,9 +256,18 @@
                                     <fieldset class="blue pad-10">
                                         <legend>图文信息列表</legend>
                                         <center><div class="onShow" id="nameTip">您最多每次可以同时上传 <font color="red">10</font> 张,双击图片移除</div></center>
-                                        <ul id="albums" class="picList"></ul>
+                                        <ul id="albums" class="picList">
+                                            <notempty name="imglist">
+                                                <volist name="imglist" id="vo">
+                                                    <li id='imglist{$i}'>
+                                                        <textarea name="imglist[{$key}][content]" style='width:400px;height:200px;float:left' class='input'>{$vo.content}</textarea>
+                                                        <img class="img" src='{$vo.thumb}' style='width:210px;height:210px' title='移除' >
+                                                        <input type='hidden' name="imglist[{$key}][thumb]" value='{$vo.thumb}'/>
+                                                    </li>
+                                                </volist>
+                                            </notempty>
+                                        </ul>
                                     </fieldset>
-
                                     <div class="bk10"></div>
                                     <input type="button" class="button btn_submit" value="选择上传" id="uploadify1">
                                 </td>
@@ -262,13 +278,13 @@
                                     <ul class="switch_list cc ">
                                         <li>
                                             <label>
-                                                <input type='radio' name='isindex' value='1'>
+                                                <input type='radio' name='isindex' value='1'  <if condition="$data['isindex'] eq '1' ">checked</if>>
                                                 <span>推荐</span>
                                             </label>
                                         </li>
                                         <li>
                                             <label>
-                                                <input type='radio' name='isindex' value='0' checked>
+                                                <input type='radio' name='isindex' value='0'   <if condition="$data['isindex'] eq '0' ">checked</if>>
                                                 <span>不推荐</span>
                                             </label>
                                         </li>
@@ -281,13 +297,13 @@
                                     <ul class="switch_list cc ">
                                         <li>
                                             <label>
-                                                <input type='radio' name='type' value='1'>
+                                                <input type='radio' name='type' value='1' <if condition="$data['type'] eq '1' ">checked</if>>
                                                 <span>是</span>
                                             </label>
                                         </li>
                                         <li>
                                             <label>
-                                                <input type='radio' name='type' value='0' checked>
+                                                <input type='radio' name='type' value='0' <if condition="$data['type'] eq '0' ">checked</if>>
                                                 <span>否</span>
                                             </label>
                                         </li>
@@ -299,7 +315,8 @@
                 </div>
                 <div class="btn_wrap">
                     <div class="btn_wrap_pd">
-                        <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">添加</button>
+                        <input type="hidden" name="id" value="{$data.id}">
+                        <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">提交</button>
                     </div>
                 </div>
             </form>

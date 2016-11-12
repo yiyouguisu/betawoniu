@@ -10,12 +10,12 @@ class QueryController extends CommonController {
 	 * 首页搜索
 	 */
 	public function search(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents("php://input");
         $ret=json_decode($ret,true);
         $uid=intval(trim($ret['uid']));
         $keyword=trim($ret['keyword']);
         $city=intval(trim($ret['city']));
-
 
         if($keyword==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
@@ -37,7 +37,7 @@ class QueryController extends CommonController {
                 ->join("left join {$sqlI} c on a.id=c.value")
                 ->where($where)
                 ->order($order)
-                ->field('a.id,a.title,a.thumb,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,c.reviewnum')
+                ->field('a.description,a.id,a.title,a.thumb,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,c.reviewnum')
                 ->select();
             foreach ($note as $key => $value) {
                 # code...
@@ -52,6 +52,9 @@ class QueryController extends CommonController {
                     $note[$key]['ishit']=1;
                 }else{
                     $note[$key]['ishit']=0;
+                }
+                if($value['reviewnum'] == null) {
+                  $note[$key]['reviewnum'] = 0;
                 }
             }
             $note=!empty($note)?$note:array();
@@ -79,9 +82,11 @@ class QueryController extends CommonController {
                 }else{
                     $house[$key]['ishit']=0;
                 }
+                if($value['reviewnum'] == null) {
+                  $house[$key]['reviewnum'] = 0;
+                }
             }
             $house=!empty($house)?$house:array();
-
 
             $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'party'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
             $party=M("Activity a")
@@ -89,7 +94,7 @@ class QueryController extends CommonController {
                 ->join("left join {$sqlI} c on a.id=c.value")
                 ->where($where)
                 ->order($order)
-                ->field('a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.starttime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime')
+                ->field('a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.starttime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime,c.reviewnum')
                 ->select();
             foreach ($party as $key => $value) {
                 # code...
@@ -110,6 +115,9 @@ class QueryController extends CommonController {
                     $data[$key]['isjoin']=1;
                 }else{
                     $data[$key]['isjoin']=0;
+                }
+                if($value['reviewnum'] == null) {
+                  $party[$key]['reviewnum'] = 0;
                 }
             }
             $party=!empty($party)?$party:array();

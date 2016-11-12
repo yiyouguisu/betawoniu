@@ -392,7 +392,7 @@ class NoteController extends CommonController {
         $hidbox=explode(",",$hid);
         $data=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$_POST['uid'],'b.status'=>2,'b.isdel'=>0,'a.paystatus'=>1))->order(array('b.listorder'=>'desc','b.id'=>'desc'))->select();
         if(empty($data)){
-            $data=M('Hostel')->where(array('status'=>2,'isdel'=>0,'type'=>'1'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
+            $data=M('Hostel')->where(array('status'=>2,'isdel'=>0,'type'=>'0'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
         }
         foreach ($data as $key => $value) {
             # code...

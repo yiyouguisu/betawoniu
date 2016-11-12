@@ -10,7 +10,7 @@
     <div class="wrap J_check_wrap">
        <div class="common-form">
                 <div class="table_full">
-                    <form class="J_ajaxForm" method="post" action="{:U('Admin/Order/review')}">
+                    <form class="J_ajaxForm" method="post" action="{:U('Admin/Inn/review')}">
                          <div class="bk10"></div>
                          <div class="h_a">审核信息</div>       
                         <table width="100%" class="table_form contentWrap">
@@ -27,7 +27,7 @@
                                         </li>
                                         <li>
                                             <label>
-                                                <input type='radio' name='status' value='5' <if condition="$data['status'] eq '5' ">checked</if>>
+                                                <input type='radio' name='status' value='3' <if condition="$data['status'] eq '3' ">checked</if>>
                                                 <span>审核失败</span></label>
                                         </li>
                                     </ul>
@@ -43,7 +43,7 @@
                         </table>
                         <div class="btn_wrap">
                             <div class="btn_wrap_pd">
-                                <input type="hidden" name="orderid" value="{$data.orderid}">
+                                <input type="hidden" name="innid" value="{$data.id}">
                                 <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">审核</button>
                             </div>
                         </div>

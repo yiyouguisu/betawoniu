@@ -389,4 +389,14 @@ class CommonController extends Controller {
             return $keyc . str_replace('=', '', base64_encode($result));
         }
     }
+
+    protected function jsonSucceed($res) {
+      $info = array('code' => 1, 'res' => $res);
+      echo json_encode($info);
+    }
+
+    protected function jsonFailed($res) {
+      $info = array('code' => 0, 'res' => $res);
+      echo json_encode($info);
+    }
 }

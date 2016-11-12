@@ -64,7 +64,8 @@
                             <td align="center" >{$vo.inputtime|date="Y-m-d H:i:s",###}</td>
                             <td align="center" >{:getpaystyle($vo['orderid'])}</td>
                             <td align="center" > 
-                                <a href="{:U('Admin/Order/doclose',array('orderid'=>$vo['orderid']))}" class="close">关闭订单</a>
+                                <a href="{:U('Admin/Order/doclose',array('orderid'=>$vo['orderid']))}" class="close">关闭订单</a></br>
+                            <a href="javascript:;" onClick="omnipotent('selectid','{:U('Admin/Order/show',array('orderid'=>$vo['orderid']))}','查看详情',1,850,600)">查看详情</a></br>
                             </td>
                         </tr>
 

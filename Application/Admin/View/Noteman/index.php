@@ -1,54 +1,69 @@
 <include file="Common:Head" />
+
 <body class="J_scroll_fixed">
     <div class="wrap J_check_wrap">
         <include file="Common:Nav" />
 
+        <form name="myform" id="myform" action="{:U('Admin/Noteman/edit')}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="type" value="1">
+            <div class="J_tabs_contents">
 
-        <form action="{:U('Admin/Noteman/listorder')}" method="post">
-            <div class="table_list">
-                <table width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-
-                            <td width="5%" align="center">排序</td>
-                            <td width="5%" align="center">ID</td>
-                            <td width="45%" align="left">游记人物名称</td>
-                            <td width="15%" align="center">添加时间</td>
-                            <td width="15%" align="center">管理操作</td>
+                <div class="h_a">基本属性</div>
+                <div class="table_full">
+                    <table width="100%" class="table_form ">
+                        <tr id="normal_add">
+                            <th width="200">名称：</th>
+                            <td>
+                                <input type="text" name="catname" id="catname" class="input" value="{$data.catname}"></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <volist name="data" id="vo">
                         <tr>
-                            <td align="center" ><input name='listorders[{$vo.id}]' class="input length_1 mr5"  type='number' size='3' value='{$vo.listorder}' align="center"></td>
-                            <td align="center" >{$vo.id}</td>
-                            <td align="left" >{$vo.catname}</td>
-                            <td align="center" >{$vo.inputtime|date="Y-m-d H:i:s",###}</td>
-                            <td align="center" > 
-                              <a href="{:U('Admin/Noteman/edit',array('id'=>$vo['id']))}" >修改</a> 
-                              <a href="{:U('Admin/Noteman/delete',array('id'=>$vo['id']))}"  class="del">删除</a>  
-                            </td>
+                            <th>显示排序：</th>
+                            <td>
+                                <input type="text" name="listorder" id="listorder" class="input" value="{$data.listorder}"></td>
                         </tr>
-                    </volist>
-                    </tbody>
-                </table>
-                <div class="p10">
-                    <div class="pages">{$Page} </div>
+                    </table>
                 </div>
-            </div>
-
-            <div class="btn_wrap">
-                <div class="btn_wrap_pd">
-                    <if condition="authcheck('Admin/Noteman/listorder')">
-                        <button class="btn btn_submit mr10 " type="submit" name="submit" value="listorder" >排序</button>
-                    </if>
-
-
-                </div>
-            </div>
-        </form>
     </div>
 
+    <div class="btn_wrap">
+        <div class="btn_wrap_pd">
+            <input type="hidden" name="id" class="input" value="{$data.id}">
+            <button class="btn btn_submit mr10 " type="submit">提交</button>
+        </div>
+    </div>
+    </form>
+</div>
     <script src="__JS__/common.js?v"></script>
+    <script src="__JS__/content_addtop.js"></script>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/Public/uploadify/uploadify.css" />
+    <script type="text/javascript" src="__PUBLIC__/Public/uploadify/swfobject.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/Public/uploadify/uploadify.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#uploadify").uploadify({
+                'uploader': '__PUBLIC__/Public/uploadify/uploadify.swf',//所需要的flash文件
+                'cancelImg': '__PUBLIC__/Public/uploadify/cancel.gif',//单个取消上传的图片
+                //'script'  : '__PUBLIC__/Public/uploadify/uploadify.php',//实现上传的程序
+                'script': "{:U('Admin/Public/uploadone')}",//实现上传的程序
+                'method': 'get',
+                'folder': '/Uploads/images',//服务端的上传目录
+                'auto': true,//自动上传
+                'multi': true,//是否多文件上传
+                'fileDesc': 'Image(*.jpg;*.gif;*.png)',//对话框的文件类型描述
+                'sizeLimit': 2100000,//限制上传文件的大小2m(比特b)
+                'queueSizeLimit': 10, //可上传的文件个数
+                'buttonImg': '__PUBLIC__/Public/uploadify/add.gif',//替换上传钮扣
+                'width': 80,//buttonImg的大小
+                'height': 26,
+                onComplete: function (evt, queueID, fileObj, response, data) {
+                    getResult(response);//获得上传的文件路径
+                }
+            });
+            var imgg = $("#image");
+            function getResult(content) {
+                imgg.val(content);
+            }
+        });
+    </script>
 </body>
 </html>

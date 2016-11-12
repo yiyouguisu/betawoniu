@@ -1,0 +1,100 @@
+﻿/* Reset CSS*/
+@charset "utf-8";
+
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video { margin: 0; padding: 0; outline: 0; font-size: 100%; font: inherit; vertical-align: baseline; font-family: Arial, "微软雅黑", "Helvetica Neue", Helvetica, sans-serif; }
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; }
+address, caption, cite, code, dfn, em, strong, i, th, var, optgroup {  font-style: normal; font-weight: normal; }
+h1, h2, h3, h4, h5, h6, abbr, acronym { font-weight: normal;}
+input, button, textarea, select, optgroup, option {  font-family: inherit; font-size: inherit; font-style: inherit; font-weight: inherit; }
+input, button, textarea, select { font-size: 100%; }
+input[type="text"], input[type="password"], textarea { outline-style: none; -webkit-appearance: none; }
+textarea { resize: none; }
+ol, ul { list-style: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+caption, th { text-align: left; }
+a, ins { text-decoration: none; }
+a { outline: none; }
+a:visited { text-decoration: none; }
+a:active, a:hover { text-decoration: none; cursor: pointer; }
+blockquote, q { quotes: none; }
+:focus { outline: none; }
+img { border: none; vertical-align: middle; height: auto; /* ie8 */ -ms-interpolation-mode: bicubic; /*为了照顾ie图片缩放失真*/ }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+fieldset, img { border: 0; }
+address, caption, cite, code, dfn, em, strong, th, var { font-style: normal; font-weight: normal; }
+li { list-style: none; }
+.fr { float: right; }
+.fl { float: left; }
+.show { display: block; }
+.invisible { visibility: hidden; }
+.affix { position: fixed; }
+.box { box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; }
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/*more*/
+.clear { clear: both; display: block; font-size: 0; height: 0; line-height: 0; overflow: hidden; }
+.hide { display: none; }
+.f9 { font-size: 9px; }
+.f10 { font-size: 10px; }
+.f12 { font-size: 12px; }
+.f13 { font-size: 13px; }
+.f14 { font-size: 14px; }
+.f16 { font-size: 16px; }
+.f18 { font-size: 18px; }
+.f20 { font-size: 20px; }
+.f22 { font-size: 22px; }
+.f24 { font-size: 24px; }
+.f25 { font-size: 25px; }
+.f26 { font-size: 26px; }
+.f27 { font-size: 27px; }
+.f28 { font-size: 28px; }
+.f29 { font-size: 29px; }
+.f30 { font-size: 30px; }
+.f31 { font-size: 31px; }
+.f32 { font-size: 32px; }
+.f33 { font-size: 33px; }
+.f34 { font-size: 34px; }
+.f35 { font-size: 35px; }
+.f36 { font-size: 36px; }
+.fb { font-weight: bold; }
+.fn { font-weight: normal; }
+.t2 { text-indent: 2em; }
+.lh150 { line-height: 150%; }
+.lh180 { line-height: 180%; }
+.lh200 { line-height: 200%; }
+.tl { text-align: left; }
+.tc { text-align: center; }
+.tr { text-align: right; }
+.bc { margin-left: auto; margin-right: auto; }
+.cb { clear: both; }
+.cl { clear: left; }
+.cr { clear: right; }
+.vm { vertical-align: middle; }
+.pr { position: relative; }
+.pa { position: absolute; }
+.abs-right { position: absolute; right: 0; }
+.zoom { zoom: 1; }
+.hidden { overflow: hidden; }
+.none { display: none; }
+.c333 { color: #333; }
+.c666 { color: #666; }
+.c999 { color: #999; }
+.cw { color: #fff; }
+.fss { font-family: SimSun; }
+.fyh { font-family: Microsoft YaHei; }
+.far { font-family: Arial; }
+.fsti { font-family: "宋体"; }
+/*test*/
+.zx9 { z-index: 9; }
+.c000 { color: #000; }
+.c737372 { color: #737372; }
+.cb5 { color: #b5b5b5; }
+.disnone { display: none !important; }
+.c6e { color: #6e6e6e; }
+.c83 { color: #838383; }
+.cb2 { color: #b2b2b2; }
+.middle { display: inline-block; vertical-align: middle; *display: inline; *zoom: 1; }
+.cur:hover{
+    cursor:pointer;
+}

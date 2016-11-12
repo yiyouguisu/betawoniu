@@ -63,7 +63,6 @@ class NoteController extends CommonController {
         }
         $where['a.status']=2;
         $where['a.isdel']=0;
-
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $count = M("Note a")
                 ->join("left join zz_member b on a.uid=b.id")
@@ -118,6 +117,7 @@ class NoteController extends CommonController {
             $uid=session("uid");
             $member=M('Member')->where(array('id'=>$uid))->find();
             $Map=A("Api/Map");
+            $hid = $_POST['hid'];
             $area="";
             if(!empty($_POST['town'])){
                 $area=$_POST['province'] . ',' . $_POST['city'] . ',' . $_POST['town'];
@@ -184,13 +184,18 @@ class NoteController extends CommonController {
                     $hostel=M('Hostel')->where(array('status'=>2,'isdel'=>0,'type'=>'1'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
                 }
                 $this->assign("hostel",$hostel);
+                $hotels = M('hostel')
+                  ->where(array('isdel' => 0))
+                  ->select();
+                $this->assign('hotels', $hotels);
                 $this->display();
             }
         }
     }
     public function edit() {
+        $uid=session("uid");
         if ($_POST) {
-            $uid=session("uid");
+            
             $member=M('Member')->where(array('id'=>$uid))->find();
             $Map=A("Api/Map");
             $area="";
@@ -237,7 +242,7 @@ class NoteController extends CommonController {
                             M('tags_content')->add(array('contentid'=>$nid,'title'=>$title,'varname'=>'note','type'=>'place','hid'=>$hostel['id'],'hostel'=>$hostel['title'],'place'=>$hostel['place'],'updatetime'=>time()));
                         }
                     }
-                    $this->success("修改游记成功！", U("Home/Note/index"));
+                    $this->success("修改游记成功！", U("Web/Member/mynote"));
                 } else {
                     $this->error("修改游记失败！");
                 }
@@ -259,6 +264,7 @@ class NoteController extends CommonController {
                 $data['province']=$area[0];
                 $data['city']=$area[1];
                 $data['town']=$area[2];
+                // var_dump($data['days']);
                 $this->assign("data", $data);
                 $imglist=json_decode($data['imglist'],true);
                 $this->assign("imglist", $imglist);
@@ -268,20 +274,36 @@ class NoteController extends CommonController {
                 $this->assign("noteman",$noteman);
                 $province = M('area')->where(array('parentid'=>0,'status'=>1))->select();
                 $this->assign('province',$province);
+                $city = M('area')->where(array('parentid'=>$data['province'],'status'=>1))->select();
+                $this->assign('city',$city);
+                $town = M('area')->where(array('parentid'=>$data['city'],'status'=>1))->select();
+                $this->assign('town',$town);
+                // var_dump($town);
                 $hidbox=explode(",",$data['hid']);
-                $hostel=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$_POST['uid'],'b.status'=>2,'b.isdel'=>0,'a.paystatus'=>1))->order(array('b.listorder'=>'desc','b.id'=>'desc'))->select();
+                $hostel=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$uid,'b.status'=>2,'b.isdel'=>0,'a.paystatus'=>1))->order(array('b.listorder'=>'desc','b.id'=>'desc'))->select();
                 if(empty($hostel)){
-                    $hostel=M('Hostel')->where(array('status'=>2,'isdel'=>0,'type'=>'1'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
+                    $hostel=M('Hostel')->where(array('status'=>2,'isdel'=>0,'type'=>'0'))->order(array('listorder'=>'desc','id'=>'desc'))->field("id,title")->select();
                 }
+                $hostelStr = '';
+                $hostelVal = '';
                 foreach ($hostel as $key => $value) {
                     # code...
                     if(!empty($hidbox)&&in_array($value['id'],$hidbox)){
                         $hostel[$key]['ischeck']=1;
+                        $hostelStr .= $hostel[$key]['title'] . ',';
+                        $hostelVal .= $hostel[$key]['id'] . ',';
                     }else{
                         $hostel[$key]['ischeck']=0;
                     }
                 }
+                if($hostelStr != '')
+                    $hostelStr = substr($hostelStr,0,strlen($hostelStr)-1);
+                if($hostelVal != '')
+                    $hostelVal = substr($hostelVal,0,strlen($hostelVal)-1);
+                $this->assign('hostelStr',$hostelStr);
+                $this->assign('hostelVal',$hostelVal);
                 $this->assign('hostel',$hostel);
+                // var_dump($hostel);
                 $this->display();
             }
         }
@@ -289,8 +311,14 @@ class NoteController extends CommonController {
     public function show() {
         $id=I('id');
         $uid=session("uid");
+        $user = M('member')->where(array('id' => $uid))->find();
+        $this->assign('user', $user);
         M('Note')->where(array('id'=>$id))->setInc("view");
-        $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
+        $sqlI=M('review')
+          ->where(array('isdel'=>0,'varname'=>'note'))
+          ->group("value")
+          ->field("value,count(value) as reviewnum")
+          ->buildSql();
         $data=M("Note a")
             ->join("left join zz_member b on a.uid=b.id")
             ->join("left join {$sqlI} c on a.id=c.value")
@@ -301,7 +329,13 @@ class NoteController extends CommonController {
             ->find();
         if(empty($data['reviewnum'])) $data['reviewnum']=0;
         $data['content']=json_decode($data['content'],true);
-        $reviewlist=M('review a')->join("left join zz_member b on a.uid=b.id")->where(array('a.value'=>$data['id'],'a.isdel'=>0,'a.varname'=>'note'))->field("a.id as rid,a.content,a.inputtime,b.id as uid,b.nickname,b.head,b.rongyun_token")->limit(10)->select();
+        $reviewlist=M('review a')
+          ->join("left join zz_member b on a.uid=b.id")
+          ->where(array('a.value'=>$data['id'],'a.isdel'=>0,'a.varname'=>'note'))
+          ->field("a.id as rid,a.content,a.inputtime,b.id as uid,b.nickname,b.head,b.rongyun_token")
+          ->limit(5)
+          ->order('id desc')
+          ->select();
         $data['reviewlist']=!empty($reviewlist)?$reviewlist:null;
         $collectstatus=M('collect')->where(array('uid'=>$uid,'varname'=>"note",'value'=>$data['id']))->find();
         !empty($collectstatus)?$data['iscollect']=1:$data['iscollect']=0;
@@ -309,9 +343,27 @@ class NoteController extends CommonController {
         $hitstatus=M('hit')->where(array('uid'=>$uid,'varname'=>"note",'value'=>$data['id']))->find();
         !empty($hitstatus)?$data['ishit']=1:$data['ishit']=0;
 
-        $note_place=M('tags_content a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.varname'=>'note','a.contentid'=>$data['id'],'a.type'=>'place'))->field("a.place as title,a.hid,b.title as hostel,b.city,'place' as type,b.uid")->select();
-        $data['note_place']=!empty($note_place)?$note_place:null;
-
+        $note_place=M('tags_content a')
+          ->join("left join zz_hostel b on a.hid=b.id")
+          ->where(array('a.varname'=>'note','a.contentid'=>$data['id'],'a.type'=>'place'))
+          ->field("a.place as title,a.hid,b.title as hostel,b.city,'place' as type,b.uid")
+          ->select();
+        //$data['note_place']=!empty($note_place)?$note_place:null;
+        $newData = array();
+        foreach($note_place as $np) {
+          $title = $np['title'];
+          $exist = false;
+          foreach($newData as $new) {
+            if($title == $new['title'] ) {
+              $exist = true;
+              break;   
+            }
+          }
+          if(!$exist) {
+            array_push($newData, $np); 
+          }
+        }
+        $data['note_place'] = $newData;
         $note_hostel=M('tags_content a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.varname'=>'note','a.contentid'=>$data['id'],'a.type'=>'hostel'))->field("a.hostel as title,a.hid,a.place,b.city,'hostel' as type,b.uid")->select();
         $data['note_hostel']=!empty($note_hostel)?$note_hostel:null;
 
@@ -338,6 +390,8 @@ class NoteController extends CommonController {
             $note_near_activity[$key]['address']=getarea($value['area']).$value['address'];
         }
         $data['note_near_activity']=!empty($note_near_activity)?json_encode($note_near_activity):null;
+        $note_near_activity_num=count($note_near_activity);
+        $this->assign("note_near_activity_num",$note_near_activity_num);
 
         $where=array();
         $where['a.status']=2;
@@ -366,7 +420,8 @@ class NoteController extends CommonController {
             $note_near_hostel[$key]['distance']=!empty($distance)?$distance:0.00;
         }
         $data['note_near_hostel']=!empty($note_near_hostel)?json_encode($note_near_hostel):null;
-
+        $note_near_hostel_num=count($note_near_hostel);
+        $this->assign("note_near_hostel_num",$note_near_hostel_num);
         $this->assign("data",$data);
         $this->display();
     }
@@ -416,6 +471,12 @@ class NoteController extends CommonController {
         $result = M("area")->where(array("parentid" => $parentid,'status'=>1))->select();
         $result = json_encode($result);
         echo $result;
+    }
+    public function ajaxcity(){
+        $parentid = $_POST['id'];
+        $result = M("area")->where(array("parentid" => $parentid,'status'=>1))->select();
+        $result = json_encode($result);
+        $this->ajaxReturn($result,'json');
     }
     public function ajax_collect(){
         if(IS_POST){

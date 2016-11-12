@@ -1,21 +1,20 @@
 <include file="public:head" />
 <body>
-
 <div class="header center z-index112 pr f18">
       <div class="stay_top">
            <div class="stay_box">
-                   <div class="stay_a fl">
-                       <div class="stay_a1">住 4-30</div>
-                       <div class="stay_a2">离 5-10</div>
+                   <div class="stay_a fl" id="stay">
+                       <div class="stay_a1">住 {$stayStart}</div>
+                       <div class="stay_a2">离 {$stayEnd}</div>
                    </div>
-                   <div class="stay_b f0 fr">
-                       <input type="text" class="stay_text vertical" placeholder="输入民宿或关键词搜索...">
+                   <div class="stay_b f0 fr" id="go_search">
+                       <input type="text" class="stay_text vertical" placeholder="输入美宿或关键词搜索...">
                        <input type="button" class="stay_btn vertical">
                    </div>
            </div>
       </div>
-      <div class="head_go pa"><a href="" onclick="history.go(-1)"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
-      <div class="tra_pr map_small f14 pa"><a href="{:U('Web/Hostel/map')}"><img src="__IMG__/map_small.jpg">地图</a></div>      
+      <div class="head_go pa"><a href="javascript:history.go(-1)"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
+      <div class="tra_pr map_small f14 pa"><a href="{:U('Web/Hostel/all_map')}"><img src="__IMG__/map_small.jpg">地图</a></div>      
 </div>
 
 <div class="container">
@@ -27,6 +26,7 @@
                         <div class="dress_box">
                              <div class="dress_b act_a center moch_click f14">
                                  <ul>
+                                    <li class='hostelcate' data-id=''>不限</li>
                                     <volist name='hostelcate' id='vo'>
                                         <li class='hostelcate' data-id='{$vo.id}'>{$vo.catname}</li>
                                     </volist>
@@ -37,11 +37,11 @@
                 </div>
                 
                 <div class="tra_li tra_li_on">按位置</div>
-                <div class="tra_drop">
+                <div class="tra_drop sarea">
                     <div class="tra_dropA_box">
                          <div class="tra_dropA">
                             <select id='area'>
-                                <option value='0'>---请选择-</option>
+                                <option value='0'>---全部---</option>
                                 <foreach name="areaArray" item="vo">
                                     <option value="{$vo.id}">{$vo.name}</option>
                                 </foreach>
@@ -49,14 +49,18 @@
                          </div>
                          <div class="tra_dropA">
                             <select id='city'>
-                                <option value='0'>---请选择-</option>
+                                <option value='0'>---全部-</option>
                             </select>
                          </div>
                          <div class="tra_dropA">
                             <select id='county'>
-                                <option value='0'>---请选择-</option>
+                                <option value='0'>---全部-</option>
                             </select>
                          </div>
+
+                    <div style="padding-bottom:8px;">
+                      <button style="width:100%;color:#fff;background:#56c3cf;border:0;border-radius:3px;" id="submit_area">确定</button>    
+                    </div>
                      </div>
                 </div>
                 <div class="tra_li tra_li_on">按价格</div>
@@ -88,7 +92,7 @@
                              <li>评分</li>
                          </ul>
                      </div>
-                     <div class="stay_right fl">
+                     <div class="stay_right fl" style="overflow-y:scroll">
                            <ul>
                               <li class='support' data-id='0'><img src="__IMG__/stay_b1.png"> 不限</li>
                               <volist name='roomcate' id='vo'>
@@ -123,56 +127,53 @@
                      </div>
                 </div>
           </div>
-
           <div class="land_btm">  
-                <volist name='data' id='vo'>
-                    <div class="recom_list pr">
-                        <a href="{:U('Web/Hostel/show',array('id'=>$vo['id']))}"><div class="recom_a pr"><img class="pic" data-original="{$vo.thumb}" src="__IMG__/default.jpg" style="width: 100%;height: 60vw;">
-                            <a href="{:U('Web/Member/memberHome',array('id'=>$vo['uid']))}"><div class="recom_d pa"><img src="{$vo.head}"></div></a>
-                            <div class="recom_g f18 center pa">
-                                <div class="recom_g1 fl"><em>￥</em>{$vo.money}<span>起</span></div>
-                                <div class="recom_g2 fl">{$vo.evaluation|default='0'}<span>分</span></div>
-                            </div>
-                        </div></a>
-                        <div class="recom_c pa"><div class="recom_gg collect <if condition='$vo.iscollect eq 1'>recom_c_cut</if>" data-id="{$vo.id}"></div></div>
-                        <div class="recom_e">
-                            <div class="land_f1 recom_e1 f16">{$vo.title}</div>
-                            <div class="recom_f">
-                            <div class="recom_f1 recom_hong f12 fl"><img src="__IMG__/add_e.png">距你  {$vo.distance|default='0'}km</div>
-                                <div class="recom_f2 fr">
-                                    <div class="land_h recom_f3 vertical">
-                                            <div class="land_h2 f12 vertical hit" data-id="{$vo.id}">
-                                                <if condition='$vo.ishit eq 1'>
-                                                  <img src="__IMG__/poin_1.png">
-                                                <else/>
-                                                  <img src="__IMG__/poin.png">
-                                                </if>
-                                                <span class="vcount">{$vo.hit}</span>
-                                            </div>
-                                            <div class="land_h1 f12 vertical">
-                                                <img src="__IMG__/land_d3.png">
-                                                <span>{$vo.reviewnum|default='0'}</span>条评论
-                                            </div>
-                                        </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>   
-                </volist>
-
+            <div class="f14" id="DataList">
+                <div id="scroller">
+                    <div id="pullDown" class="idle">
+                        <span class="pullDownIcon"></span>
+                        <span class="pullDownLabel">下拉加载数据...</span>
+                    </div>
+                    <div id="thelist"></div>
+                    <div id="pullUp" class="idle">
+                        <span class="pullUpIcon"></span>
+                        <span class="pullUpLabel">上拉加载数据...</span>
+                    </div>
+                </div>
+            </div>
           </div>    
-
    </div>  
    <div class="mask"></div>     
-   
-   <div class="">
-   
+   <div id="time_box" style="position:fixed;top:6rem;left:0;right:0;background:#fff;padding:10px;z-index:1000;display:none">
+      <input type="date" name="live_1" id="live_1" value="{$stayStartValue}" style="display:none">
+      <input type="date" name="live_2" id="live_2" value="{$stayEndValue}" style="display:none">
+      <div style="padding:5px">
+        <div class="stay_timer" data-type="start" id="start_stay" style="padding:5px;font-size:16px;border:1px solid #eee;display:inline-block;vertical-align:middle;width:60%">
+          <span style="margin:0 3px" id="start_date">{$stayStart}</span>
+          <span style="margin:0 3px" id="start_week_day">周三</span>
+          <span style="margin:0 3px">入住</span>
+        </div>
+        <button class="ft12" style="margin-left:2%;width:15%;padding:6px;color:#fff;background:#56c3cf;border:0;border-radius:3px;" id="prev_day">前一天</button>
+        <button class="ft12" style="width:15%;padding:6px;color:#fff;background:#56c3cf;border:0;border-radius:3px;" id="next_day">后一天</button>
+      </div>
+      <div style="padding:5px">
+        <div class="stay_timer" data-type="end" id="end_stay" style="padding:5px;font-size:16px;border:1px solid #eee;width:66%;vertical-align:middle;display:inline-block;border-radius:2px;">
+          <span style="margin:0 3px;" id="stay_days">住1晚</span> 
+          <span style="margin:0 3px;" id="leave_date">{$stayEnd}</span> 
+          <span style="margin:0 3px;" id="leave_week_day">周四</span> 
+          <span style="margin:0 3px;">离店</span> 
+        </div>
+        <button class="ft12" style="margin-left:2%;width:12%;padding:6px;color:#fff;background:#ccc;border-radius:3px;border:0" id="add_day">+</button>
+        <button class="ft12" style="width:12%;padding:6px;color:#fff;background:#ccc;border-radius:3px;border:0" id="minu_day">-</button>
+      </div>
+      <div style="padding:5px">
+        <button class="ft16" style="padding:6px;color:#fff;background:#56c3cf;border:0;border-radius:3px;width:100%">确定</button>
+      </div>
+   </div>
+   <div id="time_choose_box" style="position:fixed;left:0;top:0;right:0;z-index:10000;top:6rem;display:none">
+      <include file="Public:calendar" />
    </div>
 </div>
-
-
-
-
 <script src="__JS__/jquery-ui.min.js.js"></script>
 <script>
 var data={};
@@ -221,11 +222,10 @@ var data={};
         // 选择城市
         $('#area').change(function(){
             var city=$('#city');
-            city.empty();
-            var data={'id':$(this).val()};
-            console.log(data);
-            $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
-                var option='<option>--请选择--</option>';
+            var data={'parentid':$(this).val()};
+            $.get("{:U('Web/Note/getchildren')}",data,function(res){
+                res = JSON.parse(res); 
+                var option='';
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';
                 });
@@ -237,7 +237,17 @@ var data={};
             var county=$('#county');
             county.empty();
             var data={'id':$(this).val()};
-            $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
+            $.get("{:U('Web/Note/getchildren')}",data,function(res){
+                if(res == null || res == 'null') {
+                  data['area'] = $('#area').val() + ',' + $('#city').val();
+                  $('#thelist').html('');
+                  //ajax_send(data);
+                  loaded({'area': $('#area').val() + ',' + $('#city').val()});
+                  $('.mask').hide();
+                  $('.tra_drop').hide();
+                  return; 
+                }
+                res = JSON.parse(res);
                 var option='<option>--请选择--</option>';
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';
@@ -248,19 +258,25 @@ var data={};
         // 选择城市
         $('#county').change(function(){
             var area=$('#area').val()+','+$('#city').val()+','+$(this).val();
-            console.log(area);
             if($('#city').val()==$(this).val()){
               area=$('#area').val()+','+$('#city').val();
             }
             data['city']=area;
-            ajax_send(data);
+            $('#thelist').html('');
+            //ajax_send(data);
+            $('.mask').hide();
+            $('.tra_drop').hide();
         });
         // 选择特色
         $('.hostelcate').click(function(){
-          console.log($(this).data('id'));
           data['catid']=$(this).data('id');
-          console.log(data);
-          ajax_send(data);
+          if(!data['catid']) {
+            ajax_send(); 
+          } else {
+            ajax_send(data);
+          }
+          $('.mask').hide();
+          $('.tra_drop').hide();
         });
         // 支持
         var a=[];
@@ -311,7 +327,6 @@ var data={};
    })
     function ajax_send(data) {
       $.post("{:U('Web/Hostel/select')}",data,function(res){
-        console.log(res);
         addHtml(res);
         collect();
         hit();
@@ -320,6 +335,7 @@ var data={};
     }
     function collect(){
         // 收藏
+        $('.collect').unbind('click');
         $('.collect').click(function(){
           var self=$(this);
           var id=self.data('id');
@@ -368,8 +384,8 @@ var data={};
     }
 
     function addHtml(data){
-        var land_btm=$('.land_btm');
-        land_btm.empty();
+        var thelist =$('#thelist');
+        thelist.html('');
         var content=''
         $.each(data,function(i,value){
             var url="{:U('Web/Hostel/show')}";
@@ -408,7 +424,7 @@ var data={};
             content+='<span class="vcount">'+value.hit+'</span></div><div class="land_h1 f12 vertical"><img src="__IMG__/land_d3.png">';
             content+='<span>'+value.reviewnum+'</span>条评论</div></div></div></div></div></div>'
         });
-        land_btm.append(content);
+        thelist.append(content);
     }
 
     Array.prototype.remove=function(obj){ 
@@ -425,29 +441,375 @@ var data={};
         } 
       } 
     } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
+<script>
+    var p = {};
+    var city, month, notetype, order = 0;
+    var OFFSET = 5;
+    var page = 1;
+    var PAGESIZE = 5;
 
+    var myScroll,
+        pullDownEl,
+        pullDownOffset,
+        pullUpEl,
+        pullUpOffset,
+        generatedCount = 0;
+
+    var maxScrollY = 0;
+    var hasMoreData = false;
+
+    document.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+    }, false);
+    $(function () {
+        loaded();
+        $(".mask").click(function () {
+            $(".tra_drop").hide()
+            $("#time_box").hide();
+            $("#time_choose_box").hide();
+            loaded()
+        })
+    })
+
+    function loaded() {
+        page = 1;
+        p['p'] = page;
+        p['month'] = ($(".month li.tra_dropCut").length > 0) ? $(".month li.tra_dropCut").data('id') : 0;
+        p['type'] = ($(".order li.tra_dropCut").length > 0) ? $(".order li.tra_dropCut").data('id') : 0;
+        p['notetype'] = ($(".notetype li.tra_dropCut").length > 0) ? $(".notetype li.tra_dropCut").data('id') : 0;
+        p['province'] = $("#area").val();
+        p['city'] = $('#city').val();
+        p['town'] = $('#county').val();
+        var options = arguments[0] ? arguments[0] : undefined;
+        if(options) {
+          $.each(options, function(k, v) {
+            p[k] = v; 
+          });
+        }
+        pullDownEl = document.getElementById('pullDown');
+        pullDownOffset = pullDownEl.offsetHeight;
+        pullUpEl = document.getElementById('pullUp');
+        pullUpOffset = pullUpEl.offsetHeight;
+        hasMoreData = false;
+        $("#pullUp").hide();
+        pullDownEl.className = 'loading';
+        pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';
+        $.get("{:U('Web/Hostel/ajax_getlist')}", p, function (data, status) {
+            if (status == "success") {
+                if (data.status == 0) {
+                    $("#pullDown").hide();
+                    $("#pullUp").hide();
+                }
+                if (data.num < PAGESIZE) {
+                    hasMoreData = false;
+                    $("#pullUp").hide();
+                } else {
+                    hasMoreData = true;
+                    $("#pullUp").show();
+                }
+
+                myScroll = new iScroll('DataList', {
+                    useTransition: true,
+                    topOffset: pullDownOffset,
+                    onRefresh: function () {
+                        if (pullDownEl.className.match('loading')) {
+                            pullDownEl.className = 'idle';
+                            pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉刷新...';
+                            this.minScrollY = -pullDownOffset;
+                        }
+                        if (pullUpEl.className.match('loading')) {
+                            pullUpEl.className = 'idle';
+                            pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉刷新...';
+                        }
+                    },
+                    onScrollMove: function () {
+                        if (this.y > OFFSET && !pullDownEl.className.match('flip')) {
+                            pullDownEl.className = 'flip';
+                            pullDownEl.querySelector('.pullDownLabel').innerHTML = '信息更新中...';
+                            this.minScrollY = 0;
+                        } else if (this.y < OFFSET && pullDownEl.className.match('flip')) {
+                            pullDownEl.className = 'idle';
+                            pullDownEl.querySelector('.pullDownLabel').innerHTML = '下拉加载更多...';
+                            this.minScrollY = -pullDownOffset;
+                        }
+                        if (this.y < (maxScrollY - pullUpOffset - OFFSET) && !pullUpEl.className.match('flip')) {
+                            if (hasMoreData) {
+                                this.maxScrollY = this.maxScrollY - pullUpOffset;
+                                pullUpEl.className = 'flip';
+                                pullUpEl.querySelector('.pullUpLabel').innerHTML = '信息更新中...';
+                            }
+                        } else if (this.y > (maxScrollY - pullUpOffset - OFFSET) && pullUpEl.className.match('flip')) {
+                            if (hasMoreData) {
+                                this.maxScrollY = maxScrollY;
+                                pullUpEl.className = 'idle';
+                                pullUpEl.querySelector('.pullUpLabel').innerHTML = '上拉加载更多...';
+                            }
+                        }
+                    },
+                    onScrollEnd: function () {
+                        if (pullDownEl.className.match('flip')) {
+                            pullDownEl.className = 'loading';
+                            pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';
+                            refresh();
+                        }
+                        if (hasMoreData && pullUpEl.className.match('flip')) {
+                            pullUpEl.className = 'loading';
+                            pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';
+                            nextPage();
+                        }
+                    }
+                });
+                $("#thelist").empty();
+                $("#thelist").html(data.html);
+                myScroll.refresh();
+                if (hasMoreData) {
+                    myScroll.maxScrollY = myScroll.maxScrollY + pullUpOffset;
+                } else {
+                    myScroll.maxScrollY = myScroll.maxScrollY;
+                }
+                maxScrollY = myScroll.maxScrollY;
+                collect();
+                getLocation();
+            };
+        }, "json");
+        pullDownEl.querySelector('.pullDownLabel').innerHTML = '无数据...';
+        
+    }
+
+    function refresh() {
+        page = 1;
+        p['p'] = page;
+        p['month'] = ($(".month li.tra_dropCut").length > 0) ? $(".month li.tra_dropCut").data('id') : 0;
+        p['type'] = ($(".order li.tra_dropCut").length > 0) ? $(".order li.tra_dropCut").data('id') : 0;
+        p['notetype'] = ($(".notetype li.tra_dropCut").length > 0) ? $(".notetype li.tra_dropCut").data('id') : 0;
+        p['province'] = ($("#province option:selected").length > 0) ? $("#province option:selected").val() : 0;
+        p['city'] = ($("#city option:selected").length > 0) ? $("#city option:selected").val() : 0;
+        p['town'] = ($("#town option:selected").length > 0) ? $("#town option:selected").val() : 0;
+        $.get("{:U('Web/Hostel/ajax_getlist')}", p, function (data, status) {
+            if (status == "success") {
+                if (data.length < PAGESIZE || data.status == 0) {
+                    hasMoreData = false;
+                    $("#pullUp").hide();
+                } else {
+                    hasMoreData = true;
+                    $("#pullUp").show();
+                }
+                $("#thelist").empty();
+                $("#thelist").html(data.html);
+                myScroll.refresh();
+                if (hasMoreData) {
+                    myScroll.maxScrollY = myScroll.maxScrollY + pullUpOffset;
+                } else {
+                    myScroll.maxScrollY = myScroll.maxScrollY;
+                }
+                maxScrollY = myScroll.maxScrollY;
+                getLocation();
+            };
+        }, "json");
+    }
+
+    function nextPage() {
+        page++;
+        p['p'] = page;
+        p['month'] = ($(".month li.tra_dropCut").length > 0) ? $(".month li.tra_dropCut").data('id') : 0;
+        p['type'] = ($(".order li.tra_dropCut").length > 0) ? $(".order li.tra_dropCut").data('id') : 0;
+        p['notetype'] = ($(".notetype li.tra_dropCut").length > 0) ? $(".notetype li.tra_dropCut").data('id') : 0;
+        p['province'] = ($("#province option:selected").length > 0) ? $("#province option:selected").val() : 0;
+        p['city'] = ($("#city option:selected").length > 0) ? $("#city option:selected").val() : 0;
+        p['town'] = ($("#town option:selected").length > 0) ? $("#town option:selected").val() : 0;
+
+        $.get("{:U('Web/Hostel/ajax_getlist')}", p, function (data, status) {
+            if (status == "success") {
+                if (data.length < PAGESIZE || data.status == 0) {
+                    hasMoreData = false;
+                    $("#pullUp").hide();
+                } else {
+                    hasMoreData = true;
+                    $("#pullUp").show();
+                }
+                $new_item = data.html;
+                $("#thelist").append(data.html);
+                myScroll.refresh();
+                if (hasMoreData) {
+                    myScroll.maxScrollY = myScroll.maxScrollY + pullUpOffset;
+                } else {
+                    myScroll.maxScrollY = myScroll.maxScrollY;
+                }
+                maxScrollY = myScroll.maxScrollY;
+            };
+        }, "json");
+    }
+</script>
+<script>
+  $('.stay_timer').click(function(evt) {
+    evt.preventDefault();
+    $('#time_choose_box').fadeIn('fast');
+    $('.mask').show();
+    var type = $(this).data('type');
+    $('.day').unbind('click');
+    $('.day').click(function(evt) {
+      evt.preventDefault();
+      var _this = $(this);
+      var dat = _this.html().trim();
+      var mon = $('.month').html().trim();
+      var dStr = mon.replace('-', ',') + ',' + dat;
+      var month = mon.split('-')[1];
+      var d = new Date(dStr);
+      var weekShow = getWeekDate(d.getDay());
+      var year = mon + '-' + (dat < 10 ? 0 + dat.toString() : dat);
+      var timestamp = $.myTime.DateToUnix(year);
+      if(type == 'start') {
+        var endStamp = $.myTime.DateToUnix($('#live_2').val());
+        var durations = (endStamp - timestamp)/(3600 * 24);
+        if(durations <= 0) {
+          alert('离店时间必须大于入住时间！');
+          return;
+        }
+        $('#start_week_day').html(weekShow);
+        $('#start_date').html(month + '-' + dat);
+        $('#live_1').val(year);
+        $('#stay_days').html('住' + durations + '晚');
+      }
+      if(type == 'end') {
+        var startStamp = $.myTime.DateToUnix($('#live_1').val());
+        var durations = (timestamp - startStamp)/(3600 * 24);
+        console.log(durations);
+        if(durations <= 0) {
+          alert('离店时间必须大于入住时间！');
+          return;
+        }
+        $('#leave_week_day').html(weekShow);
+        $('#leave_date').html(month + '-' + dat);
+        $('#stay_days').html('住' + durations + '晚');
+        $('#live_2').val(year);
+      }
+      $('#time_choose_box').hide();
+    });
+  });
+  $('#stay').click(function(evt) {
+    evt.preventDefault();
+    $('#time_box').show();
+    $('.mask').show();
+  });
+  $('#prev_day').click(function(evt) {
+    evt.preventDefault();
+    var starttime = $('#live_1').val()
+    var endtime = $('#live_2').val();
+    var starttimestamp = $.myTime.DateToUnix(starttime) - 3600 * 24;
+    var todayTimestamp = $.myTime.DateToUnix($.myTime.UnixToDate(new Date().getTime()/1000));
+    if(starttimestamp < todayTimestamp)  {
+      alert('入住时间不能小于当日日期！');
+      return;
+    }
+    var endtimestamp = $.myTime.DateToUnix(endtime);
+    var preStarttime = $.myTime.UnixToDate(starttimestamp);
+    var weekDate = getWeekDate(new Date(preStarttime).getDay());
+    $('#start_week_day').html(weekDate);
+    $('#start_date').html(preStarttime.substring(5));
+    $('#live_1').val(preStarttime);
+    var durations = (endtimestamp - starttimestamp)/(3600 * 24);
+    $('#stay_days').html('住' + durations + '晚');
+  });
+  $('#next_day').click(function(evt) {
+    evt.preventDefault();
+    var starttime = $('#live_1').val()
+    var endtime = $('#live_2').val();
+    var starttimestamp = $.myTime.DateToUnix(starttime) + 3600 * 24;
+    var endtimestamp = $.myTime.DateToUnix(endtime);
+    if(endtimestamp <= starttimestamp) {
+      alert('入住时间必须小于离店时间！');
+      return;
+    }
+    var nextstarttime = $.myTime.UnixToDate(starttimestamp);
+    var weekDate = getWeekDate(new Date(starttimestamp).getDay());
+    $('#start_week_day').html(weekDate);
+    $('#start_date').html(nextstarttime.substring(5));
+    $('#live_1').val(nextstarttime);
+    var durations = (endtimestamp - starttimestamp)/(3600 * 24);
+    $('#stay_days').html('住' + durations + '晚');
+  });
+  $('#add_day').click(function(evt) {
+    evt.preventDefault();
+    var starttime = $('#live_1').val()
+    var endtime = $('#live_2').val();
+    var starttimestamp = $.myTime.DateToUnix(starttime);
+    var endtimestamp = $.myTime.DateToUnix(endtime) + 3600 * 24;
+    var endDate = $.myTime.UnixToDate(endtimestamp);
+    var durations = (endtimestamp - starttimestamp)/(3600 * 24);
+    var weekDate = getWeekDate(new Date(endtimestamp).getDay());
+    $('#leave_week_date').html(weekDate);
+    $('#leave_date').html(endDate.substring(5));
+    $('#live_2').val(endDate);
+    $('#stay_days').html('住' + durations + '晚');
+  });
+  $('#minu_day').click(function(evt) {
+    evt.preventDefault()
+    var starttime = $('#live_1').val();
+    var endtime = $('#live_2').val();
+    var starttimestamp = $.myTime.DateToUnix(starttime);
+    var endtimestamp = $.myTime.DateToUnix(endtime) - 3600 * 24;
+    if(endtimestamp <= starttimestamp) {
+      alert('离店日期必须大于入住日期');
+      return;
+    }
+    var endDate = $.myTime.UnixToDate(endtimestamp);
+    var durations = (endtimestamp - starttimestamp)/(3600 * 24);
+    var weekDate = getWeekDate(new Date(endtimestamp).getDay());
+    $('#leave_week_date').html(weekDate);
+    $('#leave_date').html(endDate.substring(5));
+    $('#live_2').val(endDate);
+    $('#stay_days').html('住' + durations + '晚');
+  });
+  function getWeekDate(d) {
+    switch(d) {
+      case 0:
+       return '周日';
+      case 1:
+       return '周一';
+      case 2:
+       return '周二';
+      case 3:
+       return '周三';
+      case 4:
+       return '周四';
+      case 5:
+       return '周五';
+      case 6:
+       return '周六';
+    }
+  }
+</script>
+<script>
+$('#go_search').click(function(evt) {
+  evt.preventDefault();
+  window.location.href='{:U('Web/Public/search_project')}';
+});
+$('#submit_area').click(function(evt) {
+  evt.preventDefault();
+  $('#thelist').html('');
+  loaded(); 
+  $('.mask').hide();
+  $('.sarea').fadeOut('fast');
+});
+function getHotelDistance(lat, lng) {
+  $('.distances').each(function(i, obj) {
+    var _this = $(obj);
+    var dlat = _this.data('lat');
+    var dlng = _this.data('lng');
+    $.ajax({
+      'url': '{:U("Api/Map/get_distance_for_web")}?o_lat=' + lat + '&o_lng=' + lng + '&d_lat=' + dlat + '&d_lng=' + dlng,
+      'type': 'get',
+      'dataType': 'text',
+      'success': function(data) {
+        _this.html(data);
+      },
+      'error': function(err) {
+        console.log(err); 
+      }
+    });
+  });
+}
+</script>
 </body>
-
 </html>

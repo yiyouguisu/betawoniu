@@ -3,12 +3,12 @@ namespace Web\Controller;
 use Web\Common\CommonController;
 
 class PartyController extends CommonController {
-
     public function index() {
         $province = M('area')->where(array('parentid'=>0,'status'=>1))->select();
         $this->assign('province',$province);
         $partycate=M("partycate")->order(array('listorder'=>'desc','id'=>'asc'))->select();
         $this->assign("partycate",$partycate);
+        $this->assign("uid", session("uid"));
         $this->display();
     }
     public function ajax_getlist() {
@@ -210,10 +210,6 @@ class PartyController extends CommonController {
         }
         
     }
-
-
-
-
     public function getchildren() {
         $parentid = $_GET['parentid'];
         $result = M("area")->where(array("parentid" => $parentid,'status'=>1))->select();
@@ -273,7 +269,13 @@ class PartyController extends CommonController {
         $id=I('id');
         $uid=session("uid");
         M('activity')->where(array('id'=>$id))->setInc("view");
-        $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'party'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
+        $sqlI=M('review')
+          ->where(array('isdel'=>0,'varname'=>'party'))
+          ->group("value")
+          ->field("value,count(value) as reviewnum")
+          ->order('id desc')
+          ->limit(0, 5)
+          ->buildSql();
         $data=M("activity a")
             ->join("left join zz_member b on a.uid=b.id")
             ->join("left join {$sqlI} c on a.id=c.value")
@@ -282,13 +284,27 @@ class PartyController extends CommonController {
             ->find();
         $data['catname']=M('partycate')->where(array('id'=>$data['catid']))->getField("catname");  
         if(empty($data['reviewnum'])) $data['reviewnum']=0;
-        $joinnum=M('activity_apply')->where(array('aid'=>$data['id'],'paystatus'=>1))->sum("num");
+        $joinnum=M('activity_apply')
+          ->where(array('aid'=>$data['id'],'paystatus'=>1))
+          ->sum("num");
+        $joinnum = $joinnum == NULL ? 0 : $joinnum;
+        if($joinnum >= $data['end_numlimit']) {
+          $this->assign('full', 1);
+        }
+        if($data['endtime'] <= time()) {
+          $this->assign('expire', 1); 
+        }
         $data['joinnum']=!empty($joinnum)?$joinnum:0;
-        $joinlist=M('activity_apply a')->join("left join zz_member b on a.uid=b.id")->where(array('a.aid'=>$data['id'],'a.paystatus'=>1))->field("b.id,b.nickname,b.head,b.rongyun_token")->select();
+        $joinlist=M('activity_apply a')
+          ->join("left join zz_member b on a.uid=b.id")
+          ->where(array('a.aid'=>$data['id'],'a.paystatus'=>1))
+          ->field("b.id,b.nickname,b.head,b.rongyun_token")
+          ->select();
         $data['joinlist']=!empty($joinlist)?$joinlist:null;
         $joinstatus=M('activity_apply')->where(array('aid'=>$data['id'],'uid'=>$uid))->find();
         if(!empty($joinstatus)){
             $data['isjoin']=1;
+            $this->assign('joined', 1);
         }else{
             $data['isjoin']=0;
         }
@@ -298,18 +314,24 @@ class PartyController extends CommonController {
         }else{
             $data['iscollect']=0;
         }
-        // print_r($data['iscollect']);
         $hitstatus=M('hit')->where(array('uid'=>$uid,'varname'=>"party",'value'=>$data['id']))->find();
         if(!empty($hitstatus)){
             $data['ishit']=1;
         }else{
             $data['ishit']=0;
         }
-        // print_r($data['ishit']);
-        // $Map=A("Api/Map");
-        // $distance=$Map->get_distance_baidu("driving",$lat.",".$lng,$data['lat'].",".$data['lng']);
-        // $data['distance']=!empty($distance)?$distance:0.00;
-        $reviewlist=M('review a')->join("left join zz_member b on a.uid=b.id")->where(array('a.value'=>$data['id'],'a.isdel'=>0,'a.varname'=>'party'))->field("a.id as rid,a.content,a.inputtime,b.id as uid,b.nickname,b.head,b.rongyun_token")->limit(10)->select();
+        $lat=cookie('lat');
+        $lng=cookie('lng');
+        $Map=A("Api/Map");
+        $distance=$Map->get_distance_baidu("driving",$lat.",".$lng,$data['lat'].",".$data['lng']);
+        $data['distance']=!empty($distance)?$distance:0.00;
+        $reviewlist=M('review a')
+          ->join("left join zz_member b on a.uid=b.id")
+          ->where(array('a.value'=>$data['id'],'a.isdel'=>0,'a.varname'=>'party'))
+          ->field("a.id as rid,a.content,a.inputtime,b.id as uid,b.nickname,b.head,b.rongyun_token")
+          ->order('a.id desc')
+          ->limit(5)
+          ->select();
         $data['reviewlist']=!empty($reviewlist)?$reviewlist:null;
         $where=array();
         $where['a.status']=2;
@@ -351,6 +373,8 @@ class PartyController extends CommonController {
                 $note_near_activity[$key]['iscollect']=0;
             }
         }
+        $member = M('member')->where(array('id' => session('uid')))->find();
+        $this->assign('member', $member);
         $data['note_near_activity']=!empty($note_near_activity)?$note_near_activity:null;
 
         $where=array();
@@ -496,5 +520,18 @@ class PartyController extends CommonController {
             ->find();
         $this->assign("data",$data);
         $this->display();
+    }
+    public function allComment() {
+      $id = $_GET['id'];
+      $data =M('review a')
+        ->join("left join zz_member b on a.uid=b.id")
+        ->where(array('a.value'=> $id,'a.isdel'=>0,'a.varname'=>'party'))
+        ->field("a.id as rid,a.content,a.inputtime,b.id as uid,b.nickname,b.head,b.rongyun_token")
+        ->order('a.id desc')
+        ->select();
+      $count = count($data);
+      $this->assign('count', $count);
+      $this->assign('data', $data); 
+      $this->display('Public/all_review_list');
     }
 }

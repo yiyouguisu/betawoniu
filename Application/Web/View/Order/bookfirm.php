@@ -1,7 +1,7 @@
 <include file="public:head" />
 <body>
 <div class="header center z-index112 pr f18">
-      预定民宿
+      预定美宿
       <div class="head_go pa" onclick="history.go(-1)"><img src="images/go.jpg"></div>
 </div>
 

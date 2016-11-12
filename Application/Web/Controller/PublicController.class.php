@@ -285,4 +285,49 @@ class PublicController extends Controller {
             $this->ajaxReturn(array('code'=>-200),'json');
         }
     }
+
+    public function search() {
+      $ids=M('area')->where(array('parentid'=>0,'id'=>array('not in','2,3,4,5')))->getField("id",true);
+      $map['parentid']  = array("in",$ids);
+      $map['id']  = array('in','2,3,4,5');
+      $map['_logic'] = 'or';
+      $where['_complex'] = $map;
+      $data = M("area")->where($where)->field('id,name,fletter,ishot')->select();
+      $sorted = array();
+      $hots = array();
+      foreach($data as $city) {
+        if(!$sorted[$city['fletter']]) {
+          $sorted[$city['fletter']] = array();
+        }
+        array_push($sorted[$city['fletter']], $city);
+        if($city['ishot']) {
+          array_push($hots, $city); 
+        }
+      }
+      $referer = $_SERVER['HTTP_REFERER'];
+      $referUrl = '';
+      if(strpos($referer, '?') > 0) {
+        $referUrl = explode("?", $referer)[0];
+      } else {
+        $referUrl = $referer; 
+      }
+      $selectedCity = getCityInfo(session('city'));
+      $this->assign('city', $selectedCity);
+      $this->assign('referUrl', $referUrl); 
+      $this->assign('hots', $hots);
+      ksort($sorted);
+      $this->assign('sorted', $sorted);
+      $this->display();    
+    }
+
+    public function search_project() {
+
+      $this->display(); 
+    }
+
+    public function big_map() {
+      $this->assign('lat', $_GET['lat']);
+      $this->assign('lng', $_GET['lng']);
+      $this->display();    
+    }
 }

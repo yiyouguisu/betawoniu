@@ -8,6 +8,7 @@ class RoomController extends CommonController {
         $id=I('id');
         $hid=I('hid');
         $uid=session("uid");
+        $this->assign('uid', $uid);
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'room'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
         $data=M("Room a")
         ->join("left join {$sqlI} c on a.id=c.value")
@@ -22,11 +23,15 @@ class RoomController extends CommonController {
         $support=M("roomcate")->where(array('id'=>array('in',$data['support'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
         $this->assign("support", $support);
         
-        $data['support']=M("roomcate")->where(array('ishot'=>1,'id'=>array('in',$data['support'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
-        //$evaluation=getroom_evaluation($data['rid']);
+        cookie('days', null);
+        cookie('room_num', null);
+        cookie('start_time', null);
+        cookie('end_time', null);
+        $data['support']=M("roomcate")->where(array('id'=>array('in',$data['support'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
+
         $data['evaluation']=!empty($evaluation['evaluation'])?$evaluation['evaluation']:0.0;
         $data['evaluationpercent']=!empty($evaluation['percent'])?$evaluation['percent']:0.00;
-        //$data['evaluationset']=$evaluation;
+
         $collectstatus=M('collect')->where(array('uid'=>$uid,'varname'=>"room",'value'=>$data['rid']))->find();
         if(!empty($collectstatus)){
             $data['iscollect']=1;
@@ -45,6 +50,7 @@ class RoomController extends CommonController {
         $this->assign("hid",$hid);
         $this->display();
     }
+
     public function app_show() {
     	$id=I('id');
         $data=M("room")->where(array('id'=>$id))->find();

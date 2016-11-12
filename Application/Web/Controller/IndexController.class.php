@@ -3,9 +3,16 @@ namespace Web\Controller;
 use Web\Common\CommonController;
 
 class IndexController extends CommonController {
+
+    public function _initialize() {
+      $this->assign('INDEXCTRL', true);
+    }
     
     public function index() {
         $uid=session('uid');
+        $user['id'] = $uid;
+        $this->assign("user",$user);
+        $_GET['city'] ? session('city', $_GET['city']) : NULL;
         $city=session('city');
         $lat=cookie('lat');
         $lng=cookie('lng');
@@ -104,7 +111,7 @@ class IndexController extends CommonController {
         }
         $data=array("note"=>$note,'party'=>$party,'house'=>$house);
         $this->assign('data',$data);
-
+        $this->assign('city', getCityInfo(session('city')));
         $ad=M("ad")->where(array('status'=>1,'catid'=>4))
             ->order(array('listorder'=>"desc",'id'=>"desc"))
             ->field('id,title,image,hid,aid,nid,url,type,content,description,inputtime')
@@ -118,6 +125,12 @@ class IndexController extends CommonController {
         $res=$Map->geoconv($ad);
         cookie('lng',$res[0]['x']);
         cookie('lat',$res[0]['y']);
-        $this->ajaxReturn(json_encode($res),'json');
+        $pos = array('lng' => $res[0]['x'], 'lat' => $res[0]['y']);
+        $this->ajaxReturn(json_encode($pos),'json');
+    }
+
+    public function search() {
+    
+      $this->display(); 
     }
 }

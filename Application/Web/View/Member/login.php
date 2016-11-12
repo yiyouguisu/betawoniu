@@ -9,7 +9,7 @@
             <div class="login_top">
                 <div class="login_list">
                     <div class="login_a">
-                        <input id='phone' type="text" class="login_text" placeholder="输入手机号码 :">
+                        <input id='phone' type="text" class="login_text" placeholder="输入手机号码 :" value="{$phone}">
                     </div>
                 </div>
                 <div class="login_list">
@@ -68,10 +68,10 @@
                     $("input[name='password']").focus();
                     return false;
                 } else {
-                    var data = { 'username': name, 'password': pwd }
+                    var data = { 'username': name, 'password': pwd, 'openid': '{$openid}', 'unionid': '{$unionid}' }
                     $.post("{:U('Web/Member/ajax_login')}", data, function (res) {
                         if (res.code == 200) {
-                            window.location.href = "{:U('Web/Member/index')}";
+                            window.location.href = "{:U('Web/Index/index')}";
                         }
                         else {
                             alert(res.msg);

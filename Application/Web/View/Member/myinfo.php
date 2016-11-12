@@ -2,17 +2,36 @@
 <body>
 <div class="header center pr f18">
       个人信息
-      <div class="head_go pa" onclick="window.location.href='{:U('Web/Member/index')}'"><img src="__IMG__/go.jpg"></div>
+  <div class="head_go pa" onclick="window.location.href='{:U('Web/Member/index')}'">
+    <img src="__IMG__/go.jpg" style="">
+  </div>
 </div>
-
+<div class="edit disnone">
+            <div id="clipArea"></div>
+            <div class="gn">
+                <p>提示：您可以放大、缩小、左右旋转编辑图片</p>
+                <span class="close">返回上页</span>
+                <span id="clipBtn">生成照片</span>
+            </div>
+            <!-- <div id="view"></div> -->
+          </div>
 <div class="container">
    <div class="land">
-          <div class="son_top f0">
-              <div class="son_a vertical"><img src="{$data.head}"></div>
-              <div class="son_b vertical">
-                    <div class="son_b1 f18">{$data.nickname}</div>
-                    <div class="son_b2 f14">关注: {$follow} <span>粉丝: {$fans}</span></div>
+          
+          <div class="son_top f0" style="position:relative;">
+              <div class="son_a vertical">
+                <label style="display:block" for="fileupload">
+                  <input type="file" name="head" id="fileupload" class="head-input fileupload">
+                  <img src="{$data.head}" id="headphoto" style="width:60px;height:60px;border-radius:35px;">
+                </label>
               </div>
+              <div class="son_b vertical">
+                <div class="son_b1 f18">{$data.nickname}</div>
+                <div class="son_b2 f14">关注: {$follow} <span>粉丝: {$fans}</span></div>
+              </div>
+              <div class="set_a  xm_click pa">
+                <input type="file" name="head" id="fileupload" class="head-input fileupload">
+                <a href="javascript:;">更换头像<img src="__IMG__/set_right.jpg"></a></div>
           </div>
           <div class="land_btm">
                 <div class="ht_colot"></div>
@@ -65,6 +84,7 @@
                                   <option value="B型" <if condition="$data['education'] eq 硕士">selected="selected"</if> >硕士</option>
                                   <option value="AB型" <if condition="$data['education'] eq 本科">selected="selected"</if> >本科</option>
                                   <option value="O型" <if condition="$data['education'] eq 专科">selected="selected"</if> >专科</option>
+                                  <option value="其他" <if condition="$data['education'] eq 其他">selected="selected"</if> >其他</option>
                               </select>
                             </div>
                       </div>
@@ -124,14 +144,51 @@
                                  </select>
                             </div>
                       </div>
+                      <a href="{:U('Web/Member/edithobby')}"><div class="det_list">
+                            <div class="det_a fl">个性标签 :</div>
+                            <div class="det_b fr" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{$hobbyAndCharac}</div>
+                      </div></a>
                 </div>
-                <div class="fg_d son_btn ggt_href"><a href="{:U('Web/Member/realname')}">我要实名认证</a></div>
+                <eq name="$data[realname_status]" value="0">
+                  <div class="fg_d son_btn ggt_href"><a href="{:U('Web/Member/realname')}">我要实名认证</a></div>
+                </eq>
           </div>	
 
    </div>	   	
 </div>
+<script src="__JS__/iscroll-zoom.js"></script>
+<script src="__JS__/hammer.js"></script>
+<script src="__JS__/lrz.all.bundle.js"></script>
+<script src="__JS__/jquery.photoClip.js"></script>
+<script type="text/javascript" src="__JS__/jquery.ui.widget.js">
+<script type="text/javascript" src="__JS__/jquery.fileupload.js">
+<script>
+
+</script>
 <script type="text/javascript">
   $(function(){
+    //上传头像
+    var clipArea = new bjj.PhotoClip("#clipArea", {
+      size: [$(window).width()*0.9, $(window).width()*0.9], // 截取框的宽和高组成的数组。默认值为[260,260]
+      // outputSize: [640, 640], // 输出图像的宽和高组成的数组。默认值为[0,0]，表示输出图像原始大小
+      //outputType: "jpg", // 指定输出图片的类型，可选 "jpg" 和 "png" 两种种类型，默认为 "jpg"
+      file: ".fileupload", // 上传图片的<input type="file">控件的选择器或者DOM对象
+      view: "#view", // 显示截取后图像的容器的选择器或者DOM对象
+      ok: "#clipBtn", // 确认截图按钮的选择器或者DOM对象
+      loadStart: function(file) {console.log("start");$(".photo-clip-view").addClass("zairu");}, //开始加载的回调函数。this指向 fileReader 对象，并将正在加载的 file 对象作为参数传入
+      loadComplete: function(src) {console.log("complete");$(".photo-clip-view").removeClass("zairu");}, // 加载完成的回调函数。this指向图片对象，并将图片地址作为参数传入
+      loadError: function(event) {console.log("error");}, // 加载失败的回调函数。this指向 fileReader 对象，并将错误事件的 event 对象作为参数传入
+      clipFinish: function(dataURL) {
+        BindImg(dataURL);
+        }, // 裁剪完成的回调函数。this指向图片对象，会将裁剪出的图像数据DataURL作为参数传入
+    });
+    $(".fileupload").click(function() {
+      $('.edit').show();
+    });
+    $(".close").click(function(){
+      $('.edit').hide();
+    });
+
     // 更新血型
     var blood=$('.blood');
     blood.change(function(){
@@ -170,7 +227,27 @@
     }); 
 
   });
-  
+  var BindImg = function(url){
+    $("#headphoto").attr("src",url);
+    $('.edit').hide();
+    var data={'headphoto':url};
+    var index = layer.open({type: 2});
+    $.post("{:U('Web/Member/myinfo')}",data,function(res){
+      layer.close(index);
+      if(res.code == 200)
+        layer.open({
+          content: res.msg
+          ,skin: 'msg'
+          ,time: 2 //2秒后自动关闭
+        });
+      else
+        layer.open({
+          content: '更新失败，请重试！'
+          ,skin: 'msg'
+          ,time: 2 //2秒后自动关闭
+        });
+    });
+  }
 </script>
 </body>
 

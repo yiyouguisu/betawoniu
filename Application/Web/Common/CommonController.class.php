@@ -7,6 +7,10 @@ use Think\Controller;
 use Org\Util\JsSdk;
 
 class CommonController extends Controller {
+
+    protected $wxAppId = 'wx670ea712732e93f5';
+    protected $wxSecret = 'a2986c48c1e57403b7a239c3fad9f212';
+
     public function _initialize() {
         header('Content-type:text/html;charset=UTF-8');
         $link = M("link")->where("catid=1")->order(array("listorder" => "desc", "id" => "desc"))->select();
@@ -355,5 +359,19 @@ class CommonController extends Controller {
                 return '';
             }
         }
+    }
+
+    public function jsonSucceed($res) {
+      echo json_encode(array(
+        'code' => 1,
+        'res' => $res 
+      ));
+    }
+
+    public function jsonFailed($res) {
+      echo json_encode(array(
+        'code' => 0,
+        'res' => $res 
+      ));
     }
 }

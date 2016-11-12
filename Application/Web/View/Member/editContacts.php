@@ -2,7 +2,7 @@
 <body class="back-f1f1f1">
 <div class="header center z-index112 pr f18">
       添加入住人
-       <div class="head_go pa"><a href="" onclick="history.go(-1)"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
+       <div class="head_go pa"><a href="javascript:history.back()" ><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
 </div>
 
 <div class="container">
@@ -39,8 +39,8 @@
           $("input[name='realname']").focus();
           return false;
       }
-      if(idcard==''){
-          alert("身份证号码不能为空！");
+      if(idcard=='' || idcard.length != 18){
+          alert("请输入18位有效身份证号！");
           $("input[name='icard']").focus();
           return false;
       }
@@ -49,8 +49,8 @@
         $("input[name='phone']").focus();
         return false;
       }
-      if (!/^1[3|4|5|7|8][0-9]{9}$/.test(phone)) {
-        alert("手机号码格式不正确");
+      if (phone.length != 11) {
+        alert("请输入11位有效手机号！");
         $("input[name='phone']").focus();
         return false;
       } 

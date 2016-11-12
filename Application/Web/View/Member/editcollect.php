@@ -11,7 +11,7 @@
 	<div class="land">
 		<div class="land_b map_title center  f14">
 			<a class="a_title">游记</a>
-			<a class="a_title" >民宿</a>
+			<a class="a_title" >美宿</a>
 			<a class="a_title" >活动</a>
 		</div>
    

@@ -1,7 +1,7 @@
 <include file="public:head" />
 <body>
 <div class="header center pr f18">
-      我发布的民宿
+      我发布的美宿
       <div class="head_go pa"><a href="" onclick="history.go(-1)"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
       <div class="head_click tra_head pa"><a id="all">全选</a></div>
 </div>

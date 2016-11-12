@@ -103,7 +103,7 @@
                     alert("手机号码不能为空");
                     $("#phone").focus();
                     return false;
-                } else if (!/^1[3|4|5|7|8][0-9]{9}$/.test(phone)) {
+                } else if (phone.length != 11) {
                     alert("手机号码格式不正确");
                     $("#phone").focus();
                     return false;

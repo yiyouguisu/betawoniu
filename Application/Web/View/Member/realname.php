@@ -1,29 +1,32 @@
 <include file="Public:head" />
 <script type="text/javascript" src='__JS__/ajaxfileupload.js'></script>
 <body class="back-f1f1f1">
-    <div class="header center z-index112 pr f18">实名认证
+    <div class="header center z-index112 pr f18 fix-head">实名认证
       <div class="head_go pa" onclick="history.go(-1)">
-          <img src="__IMG__/go.jpg"></div>
+        <img src="__IMG__/go.jpg">
+      </div>
     </div>
-
-    <div class="container">
+    <div class="container" style="margin-top:6rem">
         <div class="son_top pr f0">
             <div class="son_a vertical">
-                <img id='head' src="{$data.head}"></div>
+                <img id='head' src="{$data.head}" style="width:60px;height:60px;"></div>
             <div class="son_b vertical">
                 <div class="son_b1 f18">{$data.nickname}</div>
             </div>
-            <div class="set_a  xm_click pa">
-                <a href="javascript:;">更换头像<img src="__IMG__/set_right.jpg"></a></div>
+            
         </div>
         <form id='form' action="{:U('Web/Member/realname')}" method="post">
             <div class="act_c">
                 <div class="lu_b">
-                    <input type="text" class="lu_text" placeholder="真实姓名 :" name="realname" />
+                    <input type="text" class="lu_text" placeholder="真实姓名 :" name="realname" value="{$apply_info.realname}"/>
                 </div>
 
                 <div class="lu_b">
-                    <input type="text" class="lu_text" placeholder="身份证号码 :" name="idcard" />
+                    <input type="text" class="lu_text" placeholder="身份证号码 :" name="idcard" value="{$apply_info.idcard}">
+                </div>
+
+                <div class="lu_b">
+                    <input type="text" class="lu_text" placeholder="支付宝帐号 :" name="aliPay"  value="{$apply_info.alipayaccount}"/>
                 </div>
             </div>
             <div class="hm_b">上传证件照 :</div>
@@ -31,8 +34,8 @@
             <div class="hm_d">
                 <ul>
                     <li>
-                        <img src="__IMG__/hm_c1.jpg" id="upz">
-                        <input type='hidden' value='' name='idcard_front' id='idcard_front' />
+                        <img src="{$apply_info.idcard_front}" id="upz">
+                        <input type='hidden' value='{$apply_info.idcard_front}' name='idcard_front' id='idcard_front' />
                     </li>
                     <li class="file" id='zfile'></li>
                 </ul>
@@ -41,8 +44,8 @@
             <div class="hm_d">
                 <ul>
                     <li>
-                        <img src="__IMG__/hm_c1.jpg" id="upf">
-                        <input type='hidden' value='' name='idcard_back' id="idcard_back" />
+                        <img src="{$apply_info.idcard_back}" id="upf">
+                        <input type='hidden' value='{$apply_info.idcard_back}' name='idcard_back' id="idcard_back" />
                     </li>
                     <li class="file" id='ffile'></li>
                 </ul>
@@ -63,11 +66,6 @@
         </div>
 
         <div class="fish_s xm_ht">
-            <!--                    <div class="fish_list">
-                       <div class="snail_d center f16">
-                            <a href="" class="snail_cut"><img src="__IMG__/xm_a1.jpg">拍一张照片</a>
-                       </div>
-                   </div>   -->
             <div class="fish_list">
                 <div class="snail_d center f16">
                     <form id="uploadForm2" enctype="multipart/form-data" method="post" onchange="doUpload2()" />

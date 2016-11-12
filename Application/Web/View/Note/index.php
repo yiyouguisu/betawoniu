@@ -40,7 +40,24 @@
                                 $('#town').append('<option value="' + items.id + '">' + items.name + '</option>');
                             }
                         });
+                    } else {
+                      /*
+                      var province = $('#province').val();
+                      var city = $('#city').val();
+                      var area = province + ',' + city;
+                      var options = {'area': area};
+                      loaded(options);
+                       */
                     }
+                } else if (type == 'district') {
+                  /*
+                  var province = $('#province').val();
+                  var city = $('#city').val();
+                  var district = $('#district').val();
+                  var area = province + ',' + city + ',' + district;
+                  var options = {'area': area};
+                  loaded(options); 
+                   */
                 }
             }
         });
@@ -54,7 +71,7 @@
         <span>&nbsp;</span>
     </div>
     <div class="tra_pr pa"><i></i>
-        <a href="search-2.html">
+        <a href="{:U('Public/search_project')}">
             <img src="__IMG__/search.jpg">
         </a>
     </div>
@@ -65,23 +82,23 @@
             <div class="tra_li tra_li_on">按时间</div>
             <div class="tra_drop tra_nb month">
                 <ul>
-                    <li data-id='0'>不限</li>
-                    <li data-id='1'>1月</li>
-                    <li data-id='2'>2月</li>
-                    <li data-id='3'>3月</li>
-                    <li data-id='4'>4月</li>
-                    <li data-id='5'>5月</li>
-                    <li data-id='6'>6月</li>
-                    <li data-id='7'>7月</li>
-                    <li data-id='8'>8月</li>
-                    <li data-id='9'>9月</li>
-                    <li data-id='10'>10月</li>
-                    <li data-id='11'>11月</li>
-                    <li data-id='12'>12月</li>
+                    <li class="mon" data-id='0'>不限</li>
+                    <li class="mon" data-id='1'>1月</li>
+                    <li class="mon" data-id='2'>2月</li>
+                    <li class="mon" data-id='3'>3月</li>
+                    <li class="mon" data-id='4'>4月</li>
+                    <li class="mon" data-id='5'>5月</li>
+                    <li class="mon" data-id='6'>6月</li>
+                    <li class="mon" data-id='7'>7月</li>
+                    <li class="mon" data-id='8'>8月</li>
+                    <li class="mon" data-id='9'>9月</li>
+                    <li class="mon" data-id='10'>10月</li>
+                    <li class="mon" data-id='11'>11月</li>
+                    <li class="mon" data-id='12'>12月</li>
                 </ul>
             </div>
             <div class="tra_li tra_li_on">按位置</div>
-            <div class="tra_drop">
+            <div class="tra_drop sarea">
                 <div class="tra_dropA_box">
                     <div class="tra_dropA">
                         <select name="province" id="province" onchange="load(this.value,'city',0)">
@@ -94,9 +111,12 @@
                             <option value="">--请选择--</option>
                         </select>
 
-                        <select name="town" id="town" onchange="load(this.value,'distinct',0)">
+                        <select name="town" id="town" onchange="load(this.value,'district',0)">
                             <option value="">--请选择--</option>
                         </select>
+                    </div>
+                    <div style="padding-bottom:8px;">
+                      <button style="width:100%;color:#fff;background:#56c3cf;border:0;border-radius:3px;" id="submit_area">确定</button>    
                     </div>
                 </div>
             </div>
@@ -117,7 +137,7 @@
             </div>
         </div>
         <div class="land_btm">
-            <div class="land_c f14" id="DataList">
+            <div class="f14" id="DataList">
                 <div id="scroller">
                     <div id="pullDown" class="idle">
                         <span class="pullDownIcon"></span>
@@ -139,7 +159,6 @@
     </div>
     <div class="mask"></div>
 </div>
-
 <script>
     var p = {};
     var city, month, notetype, order = 0;
@@ -168,13 +187,6 @@
         })
     })
 
-
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     $(document).ready(function() {
-    //         loaded();
-    //     });
-    // }, false);
-
     function loaded() {
         page = 1;
         p['p'] = page;
@@ -184,6 +196,12 @@
         p['province'] = ($("#province option:selected").length > 0) ? $("#province option:selected").val() : 0;
         p['city'] = ($("#city option:selected").length > 0) ? $("#city option:selected").val() : 0;
         p['town'] = ($("#town option:selected").length > 0) ? $("#town option:selected").val() : 0;
+        var options = arguments[0];
+        if(options) {
+          $.each(options, function(key, value) {
+            p[key] = value;
+          });
+        }
 
         pullDownEl = document.getElementById('pullDown');
         pullDownOffset = pullDownEl.offsetHeight;
@@ -337,6 +355,21 @@
             };
         }, "json");
     }
+    $('.mon').click(function(evt) {
+      evt.preventDefault();
+      var _this = $(this);
+      var month = _this.data('id');
+      var params = { 'month': month };
+      loaded(params);
+      $('.mask').hide();
+      $('.month').fadeOut('fast');
+    });
+    $('#submit_area').click(function(evt) {
+      evt.preventDefault();
+      loaded(); 
+      $('.mask').hide();
+      $('.sarea').fadeOut('fast');
+    });
 </script>
 </body>
 </html>

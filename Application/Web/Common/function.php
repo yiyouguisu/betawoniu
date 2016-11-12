@@ -1080,3 +1080,21 @@ function getevaluation($evaluationpercent){
         echo "<li class=\"fl\"><img src=\"/Public/Home/images/Icon/img42.png\" /></li>";
     }
 }
+function getChStartTime($time) {
+  $start = explode('-', date('Y-m-d', $time));
+  $startTime = $start[0] . '年' . $start[1] . '月' . $start[2] . '日';
+  return $startTime;
+}
+function getChEndTime($starttime, $endtime) {
+  $start = explode('-', date('Y-m-d', $starttime));
+  $end = explode('-', date('Y-m-d', $trip['endtime']));
+  $endTime = $start[0] == $end[0] ? $end[1] . '月' . $end[3] . '日' : $end[0] . '年' . $end[1] . '月' . $end[3] . '日';
+  return $endTime;
+}
+function getChMonth($time) {
+  $m = explode('-', date('Y-m-d', $time))[1];
+}
+function getCityInfo($id) {
+  return M('area')->where(array('id'=>$id))->find();
+}
+

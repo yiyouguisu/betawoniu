@@ -10,13 +10,13 @@
 	<div class="container">
 		<div class="act_c">
 			<div class="lu_b">
-				<input type="text" name="title" class="lu_text" placeholder="游记标题 :">
+				<input type="text" name="title" class="lu_text" placeholder="游记标题 :" value="{$data.title}" >
 			</div>
 			<div class="lu_b">
-				<input type="text" name="description" class="lu_text" placeholder="游记摘要 :">
+				<input type="text" name="description" class="lu_text" placeholder="游记摘要 :" value="{$data.description}" >
 			</div>
 			<div class="lu_b">
-				<input type="text" name="address" class="lu_text" placeholder="详细地址 :">
+				<input type="text" name="address" class="lu_text" placeholder="详细地址 :" value="{$data.address}" >
 			</div>
 
 			<div class="lu_b  lu_drop">
@@ -27,16 +27,22 @@
 					<select class="lu_select" id='area' name='area'>
 						<option value='0'>-请选择-</option>
 							<foreach name="province" item="vo">
-								<option value="{$vo.id}">{$vo.name}</option>
+								<option value="{$vo.id}" <if condition="$data['carray'][0] eq $vo['id']">selected="selected"</if>>{$vo.name}</option>
 							</foreach>
 					</select>
 
 					<select class="lu_select" id='city' name='city'>
 						<option value='0'>-请选择-</option>
+						<foreach name="allprovince[0]" item="vo">
+								<option value="{$vo.id}" <if condition="$data['carray'][1] eq $vo['id']">selected="selected"</if>>{$vo.name}</option>
+						</foreach>
 					</select>
 
 					<select class="lu_select" id='county'name='county'>
 						<option value='0'>-请选择-</option>
+						<foreach name="allprovince[1]" item="vo">
+								<option value="{$vo.id}" <if condition="$data['carray'][2] eq $vo['id']">selected="selected"</if>>{$vo.name}</option>
+						</foreach>
 					</select>
 				</div>
 			</div>
@@ -49,43 +55,41 @@
 			<div class="yr-b">
 				<div class="yr-c center fl">
 					<div class="yr-c1"><img src="__IMG__/date.jpg"></div>
-					<div class="yr-c2">开始时间</div>
+					<div class="yr-c2">入住时间</div>
 					<div class="yr-c3">
-						<input class="ggo_text" type="date" name="begintime" value="2016-05-12" id="in">
+						<input class="ggo_text" type="date" name="begintime" value="{$data.begintime|date='Y-m-d',###}" id="in">
 					</div>
 				</div>
 				<div class="yr-d fl pr" >
-					共<span id='day'>-</span>天
-					<input type="hidden" name="days" id="days"/>
+					共<span id='day'>{$data.days}</span>天
+					<input type="hidden" name="days" id="days" value='{$data.days}' />
 					<div class="yr_line pa"></div>
 				</div>
 				<div class="yr-c center fl">
 					<div class="yr-c1"><img src="__IMG__/date.jpg"></div>
-					<div class="yr-c2">结束时间</div>
+					<div class="yr-c2">退房时间</div>
 					<div class="yr-c3">
-						<input class="ggo_text" type="date" name="endtime" value="2016-05-12" id="out">
+						<input class="ggo_text" type="date" name="endtime" value="{$data.endtime|date='Y-m-d',###}" id="out">
 					</div>
 				</div>
 			</div>
 		</div> 
 		<div class="yr-a center">人均费用</div>
 		<div class="bmm" style="padding:2rem 2.5%;">
-			<input type="text" name="fee" class="lu_text" placeholder="人均费用 :">
+			<input type="text" name="fee" class="lu_text" placeholder="人均费用 :" value='{$data.fee}'>
 		</div> 
 		<div class="act_c">
 			<div class="tra_dropA">
 				<select name="noteman">
-					<option value="">请选择活动人物</option>
 					<volist name="noteman" id="vo">
-						<option value="{$vo.id}">{$vo.catname}</option>
+						<option value="{$vo.id}" <if condition="$data['man'] eq $vo['id']">selected="selected"</if>>{$vo.catname}</option>
 					</volist>
 				</select>
 			</div>       
 			<div class="tra_dropA">
 				<select name="notestyle">
-					<option value="" >请选择活动形式</option>
 					<volist name="notestyle" id="vo">
-						<option value="{$vo.id}">{$vo.catname}</option>
+						<option value="{$vo.id}" <if condition="$data['style'] eq $vo['id']">selected="selected"</if>>{$vo.catname}</option>
 					</volist>
 				</select>
 			</div>
@@ -95,7 +99,9 @@
 			</div>   
 			<input type="button" class="jok_btn jok_red" value="添加图片和描述">
 			<!-- 所有内容 -->
-			<input type="hidden" name="content" id='content' />       
+			<input type="hidden" name="content" id='content' /> 
+			<!-- 修改游记id  -->
+			<input type="hidden" name='id' value='{$data.id}'>
 		</div>
 		<div class="snail_d center trip_btn f16" style="margin:2rem 2.5% 0">
 			<a href="javascript:;" id="sub" class="snail_cut">发布</a>
@@ -123,11 +129,19 @@
 			day=checktime(intime,outtime);
 			showdays(day)
 		});
-		var rform='<div class="jok_b"><img src="__IMG__/jok_b.jpg" id="upz1"><input type="hidden" id="hid1" class="limgs" /></div><form id= "uploadForm1" enctype="multipart/form-data" method="post">  <a href="javascript:;" class="file jok_btn">上传图片<input type="file" name="Filedata" style="width:100%;height:100%" id=""  onchange="doUpload(1)"></a></form><div class="lu_b"><input type="text" class="lu_text ltest" placeholder="描述 :"></div>'
-		$('.describe_list').append(rform);
+		// var content='{$data.imglist}';
+		// content=JSON.parse(content);
+		// console.log(typeof(content));
+		var rform=''
+		var i=0;
+		// $.each(content,function(id,value){
+		// 	console.log(value);
+		// 	rform+='<div class="jok_b"><img src="'+value.thumb+'" id="upz'+id+'"><input type="hidden" id="hid'+id+'" class="limgs" value="'+value.thumb+'" /></div><form id= "uploadForm'+id+'" enctype="multipart/form-data" method="post">  <a href="javascript:;" class="file jok_btn">上传图片<input type="file" name="Filedata" style="width:100%;height:100%" id=""  onchange="doUpload('+id+')"></a></form><div class="lu_b"><input type="text" class="lu_text ltest" placeholder="描述 :" value='+value.content+'></div>'
+		// 	i++;
+		// })
+		// $('.describe_list').append(rform);
 
 		var jok_red=$('.jok_red');
-		var i=2;
 		jok_red.click(function(){
 			if(i<=10){
 				var html='';
@@ -163,14 +177,13 @@
 					}
 				});
 			});
-			console.log(typeof(data));
 			var data=JSON.stringify(data);
-			console.log(typeof(data));
 			$('#content').val(data);
+			console.log(data);
 			$('#form').submit();
 		});
 		var area,city,county;
-		// 城市
+		//城市
         $('#area').change(function(){
             var city=$('#city');
             city.empty();
@@ -178,6 +191,7 @@
             console.log(data);
             $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
                 var option='<option>-请选择-</option>';
+                res = JSON.parse(res);
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';
                 });
@@ -192,6 +206,7 @@
             var data={'id':$(this).val()};
             $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
                 var option='<option>-请选择-</option>';
+                res = JSON.parse(res);
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';
                 });

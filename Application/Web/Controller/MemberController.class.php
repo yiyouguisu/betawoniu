@@ -5,6 +5,11 @@ namespace Web\Controller;
 use Web\Common\CommonController;
 
 class MemberController extends CommonController {
+
+  public function _initialize() {
+    $this->assign('MYCTRL', true);
+  }
+
 	//首页
 	public function index(){
 		if (!session('uid')) {
@@ -16,6 +21,23 @@ class MemberController extends CommonController {
             $this->assign('data',$data['data']);
             $this->assign('follow',$data['follow']);
             $this->assign('fans',$data['fans']);
+
+
+            if ($data['houseowner_status'] == 1) {
+                $ordernum = M('order a')
+                    ->join("left join zz_order_time c on a.orderid=c.orderid")
+                    ->join("left join zz_book_room d on a.orderid=d.orderid")
+                    ->join("left join zz_hostel e on d.hid=e.id")
+                    ->where(array('e.uid' => $uid, 'c.status' => 1, 'c.pay_status' => 0, 'a.ordertype' => 1))
+                    ->count();
+            } else {
+                $ordernum = M('Order a')
+                    ->join("left join zz_order_time b on a.orderid=b.orderid")
+                    ->where(array('a.uid' => $uid, 'b.status' => 2, 'b.pay_status' => 0))
+                    ->count();
+            }
+            $ordernum = !empty($ordernum) ? $ordernum : 0;
+            $this->assign("newordernum",$ordernum);
             $this->display();
 		}
 		
@@ -96,29 +118,30 @@ class MemberController extends CommonController {
     public function regSuccess(){
         $this->display();
     }
-    // 注册成功后完善信息
+
+    // 微信登录后完善用户信息
     public function information(){
-        if(IS_POST){
-            $data['nickname']=$_POST['nickname'];
-            $data['sex']=$_POST['sex'];
-            $uid=cookie("userid");
-            $rel=M('member')->where(array('id'=>$uid))->save($data);
-            if($rel){
-                if(cookie('tuijiancode')){
-                    cookie('tuijiancode',null);
-                    $this->success('信息完善成功',U('Web/Member/download'));
-                }
-                else{
-                    session('uid',cookie('userid'));
-                    $this->success('信息完善成功',U('Web/Index/Index'));
-                }
-            }
-            else{
-
-            }
+      if(IS_POST){
+        $data['nickname'] = $_POST['nickname'];
+        $data['phone'] = $_POST['phone'];
+        $data['username'] = $_POST['phone'];
+        $data['password'] = $_POST['password'];
+        $data['sex']=$_POST['sex'];
+        $data['openid'] = $_POST['openid'];
+        $data['unionid'] = $_POST['unionid'];
+        $data['head'] = $_POST['head'];
+        $res = D('member')->addUser($data);
+        if($res){
+          $status=$this->loginHome($data['phone'], $data['password'], 100);
+          if($url = cookie('returnurl')) {
+            $this->redirect($url); 
+          } else {
+            $this->redirect('Index/index');
+          }
+        } else {
+          $this->error('系统错误，请联系管理员！');
         }
-
-        $this->display();
+      }
     }
     // 注册成功下载页面
     public function download(){
@@ -133,22 +156,46 @@ class MemberController extends CommonController {
         if (session('uid')) {
             $this->redirect('Web/Member/index');
         } else {
-            $this->display();
+          if($_GET['phone']) {
+            $this->assign('phone', $_GET['phone']);
+          } else {
+            $this->assign('phone', '');
+          }
+          if($_GET['openid']) {
+            $this->assign('openid', $_GET['openid']);
+          } else {
+            $this->assign('openid', '');
+          }
+          if($_GET['unionid']) {
+            $this->assign('unionid', $_GET['unionid']);
+          } else {
+            $this->assign('unionid', '');
+          }
+          $this->display();
         }
     }
 
     public function ajax_login(){
         $username = $_POST['username'];
         $password = $_POST['password'];
+        $openid = $_POST['openid'];
+        $unionid = $_POST['unionid'];
         $autotype = 1;
         $status=$this->loginHome($username, $password, $autotype);
         $data=array();
         if ($status==2) {
+            $member = M('member')->where(array('username' => $username))->find();
+            if(empty($member['openid']) && $openid) {
+              M('member')->where(array('username' => $username))->setField('openid', $openid);
+            }
+            if(empty($member['unionid']) && $unionid) {
+              M('member')->where(array('username' => $username))->setField('unionid', $unionid);
+            }
             $data['code']=200;
             $data['msg']='登入成功';
         }elseif($status==0) {
             $data['code']=-200;
-            $data['msg']='登录失败';
+            $data['msg']='账号或密码错误！';
         }elseif($status==1) {
             $data['code']=-200;
             $data['msg']='帐号被禁用,请联系管理员';
@@ -159,10 +206,21 @@ class MemberController extends CommonController {
 
     public function wxlogin(){
         if (session('uid')) {
-            $this->redirect('Web/Member/index');
+            $this->redirect('Web/Index/index');
         } else {
             $Wxhelp=A('Web/Wxhelp');
             $userinfo = $Wxhelp->GetUserInfo();
+
+            /**
+             * 通过openid来判断用户是否注册了
+             */
+            $user = M('member')->where(array('openid' => $userinfo['openid']))->find();
+            if(!$user || empty($user['phone'])) {//未注册用户或未留手机号用户需要补全信息.
+              session('userinfo', $userinfo);
+              $this->assign('userinfo', $userinfo);
+              $this->display('information');
+              return;
+            }
             if(empty($userinfo['unionid'])){
                 $this->error('授权失败',U('Member/login'));
             }
@@ -565,7 +623,7 @@ class MemberController extends CommonController {
     }
 
     // 优惠券记录
-    public function couponInfo(){
+    public function mycoupons(){
         // $uid=47;
         $uid=$this->getSessionId();
         $data=M('member a')
@@ -580,18 +638,72 @@ class MemberController extends CommonController {
         $this->assign('data',$data);
         $this->display();
     }
+    public function couponInfo(){
+        $id=I('id');
+        $data = M('vouchers_order a')
+            ->join("left join zz_vouchers b on a.catid=b.id")
+            ->where(array('a.id'=>$id))
+            ->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,a.price,a.hid,a.aid,b.city,b.`range`,b.validity_starttime,b.validity_endtime,a.`status`,b.`range`,b.content")->find();
+        if(!empty($data['city'])){
+            $data['cityname']=M('area')->where(array('id'=>$data['city']))->getField("name");
+        }
+        if(!empty($data['hid'])){
+           $data['hostel']=M('hostel')->where(array('id'=>array('in',trim($data['hid'],','))))->getField("title",true); 
+        }
+        if(!empty($data['aid'])){
+            $data['party']=M('Activity')->where(array('id'=>array('in',trim($data['aid'],','))))->getField("title",true); 
+        }
+        $this->assign("data",$data);
+        $this->display();
+    }
 
     public function orderlist(){
         $uid=$this->getSessionId();
-        // 名宿
-        $httorder=M('order a')
-        ->join('left join zz_activity_apply b on a.orderid=b.orderid')
-        ->join('left join zz_activity d on d.id=b.aid')
-        ->join('left join zz_member c on c.id=b.uid')
-        ->where(array('c.id'=>$uid,'a.ordertype'=>1))
+        //我预定的名宿
+        $this->assign('todayTime', time);
+        $myOrder =M('order a')
+        ->join('join zz_book_room b on a.orderid = b.orderid')
+        ->join('join zz_hostel c on b.hid = c.id')
+        ->join('join zz_member d on a.uid= d.id')
+        ->join('join zz_order_time e on a.orderid = e.orderid')
+        ->where(array('a.uid'=>$uid,'a.ordertype'=>1))
         ->order(array('a.inputtime'=>'desc'))
+        ->field('e.status, a.orderid, c.title, a.money, c.thumb,e.refund_status, e.review_status, a.uid, e.cancel_status, e.pay_status, e.review_remark,b.starttime, b.endtime, b.rid, e.evaluate_status, 0 as owner_order')
         ->select();
-        $this->assign('ht',$httorder);
+        if(empty($myOrder)) $myOrder = array();
+        foreach($myOrder as $key => $morder) {
+          if($morder['status'] == 4 && $morder['endtime'] > time()) {
+            $myOrder[$key]['checkin'] = 1;
+          }
+          if($morder['status'] == 4 && $morder['endtime'] < time()) {
+            $myOrder[$key]['finished'] = 1;
+          }
+        }
+
+        //我收到的名宿订单
+        $owner_where = array('c.cancel_status' => 0, 'a.ordertype' => 1);
+        $owner_order = array('a.inputtime' => 'desc');
+        $owner_field = array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,a.ordertype,c.donetime, 1 as hotel_owner,b.starttime,b.endtime');
+        $otherOrder =M('order a')
+        ->join('zz_book_room b on a.orderid = b.orderid')
+        ->join('zz_hostel c on b.hid = c.id')
+        ->join('zz_member d on c.uid= d.id')
+        ->join('zz_order_time e on a.orderid = e.orderid')
+        ->where(array('c.uid'=>$uid,'a.ordertype'=>1))
+        ->order(array('a.inputtime'=>'desc'))
+        ->field('a.orderid, c.title, a.money, c.thumb, e.review_status, a.uid, e.cancel_status, e.pay_status, e.review_remark, e.status, 1 as owner_order,b.starttime,b.endtime, e.evaluate_status')
+        ->select();
+        if(empty($otherOrder)) $otherOrder = array();
+        foreach($otherOrder as $key => $oorder) {
+          if($oorder['status'] == 4 && $oorder['endtime'] > time()) {
+            $otherOrder[$key]['checkin'] = 1;
+          }
+          if($oorder['status'] == 4 && $oorder['endtime'] < time()) {
+            $otherOrder[$key]['finished'] = 1;
+          }
+        }
+
+        $this->assign('ht',array_merge($myOrder, $otherOrder));
         // 活动
         $actorder=M('order a')
         ->join('left join zz_activity_apply b on a.orderid=b.orderid')
@@ -600,30 +712,183 @@ class MemberController extends CommonController {
         ->where(array('c.id'=>$uid,'a.ordertype'=>2))
         ->order(array('a.inputtime'=>'desc'))
         ->getField('a.orderid,b.paystatus,d.title,d.money,d.thumb,d.id');
+
         $this->assign('act',$actorder);
+        $this->assign('now', time());
+        $this->assign('uid', $uid);
         $this->display();
     }
 
     // 我的游记
     public function mynote(){
         $uid=$this->getSessionId();
-        $data=M('note a')->where(array('uid'=>$uid))->select();
+        $data=M('note a')->where(array('uid'=>$uid,'isdel'=>0))->select();
         $this->assign('data',$data);
         $this->display();
     }
-    // 编辑我的游记列表
-    public function editmynote(){
+    //删除我发布的美宿
+    public function deletemyhostel(){
         $uid=$this->getSessionId();
-        $data=M('note a')
-        ->join('left join zz_member b on b.id=a.uid')
-        ->where(array('b.id'=>$uid))
-        ->getField('a.id nid,a.title,a.inputtime,a.thumb,b.*');
         if(IS_AJAX){
-            $id=$_POST['id'];
-            M('note')->delete($id);
-            $this->ajaxReturn(array('code'=>200,'msg'=>'删除成功'),'json');
+            $data=$_POST['id'];
+            $flag = 1;
+            M()->startTrans();
+            $list = explode("|",$data);
+            if(count($list) == 0)
+                $this->ajaxReturn(array("code"=>500,"msg"=>"请至少选择一条记录！"),'json');
+            M()->startTrans();
+            $flag = 1;
+            $updateData['isdel'] = 1;
+            $updateData['deletetime'] = time();
+            foreach ($list as $key => $value) {
+                # code...
+                if($value != ''){
+                    $res = M('hostel')->where(array('id'=>$value))->save($updateData);
+                    if(!$res)
+                        $flag = 0;
+                }
+            }
+            if($flag == 0){
+                $data=array('code'=>500,'msg'=>'删除失败');
+                M()->rollback();
+            }else{
+                M()->commit();
+                $data=array('code'=>200,'msg'=>'删除成功');
+            }
+            $this->ajaxReturn($data,'json');
+        }else{
+            $this->ajaxReturn(array('code'=>-200,'msg'=>'请求错误！'),'json');
         }
-        $this->assign('data',$data);
+    }
+    //下架我发布的美宿
+    public function setoffmyhostel(){
+        $uid=$this->getSessionId();
+        if(IS_AJAX){
+            $data=$_POST['id'];
+            $flag = 1;
+            M()->startTrans();
+            $list = explode("|",$data);
+            if(count($list) == 0)
+                $this->ajaxReturn(array("code"=>500,"msg"=>"请至少选择一条记录！"),'json');
+            M()->startTrans();
+            $flag = 1;
+            $updateData['isoff'] = 1;
+            $updateData['offtime'] = time();
+            foreach ($list as $key => $value) {
+                # code...
+                if($value != ''){
+                    $res = M('hostel')->where(array('id'=>$value))->find();
+                    if(!$res)
+                        $flag = 0;
+                    if($res['status'] != 2){
+                        M()->rollback();
+                        $data=array('code'=>500,'msg'=>'选中要下架的美宿必须都为审核通过的！');
+                        $this->ajaxReturn($data,'json');
+                    }
+
+                    $res = M('hostel')->where(array('id'=>$value))->save($updateData);
+                    if(!$res)
+                        $flag = 0;
+                }
+            }
+            if($flag == 0){
+                M()->rollback();
+                $data=array('code'=>500,'msg'=>'下架失败');
+            }else{
+                M()->commit();
+                $data=array('code'=>200,'msg'=>'下架成功');
+            }
+            $this->ajaxReturn($data,'json');
+        }else{
+            $this->ajaxReturn(array('code'=>-200,'msg'=>'请求错误！'),'json');
+        }
+    }
+    // 删除我的游记列表
+    public function deletemynote(){
+        $uid=$this->getSessionId();
+        if(IS_AJAX){
+            $data=$_POST['id'];
+            $flag = 1;
+            M()->startTrans();
+            $list = explode("|",$data);
+            if(count($list) == 0)
+                $this->ajaxReturn(array("code"=>500,"msg"=>"请至少选择一条记录！"),'json');
+            M()->startTrans();
+            $flag = 1;
+            $updateData['isdel'] = 1;
+            $updateData['deletetime'] = time();
+            foreach ($list as $key => $value) {
+                # code...
+                if($value != ''){
+                    $res = M('note')->where(array('id'=>$value))->save($updateData);
+                    if(!$res)
+                        $flag = 0;
+                }
+            }
+            if($flag == 0){
+                $data=array('code'=>500,'msg'=>'删除失败');
+                M()->rollback();
+            }else{
+                M()->commit();
+                $data=array('code'=>200,'msg'=>'删除成功');
+            }
+            $this->ajaxReturn($data,'json');
+        }else{
+            $this->ajaxReturn(array('code'=>-200,'msg'=>'请求错误！'),'json');
+        }
+    }
+    //发布游记
+    public function publicnote(){
+        $uid=$this->getSessionId();
+        $id=I('id');
+        if(IS_POST){
+            $data['uid']=$uid;
+            $data['title']=$_POST['title'];
+            $data['begintime']=strtotime($_POST['begintime']);
+            $data['endtime']=strtotime($_POST['endtime']);
+            $data['address']=$_POST['address'];
+            $data['description']=$_POST['description'];
+            $data['days']=$_POST['days'];
+            $data['fee']=$_POST['fee'];
+            $data['man']=$_POST['noteman'];
+            $data['style']=$_POST['notestyle'];
+            $data['imglist']=json_encode($_POST['content']);
+            $data['updatetime']=time();
+            $data['notetype']=1;
+            $thumb=json_decode($_POST['content']);
+            $thumb=$thumb[0]->thumb;
+            $data['thumb']=$thumb;
+            $data['lat']=(cookie('longitude')) ? cookie('longitude') : '';
+            $data['lng']=(cookie('latitude')) ? cookie('latitude') : '';
+            $data['imglist']=$_POST['content'];
+            if($_POST['city']==$_POST['county']){
+                $county=$_POST['city'];
+            }
+            else{
+                $county=$_POST['city'].','.$_POST['county'];
+            }
+            $data['area']=$_POST['area'].','.$county;
+            $data['city']=$_POST['county'];
+            $res=M('note')->add($data);
+            if($res){
+                $this->success('发布成功',U('Web/Member/index'));
+            }else{
+                $this->error('发布失败');
+            }
+        }
+        // $data=M('note a')->where(array('id'=>$id,'uid'=>$uid))->find();
+        $notestyle=M("notestyle")->order(array('listorder'=>'desc','id'=>'asc'))->select();
+        $this->assign("notestyle",$notestyle);
+        $noteman=M("noteman")->order(array('listorder'=>'desc','id'=>'asc'))->select();
+        $this->assign("noteman",$noteman);
+        // 
+        $province = M('area')->where(array('parentid'=>0))->select();
+        $this->assign('province',$province);
+        // $data['carray']=$carray;
+        // $this->assign('data',$data);
+        // $this->assign('allprovince',$allprovince);
+        // $province=M('area')->where(array('parentid'=>0))->select();
+        // $this->assign('province',$province);
         $this->display();
     }
     // 编辑我的游记详情
@@ -689,7 +954,7 @@ class MemberController extends CommonController {
             ->join("left join zz_note b on a.value=b.id")
             ->join("left join zz_member c on b.uid=c.id")
             ->where(array('a.uid'=>$uid,'b.isdel'=>0,'a.varname'=>'note'))
-            ->field('a.id,b.id as nid,b.title,b.thumb,b.area,b.city,b.address,b.lat,b.lng,b.hit,b.begintime,b.endtime,b.uid,c.nickname,c.head,c.rongyun_token,a.inputtime')
+            ->field('a.id,b.id as nid,b.description,b.title,b.thumb,b.area,b.city,b.address,b.lat,b.lng,b.hit,b.begintime,b.endtime,b.uid,c.nickname,c.head,c.rongyun_token,a.inputtime')
             ->order(array('a.inputtime'=>'desc'))
             ->select();
         foreach ($notelist as $key => $value)
@@ -728,11 +993,8 @@ class MemberController extends CommonController {
         ->select();
         foreach ($partylist as $key => $value)
         {
-            $reviewnum=M('review')->where(array('isdel'=>0,'varname'=>'hostel','value'=>$value['hid']))->count();
-            $partylist[$key]['reviewnum']=!empty($reviewnum)?$reviewnum:0;
-
-            $collectnum=M('collect')->where(array('varname'=>'hostel','value'=>$value['hid']))->count();
-            $partylist[$key]['collectnum']=!empty($collectnum)?$collectnum:0;
+            $joinnum=M('activity_apply')->where(array('aid'=>$value['aid'],'paystatus'=>1))->sum("num");
+            $partylist[$key]['joinnum']=!empty($joinnum)?$joinnum:0;
         }
         $this->assign('party',$partylist);
         $this->display();
@@ -740,106 +1002,72 @@ class MemberController extends CommonController {
     // 编辑收藏
     public function editcollect(){
         $uid=$this->getSessionId();
-        $notelist=M('collect a')
-            ->join("left join zz_note b on a.value=b.id")
-            ->join("left join zz_member c on b.uid=c.id")
-            ->where(array('a.uid'=>$uid,'b.isdel'=>0,'a.varname'=>'note'))
-            ->field('a.id,b.id as nid,b.title,b.thumb,b.area,b.city,b.address,b.lat,b.lng,b.hit,b.begintime,b.endtime,b.uid,c.nickname,c.head,c.rongyun_token,a.inputtime')
-            ->order(array('a.inputtime'=>'desc'))
-            ->select();
-        foreach ($notelist as $key => $value)
-        {   
-            $reviewnum=M('review')->where(array('isdel'=>0,'varname'=>'note','value'=>$value['nid']))->count();
-            $notelist[$key]['reviewnum']=!empty($reviewnum)?$reviewnum:0;
-
-            $collectnum=M('collect')->where(array('varname'=>'note','value'=>$value['nid']))->count();
-            $notelist[$key]['collectnum']=!empty($collectnum)?$collectnum:0;
-        }
-        $this->assign('note',$notelist);
-
-        $houselist=M('collect a')
-            ->join("left join zz_hostel b on a.value=b.id")
-            ->join("left join zz_member c on b.uid=c.id")
-            ->where(array('a.uid'=>$uid,'b.isdel'=>0,'a.varname'=>'hostel'))
-            ->field('a.id,b.id as hid,b.title,b.thumb,b.money,b.area,b.city,b.address,b.lat,b.lng,b.hit,b.uid,c.nickname,c.head,c.rongyun_token,a.inputtime')
-            ->order(array('a.inputtime'=>'desc'))
-            ->select();
-        foreach ($houselist as $key => $value)
-        {
-            $reviewnum=M('review')->where(array('isdel'=>0,'varname'=>'hostel','value'=>$value['hid']))->count();
-            $houselist[$key]['reviewnum']=!empty($reviewnum)?$reviewnum:0;
-
-            $collectnum=M('collect')->where(array('varname'=>'hostel','value'=>$value['hid']))->count();
-            $houselist[$key]['collectnum']=!empty($collectnum)?$collectnum:0;
-        }
-        $this->assign('houselist',$houselist);
-
-        $partylist=M('collect a')
-        ->join("left join zz_activity b on a.value=b.id")
-        ->where(array('a.uid'=>$uid,'b.isdel'=>0,'a.varname'=>'party'))
-        ->field('a.id,b.id as aid,b.title,b.thumb,b.area,b.city,b.address,b.lat,b.lng,b.starttime,b.endtime')
-        ->order(array('a.inputtime'=>'desc'))
-        ->select();
-        foreach ($partylist as $key => $value)
-        {
-            $reviewnum=M('review')->where(array('isdel'=>0,'varname'=>'hostel','value'=>$value['hid']))->count();
-            $partylist[$key]['reviewnum']=!empty($reviewnum)?$reviewnum:0;
-
-            $collectnum=M('collect')->where(array('varname'=>'hostel','value'=>$value['hid']))->count();
-            $partylist[$key]['collectnum']=!empty($collectnum)?$collectnum:0;
-        }
-        $this->assign('party',$partylist);
         if(IS_AJAX){
             $data=$_POST['id'];
-            $dataarray=explode("|",$data);
-            $n=array();
-            $h=array();
-            $p=array();
-            foreach ($dataarray as $key => $value) {
-                if(strpos($value,'n')!== false){
-                    $n[$key]=substr($value,2);
+            $type = $_POST['type'];
+            $list = explode("|",$data);
+            if(count($list) == 0)
+                $this->ajaxReturn(array("code"=>500,"msg"=>"请至少选择一条记录！"),'json');
+            M()->startTrans();
+            $flag = 1;
+            foreach ($list as $key => $value) {
+                # code...
+                if($value != ''){
+                $res = M('collect')->where(array('id'=>$value))->delete();
+                    if(!$res)
+                        $flag = 0;
                 }
-                if(strpos($value,'h')!== false){
-                    $h[$key]=substr($value,2);
-                }
-                if(strpos($value,'p')!== false){
-                    $p[$key]=substr($value,2);
-                }
-
             }
-            if(count($n)>0 || count($h)>0 || count($p)>0){
-                if(count($n)>0){
-                    foreach ($n as $key => $value) {
-                        M('collect')->where(array('id'=>$value))->delete();
-                    }        
-                }
-                if(count($h)>0){
-                    foreach ($h as $key => $value) {
-                        M('collect')->where(array('id'=>$value))->delete();
-                    }     
-                }
-                if(count($p)>0){
-                    foreach ($p as $key => $value) {
-                        M('collect')->where(array('id'=>$value))->delete();
-                    }    
-                }
+            if($flag == 0){
+                $data=array('code'=>500,'msg'=>'删除失败');
+                M()->rollback();
+            }else{
+                M()->commit();
                 $data=array('code'=>200,'msg'=>'删除成功');
             }
-            else{
-                $data=array('code'=>500,'msg'=>'删除失败');
-            }
             $this->ajaxReturn($data,'json');
+        }else{
+            $this->error("请求错误!");
         }
-        $this->display();
     }
 
     public function memberHome(){
         $uid=I('id');
         $data=$this->userInfo($uid);
+        $hobbyAndCharac = '';
+        $hobbyData = getlinkage(2);
+        $characData = getlinkage(1);
+        foreach ($hobbyData as $key => $value) {
+            if(strstr($data['data']['characteristic'],$value['value']))
+                $hobbyAndCharac .= $value['name'] . ',';
+        }
+        foreach ($characData as $key => $value) {
+            if(strstr($data['data']['hobby'],$value['value']))
+                $hobbyAndCharac .= $value['name'] . ',';
+        }
+        if($hobbyAndCharac != '')
+            $hobbyAndCharac = substr($hobbyAndCharac,0,strlen($hobbyAndCharac)-1);
+        $this->assign("hobbyAndCharac",$hobbyAndCharac);
         // 我的游记
-        $notedata=M('note')->where(array('uid'=>$uid))->select();
+        $notedata=M('note')->where(array('uid'=>$uid,'isdel'=>0,'status'=>2))->select();
+        foreach ($notedata as $key => $value)
+        {   
+          $reviewnum=M('review')->where(array('isdel'=>0,'varname'=>'note','value'=>$value['nid']))->count();
+          $notedata[$key]['reviewnum']=!empty($reviewnum)?$reviewnum:0;
+
+          $collectnum=M('collect')->where(array('varname'=>'note','value'=>$value['nid']))->count();
+          $notedata[$key]['collectnum']=!empty($collectnum)?$collectnum:0;
+        }
         $this->assign('note',$notedata);
         $this->assign('cnote',count($notedata));
+        //我的活动
+        $actdata=M('activity')->where(array('uid'=>$uid,'isdel'=>0,'status'=>2))->select();
+        $this->assign('actdata',$actdata);
+        $this->assign('cact',count($actdata));
+        //我的美宿
+        $hosteldata=M('hostel')->where(array('uid'=>$uid,'isdel'=>0,'isoff'=>0,'status'=>2))->select();
+        $this->assign('hosteldata',$hosteldata);
+        $this->assign('chostel',count($hosteldata));
         // 我的评论
         // 游记评论
         $notedata=M('note a')
@@ -947,6 +1175,20 @@ class MemberController extends CommonController {
         $hometown=array();
         $area=array();
         $i=0;
+        $hobby = array('bfm'=>'白富美','gfs'=>'高富帅','zhainan'=>'宅男','zhainv'=>'宅女','nvshen'=>'女神','nanshen'=>'男神','nvsheng'=>'女生','nansheng'=>'男生','xiaohua'=>'校花','xiaocao'=>'校草','ouba'=>'欧巴');
+        $charac = array('yundong'=>'运动','meishi'=>'美食','jianshen'=>'健身','changge'=>'唱歌','sheying'=>'摄影','lvxing'=>'旅行','yuedu'=>'阅读','faming'=>'发明');
+        $hobbyArray = explode(',', $data['data']['hobby']);
+        $characArray = explode(',', $data['data']['characteristic']);
+        $hobbyAndCharac = '';
+        foreach ($hobbyArray as $key => $value) {
+            $hobbyAndCharac .= $hobby[$value] . ',';
+        }
+        foreach ($characArray as $key => $value) {
+            $hobbyAndCharac .= $charac[$value] . ',';
+        }
+        if($hobbyAndCharac != '')
+            $hobbyAndCharac = substr($hobbyAndCharac,0,strlen($hobbyAndCharac)-1);
+        $this->assign('hobbyAndCharac',$hobbyAndCharac);
         // 故乡
         foreach ($adarray as $key => $value) {
             $hometown[$i]=M('area')->where(array('id'=>$value))->getField('name');
@@ -981,6 +1223,19 @@ class MemberController extends CommonController {
             if(isset($_POST['constellation'])){
                 $constellation=$_POST['constellation'];
                 M('member')->where(array('id'=>$uid))->save(array('constellation'=>$constellation));
+                $this->ajaxReturn(array('code'=>200,'msg'=>'更新成功'),'json'); 
+            }
+            if(isset($_POST['headphoto'])){
+                //解析图片地址
+                if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $_POST['headphoto'], $result)){
+                    $type = $result[2];
+                    $new_file = "./Uploads/images/headphoto/headphotos".time().".{$type}";
+                    if (file_put_contents($new_file, base64_decode(str_replace($result[1], '', $_POST['headphoto'])))){
+                        // echo '新文件保存成功：', $new_file;
+                        $new_file = substr($new_file, 1);
+                    }
+                }
+                M('member')->where(array('id'=>$uid))->save(array('head'=>$new_file));
                 $this->ajaxReturn(array('code'=>200,'msg'=>'更新成功'),'json'); 
             }
         }
@@ -1065,6 +1320,25 @@ class MemberController extends CommonController {
         }
         $this->display();
     }
+    //修改个性标签
+    public function edithobby(){
+        $uid=$this->getSessionId();
+        if(IS_POST){
+            M('member')->where(array('id'=>$uid))->save(array('hobby'=>$_POST['hobby']));
+            M('member')->where(array('id'=>$uid))->save(array('characteristic'=>$_POST['charac']));
+            $this->ajaxReturn(array('code'=>200),'json');
+        }
+        else{
+            $tags=M('Member')->where(array('id'=>$uid))->find();
+            $hobbyData = getlinkage(2);
+            $characData = getlinkage(1);
+            $this->assign('hobbyData',$hobbyData);
+            $this->assign('characData',$characData);
+            // var_dump($tags.hobby);
+            $this->assign('tags',$tags);
+        }
+        $this->display();
+    }
     // 修改我的故乡
     public function edithometown(){
         $uid=$this->getSessionId();
@@ -1124,7 +1398,6 @@ class MemberController extends CommonController {
     // 实名认证
     public function realname(){
         $uid=$this->getSessionId();
-        $mdata=M('member')->where(array('id'=>$uid))->find();
         if(IS_POST){
             $data['uid']=$uid;
             $data['realname']=$_POST['realname'];
@@ -1132,14 +1405,29 @@ class MemberController extends CommonController {
             $data['idcard_front']=$_POST['idcard_front'];
             $data['idcard_back']=$_POST['idcard_back'];
             $data['status']=1;
+            $data['alipayaccount'] = $_POST['aliPay'];
             $data['inputtime']=time();
             $id=M('realname_apply')->add($data);
-            if($id){
-                $this->success('申请成功');
+            if($id) {
+                $this->success('申请成功', U('member/index'));
             }
+        } else {
+          $mdata=M('member')->where(array('id'=>$uid))->find();
+          $applys = M('realname_apply')
+            ->where(array('uid' => $uid))
+            ->order('id desc')
+            ->select();
+          $realnameApply = array();
+          if(!empty($applys)) {
+            $realnameApply = $applys[0];
+            if($realnameApply['status'] == 1) {
+              return $this->error('您已提交申请，请等待蜗牛客平台工作人员审核您的实名信息。') ;
+            }
+            $this->assign('apply_info', $realnameApply);
+          }
+          $this->assign('data',$mdata);
+          $this->display();
         }
-        $this->assign('data',$mdata);
-        $this->display();
     }
     // 更改头像
     public function uphead(){
@@ -1148,10 +1436,10 @@ class MemberController extends CommonController {
         $data['head']=$url;
         M('member')->where(array('id'=>$uid))->save($data);
     }
-    // 我发布的民宿
+    // 我发布的美宿
     public function mymerchant(){
         $uid=$this->getSessionId();
-        $data=M('hostel')->where(array('uid'=>$uid,'isdel'=>0))->select();
+        $data=M('hostel')->where(array('uid'=>$uid,'isdel'=>0,'isoff'=>0))->select();
         $this->assign('count',count($data));
         $this->assign('data',$data);
         $this->display();
@@ -1159,14 +1447,14 @@ class MemberController extends CommonController {
     // 修改我发布的名宿
     public function editmymerchant(){
         $uid=$this->getSessionId();
-        $data=M('hostel')->where(array('uid'=>$uid,'isdel'=>0))->select();
+        $data=M('hostel')->where(array('uid'=>$uid,'isoff'=>0, 'isdel' => 0))->select();
         $this->assign('count',count($data));
         if(IS_AJAX){
             $idarray=explode(",", $_POST['id']);
             foreach ($idarray as $key => $value) {
-                M('hostel')->where(array('id'=>$value))->save(array('isdel'=>1));
+                M('hostel')->where(array('id'=>$value))->save(array('isoff'=>1));
             }
-            $this->ajaxReturn(array('code'=>200,'msg'=>'删除成功'),'json');
+            $this->ajaxReturn(array('code'=>200,'msg'=>'下架成功'),'json');
         }
         $this->assign('data',$data);
         $this->display();
@@ -1174,7 +1462,7 @@ class MemberController extends CommonController {
     // 我发布的活动
     public function myact(){
         $uid=$this->getSessionId();
-        $data=M('activity')->where(array('uid'=>$uid))->select();
+        $data=M('activity')->where(array('uid'=>$uid,'isdel'=>0))->select();
         $this->assign('data',$data);
         $this->display();
     }
@@ -1192,6 +1480,41 @@ class MemberController extends CommonController {
         }
         $this->display();
     }
+
+    //删除我发布的活动
+    public function deletemyact(){
+        $uid=$this->getSessionId();
+        if(IS_AJAX){
+            $data=$_POST['id'];
+            $flag = 1;
+            M()->startTrans();
+            $list = explode("|",$data);
+            if(count($list) == 0)
+                $this->ajaxReturn(array("code"=>500,"msg"=>"请至少选择一条记录！"),'json');
+            M()->startTrans();
+            $flag = 1;
+            $updateData['isdel'] = 1;
+            $updateData['deletetime'] = time();
+            foreach ($list as $key => $value) {
+                # code...
+                if($value != ''){
+                    $res = M('activity')->where(array('id'=>$value))->save($updateData);
+                    if(!$res)
+                        $flag = 0;
+                }
+            }
+            if($flag == 0){
+                $data=array('code'=>500,'msg'=>'删除失败');
+                M()->rollback();
+            }else{
+                M()->commit();
+                $data=array('code'=>200,'msg'=>'删除成功');
+            }
+            $this->ajaxReturn($data,'json');
+        }else{
+            $this->ajaxReturn(array('code'=>-200,'msg'=>'请求错误！'),'json');
+        }
+    }
     
     public function getSessionId(){
         $uid=session('uid');
@@ -1208,6 +1531,14 @@ class MemberController extends CommonController {
     // 常用联系人
     public function topContacts(){
         $uid=session('uid');
+        $starttime = $_GET['starttime'];
+        $endtime = $_GET['endtime'];
+        $roomNum = $_GET['roomnum'];
+        $days = $_GET['days'];
+        cookie('start_time', $starttime);
+        cookie('end_time', $endtime);
+        cookie('room_num', $roomNum);
+        cookie('days', $days);
         $data['people']=M('linkman')->where(array('uid'=>$uid))->select();
         if(isset($_GET['url']))
         {
@@ -1217,7 +1548,6 @@ class MemberController extends CommonController {
             $data['url']=I('server.HTTP_REFERER');
             $data['url']=str_replace("/",",",$data['url']);
         }
-        // die;
         $this->assign('data',$data);
         $this->display();
     }
@@ -1228,7 +1558,6 @@ class MemberController extends CommonController {
         $url=I('url');
         // die;
         if(IS_POST){
-            // print_r($_POST);
             if($_POST['id']!=''){
                 $data['realname']=$_POST['realname'];
                 $data['phone']=$_POST['phone'];
@@ -1259,7 +1588,8 @@ class MemberController extends CommonController {
     public function addPeople(){
         // 获取当前参加人数数组
         $uid=session('uid');
-        $res=M('linkman')->where("uid=%d AND (realname='%s' or idcard='%s' or phone='%s')",array($uid,$_POST['realname'],$_POST['idcard'],$_POST['phone']))->select();
+        $res=M('linkman')
+          ->where("uid=%d AND (realname='%s' or idcard='%s' or phone='%s')",array($uid,$_POST['realname'],$_POST['idcard'],$_POST['phone']))->select();
         if(!$res){
             $data['uid']=$uid;
             $data['realname']=$_POST['realname'];
@@ -1285,10 +1615,6 @@ class MemberController extends CommonController {
         else{
             $this->ajaxReturn(array('code'=>500),'json');
         }
-        // print_r($addArray);
-        // 
-        // print_r($addArray);
-        // cookie('add',$addArray);
     }
     public function addContacts(){
         $addArray=cookie('add');
@@ -1330,5 +1656,111 @@ class MemberController extends CommonController {
     }
     public function useinfo(){
         $this->display();
+    }
+
+    public function rongToken() {
+      if(session('uid')) {
+        $user = M('member')->where(array('id' => session('uid')))->find();
+        return $this->jsonSucceed(array( 'token' => $user['rongyun_token'], 'head' => $user['head']));
+      } else {
+        return $this->jsonFailed('请先登录！');
+      }
+    }
+
+    public function chatting() {
+      $targetId = $_POST['targetId'];
+      if(!session('targetIds')) {
+        session('targetIds', array());
+      }
+      if(!in_array($targetId, session('targetIds'))) {
+        $ids = session('targetIds');
+        array_push($ids, $targetId);
+        session('targetIds', $ids);
+      }
+      echo json_encode(session('targetIds'));
+      return; 
+    }
+
+    public function checkOrder() {
+      $uid=$this->getSessionId();
+      $orderid = $_GET['orderid'];
+      if(empty($orderid)) {
+        return $this->error('参数错误！');
+      }
+      $order = M('order')
+        ->where(array('orderid' => $orderid)) 
+        ->find();
+      $orderInfo = M('order_time')
+        ->where(array('orderid' => $orderid))
+        ->find();
+      $roomInfo = M('book_room a')
+        ->join('zz_hostel b on a.hid = b.id')
+        ->join('zz_member c on b.uid = c.id')
+        ->where(array('orderid' => $orderid))
+        ->field('b.title, a.realname, a.idcard, a.phone, a.inputtime, b.uid, a.starttime, a.endtime, c.head, a.orderid')
+        ->find();
+
+      if($roomInfo['uid'] != $uid) {
+        $this->error('您无权审核该订单！'); 
+      }
+
+      if(!$roomInfo || !$orderInfo || !$order) {
+        $this->error('订单信息不存在！'); 
+      }
+
+      if(intval($roomInfo['endtime']) < time()) {
+        $this->error('订单已过时！');
+      }
+
+      if($orderInfo['cancel_status'] || $orderInfo['review_status']) {
+        $this->error('订单状态错误，不可审核！');
+      }
+
+      $roomerCount = M('book_member')
+        ->where(array('orderid' => $orderid))
+        ->count();
+
+      $this->assign('roomInfo', $roomInfo);
+      $this->assign('roomerCount', $roomerCount);
+      $this->assign('uid', $uid);
+
+      $this->display();
+    }
+
+    public function comment_hotel() {
+      $rid = I('get.rid');
+      $orderid = I('get.orderid');
+      $hotel = M('room a')
+        ->join('zz_hostel b on a.hid = b.id')
+        ->field('a.id, a.title as room_name, b.title, a.thumb, b.id as hid')
+        ->where(array('a.id' => $rid))
+        ->find();
+      $this->assign('hotel', $hotel);
+      $this->assign('orderid', $orderid);
+      $this->assign('uid', session('uid'));
+      $this->display(); 
+    }
+
+    public function apply_hotel_owner() {
+      $uid = $this->getSessionId();
+      if(IS_POST) {
+      
+      
+      } else {
+        $mdata=M('member')->where(array('id'=>$uid))->find();
+        $applys = M('realname_apply')
+          ->where(array('uid' => $uid))
+          ->order('id desc')
+          ->select();
+        $realnameApply = array();
+        if(!empty($applys)) {
+          $realnameApply = $applys[0];
+          $this->assign('apply_info', $realnameApply);
+          $this->assign('mdata', $mdata);
+        } else {
+          return $this->redirect('Member/realname'); 
+        }
+      }
+      $this->display();
     }
 }

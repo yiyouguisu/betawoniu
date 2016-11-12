@@ -191,6 +191,7 @@
             console.log(data);
             $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
                 var option='<option>-请选择-</option>';
+                res = JSON.parse(res);
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';
                 });
@@ -205,6 +206,7 @@
             var data={'id':$(this).val()};
             $.post("{:U('Web/Note/ajaxcity')}",data,function(res){
                 var option='<option>-请选择-</option>';
+                res = JSON.parse(res);
                 $.each(res,function(i,value){
                     option+='<option value='+value.id+'>'+value.name+'</option>';
                 });

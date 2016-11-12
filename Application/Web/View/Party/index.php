@@ -46,13 +46,14 @@
         });
     }
 </script>
-<div class="header center z-index112 pr f18">
-      活动
-      <div class="head_go pa"><a href="{:U('Web/Index/index')}"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
-      <div class="tra_pr pa"><i></i><a href="search-2.html"><img src="__IMG__/search.jpg"></a></div>
+<div class="header center z-index112 pr f18 fix-head">
+  活动
+  <div class="head_go pa">
+    <a href="{:U('Web/Index/index')}"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
+  <div class="tra_pr pa"><i></i><a href="{:U('Public/search_project')}"><img src="__IMG__/search.jpg"></a></div>
 </div>
 
-<div class="container">
+<div class="container" style="margin-top:6rem">
    <div class="land">
           <div class="tra_list pr z-index112 center f14">
                 <div class="tra_li tra_li_on">按特色</div>
@@ -61,6 +62,7 @@
                         <div class="dress_box">
                              <div class="dress_b act_a moch_click center f14 partycate">
                                  <ul>
+                                    <li data-id=''>不限</li>
                                     <volist name='partycate' id='vo'>
                                       <li data-id='{$vo.id}'>{$vo.catname}</li>
                                     </volist>
@@ -69,7 +71,6 @@
                        </div>
                     </div>
                 </div>
-                
                 <div class="tra_li tra_li_on">按时间</div>
                 <div class="tra_drop">
                     <img src="__IMG__/dt_a.jpg">
@@ -134,7 +135,7 @@
           </div>
 
           <div class="land_btm">
-              <div class="land_c f14" id="DataList">
+              <div class="f14" id="DataList">
                   <div id="scroller">
                       <div id="pullDown" class="idle">
                           <span class="pullDownIcon"></span>
@@ -151,6 +152,7 @@
 
    </div>  
    <div class="mask"></div>     
+   <input type="hidden" name="uid" value="{$uid}" id="uid" >
 </div>
 <script src="__JS__/jquery-ui.min.js"></script>
 <script>
@@ -167,14 +169,17 @@
             }
       });
       $(".scr_d").click(function(){
-          $(this).toggleClass("hm_cut");
-      })
-      $(".partytype li").click(function(){
-          $(this).addClass("hm_cut").siblings().removeClass("hm_cut")   
-      })
+        $(this).toggleClass("hm_cut"); 
+      });
+      $(".partytype li").click(function(){ 
+        $(this).addClass("hm_cut").siblings().removeClass("hm_cut")   
+      }); 
       $(".partycate li").click(function(){
-          $(this).addClass("hm_cut").siblings().removeClass("hm_cut")   
-      })
+        $(this).addClass("hm_cut").siblings().removeClass("hm_cut");
+        $(".tra_drop").hide();
+        $('.mask').hide();
+        loaded();
+      });
   });
 </script>
 
@@ -183,7 +188,7 @@
     var city, month, notetype, order = 0;
     var OFFSET = 5;
     var page = 1;
-    var PAGESIZE = 10;
+    var PAGESIZE = 5;
 
     var myScroll,
         pullDownEl,
@@ -206,14 +211,8 @@
         })
     })
 
-
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     $(document).ready(function() {
-    //         loaded();
-    //     });
-    // }, false);
-
     function loaded() {
+        console.log('loadding');
         page = 1;
         p['p'] = page;
         p['catid'] = ($(".partycate li.hm_cut").length > 0) ? $(".partycate li.hm_cut").data('id') : 0;
@@ -233,6 +232,8 @@
         pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';
         $.get("{:U('Web/Party/ajax_getlist')}", p, function (data, status) {
             if (status == "success") {
+              console.log(data.num);
+              console.log(PAGESIZE);
                 if (data.status == 0) {
                     $("#pullDown").hide();
                     $("#pullUp").hide();
@@ -289,7 +290,8 @@
                             pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';
                             refresh();
                         }
-                        if (hasMoreData && pullUpEl.className.match('flip')) {
+                        console.log(hasMoreData);
+                        if (pullUpEl.className.match('flip')) {
                             pullUpEl.className = 'loading';
                             pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';
                             nextPage();
@@ -299,6 +301,54 @@
 
                 $("#thelist").empty();
                 $("#thelist").html(data.html);
+
+                /////
+                $('.collect').unbind('click');
+                $('.collect').bind('click', function(evt) {
+                  evt.preventDefault();
+                  var _me = $(this);
+                  var isCollect = _me.data('collect');
+                  var aid = _me.data('id');
+                  var uid = $('#uid').val();
+                  if(!uid) {
+                    alert('请先登录！');
+                    window.location.href="{:U('member/login')}";
+                  }
+                  var url = '';
+                  if(!isCollect) {
+                     url = '{:U("/Api/Activity/collect")}';
+                  } else {
+                     url = '{:U("/Api/Activity/uncollect")}';
+                  }
+                  $.ajax({
+                    'url': url,
+                    'data': JSON.stringify({
+                      'uid': uid,
+                      'aid': aid
+                    }),
+                    'dataType': 'json',
+                    'contentType': 'text/xml',
+                    'processData': false,
+                    'type': 'post',
+                    'success': function(data) {
+                      if(data.code == 200) {
+                        console.log(isCollect);
+                        if(isCollect) {
+                          _me.removeClass('recom_c_cut');
+                          _me.data('collect', 0)
+                        } else {
+                          _me.addClass('recom_c_cut');
+                          _me.data('collect', 1)
+                        }
+                      }
+                    },
+                    'error': function(err, data) {
+                      console.log(err); 
+                    }
+                  });
+                });
+                
+        /////
 
                 myScroll.refresh();
                 if (hasMoreData) {
@@ -352,7 +402,6 @@
         p['province'] = ($("#province option:selected").length > 0) ? $("#province option:selected").val() : 0;
         p['city'] = ($("#city option:selected").length > 0) ? $("#city option:selected").val() : 0;
         p['town'] = ($("#town option:selected").length > 0) ? $("#town option:selected").val() : 0;
-
         $.get("{:U('Web/Party/ajax_getlist')}", p, function (data, status) {
             if (status == "success") {
                 if (data.length < PAGESIZE || data.status == 0) {
@@ -376,6 +425,13 @@
         }, "json");
     }
 </script>
+<script>
+$('#town').change(function(evt) {
+  evt.preventDefault();
+  $(".tra_drop").hide()
+  $('.mask').hide();
+  loaded()
+});
+</script>
 </body>
-
 </html>

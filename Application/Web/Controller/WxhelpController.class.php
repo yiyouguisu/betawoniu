@@ -5,27 +5,27 @@ namespace Web\Controller;
 use Web\Common\CommonController;
 
 class WxhelpController extends CommonController {
-    public function _initialize() {
-        $this->appid = C('WEI_XIN_INFO.APP_ID');
-        $this->appsecret = C("WEI_XIN_INFO.APP_SECRET");
-    }
+  public function _initialize() {
+    $this->appid = "wx670ea712732e93f5";
+    $this->appsecret = "a2986c48c1e57403b7a239c3fad9f212";
+  }
 	
 	public function GetOpenid()
 	{
 		//通过code获得openid
 		if (!isset($_GET['code'])){
 			//触发微信返回code码
-			$baseUrl = urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].$_SERVER['QUERY_STRING']);
-			$url = $this->__CreateOauthUrlForCode($baseUrl,'snsapi_base');
+			$baseUrl = urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']. '?' .$_SERVER['QUERY_STRING']);
+			$url = $this->__CreateOauthUrlForCode($baseUrl,'snsapi_userinfo');
 			Header("Location: $url");
 			exit();
 		} else {
 			//获取code码，以获取openid
-		    $code = $_GET['code'];
+		  $code = $_GET['code'];
 			$get_user_info_url = $this->__CreateOauthUrlForOpenid($code);
-            $res = file_get_contents($get_user_info_url);
-            $user_obj = json_decode($res, true);
-            $openId=$user_obj["openid"];
+      $res = file_get_contents($get_user_info_url);
+      $user_obj = json_decode($res, true);
+      $openId=$user_obj["openid"];
 			return $openId;
 		}
 	}
@@ -36,17 +36,17 @@ class WxhelpController extends CommonController {
 			//触发微信返回code码
 			$baseUrl = urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].$_SERVER['QUERY_STRING']);
 			$url = $this->__CreateOauthUrlForCode($baseUrl,'snsapi_userinfo');
-			Header("Location: $url");
-			exit();
+			Header("Location:$url");
 		} else {
 			//获取code码，以获取openid
-		    $code = $_GET['code'];
+		  $code = $_GET['code'];
 			$get_user_url = $this->__CreateOauthUrlForOpenid($code);
-            $user_obj_res = file_get_contents($get_user_url);
-            $user_obj = json_decode($user_obj_res, true);
-            $get_user_info_url = $this->__CreateGetUserInfoUrl($user_obj["access_token"],$user_obj["openid"]);
-            $res = file_get_contents($get_user_info_url);
-            $user_info_obj = json_decode($res, true);
+      $user_obj_res = file_get_contents($get_user_url);
+      $user_obj = json_decode($user_obj_res, true);
+      $get_user_info_url = $this->__CreateGetUserInfoUrl($user_obj["access_token"],$user_obj["openid"]);
+      $res = file_get_contents($get_user_info_url);
+      $user_info_obj = json_decode($res, true);
+      $user_info_obj['openid'] = $user_obj['openid'];
 			return $user_info_obj;
 		}
 	}
@@ -94,7 +94,7 @@ class WxhelpController extends CommonController {
 	private function __CreateOauthUrlForCode($redirectUrl,$scope='snsapi_base')
 	{
 		$urlObj["appid"] = $this->appid;
-		$urlObj["redirect_uri"] = "$redirectUrl";
+		$urlObj["redirect_uri"] = $redirectUrl;
 		$urlObj["response_type"] = "code";
 		$urlObj["scope"] = $scope;
 		$urlObj["state"] = "STATE"."#wechat_redirect";

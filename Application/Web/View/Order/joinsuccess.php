@@ -12,7 +12,7 @@
           <div class="fg_c">我们会尽快通知发起人，收到确认后</div>
           <div class="fg_c">我们会第一时间通知您</div>
           <div class="act_d center">
-                  <span>活动附近的民宿</span>
+                  <span>活动附近的美宿</span>
                   <div class="act_d1"></div>
           </div>
     </div>
@@ -41,7 +41,7 @@
 				</div>
 			</a>			
 		</volist>
-		<div class="scr_d center">显示全部6个民宿<img src="__IMG__/drop_f.jpg"></div> 
+		<div class="scr_d center">显示全部6个美宿<img src="__IMG__/drop_f.jpg"></div> 
 	</div>
 </div>
 

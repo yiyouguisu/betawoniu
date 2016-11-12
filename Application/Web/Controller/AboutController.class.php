@@ -28,6 +28,8 @@ class AboutController extends CommonController {
 	}
 	// 问答
 	public function help(){
+        $data=M("question")->where(array('status'=>1))->order(array('id'=>"desc"))->field('id,title,content,inputtime')->select();
+        $this->assign('data',$data);
 		$this->display();
 	}
 	public function feedback(){

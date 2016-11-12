@@ -7,7 +7,6 @@ use Web\Common\CommonController;
 class MyController extends CommonController {
 
 	public function index() {
-        // 用户id存session中
 		$uid=47;
         $data=M('member')->where(array('id'=>$uid))->find();
         $this->assign('data',$data);

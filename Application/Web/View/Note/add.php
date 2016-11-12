@@ -1,61 +1,68 @@
 <include file="Public:head" />
 <script type="text/javascript" src="__JS__/ajaxfileupload.js"></script>
 <script type="text/javascript">
-    var areaurl = "{:U('Web/Note/getchildren')}";
-    function load(parentid, type) {
-        $.ajax({
-            type: "GET",
-            url: areaurl,
-            data: { 'parentid': parentid },
-            dataType: "json",
-            success: function (data) {
-                if (type == 'city') {
-                    $('#city').html('<option value="">--请选择--</option>');
-                    $('#town').html('<option value="">--请选择--</option>');
-                    if (data != null) {
-                        $.each(data, function (no, items) {
-                            if (items.id == "{$_GET['city']}") {
-                                $('#city').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
-                            } else {
-                                $('#city').append('<option value="' + items.id + '">' + items.name + '</option>');
-                            }
-                        });
-                    }
-                } else if (type == 'town') {
-                    $('#town').html('<option value="">--请选择--</option>');
-                    if (data != null) {
-                        $.each(data, function (no, items) {
-                            if (items.id == "{$_GET['town']}") {
-                                $('#town').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
-                            } else {
-                                $('#town').append('<option value="' + items.id + '">' + items.name + '</option>');
-                            }
-                        });
-                    }
-                }
-            }
-        });
-    }
+  var areaurl = "{:U('Web/Note/getchildren')}";
+  function load(parentid, type) {
+      $.ajax({
+          type: "GET",
+          url: areaurl,
+          data: { 'parentid': parentid },
+          dataType: "json",
+          success: function (data) {
+              if (type == 'city') {
+                  $('#city').html('<option value="">--请选择--</option>');
+                  $('#town').html('<option value="">--请选择--</option>');
+                  if (data != null) {
+                      $.each(data, function (no, items) {
+                          if (items.id == "{$_GET['city']}") {
+                              $('#city').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
+                          } else {
+                              $('#city').append('<option value="' + items.id + '">' + items.name + '</option>');
+                          }
+                      });
+                  }
+              } else if (type == 'town') {
+                  $('#town').html('<option value="">--请选择--</option>');
+                  if (data != null) {
+                      $.each(data, function (no, items) {
+                          if (items.id == "{$_GET['town']}") {
+                              $('#town').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
+                          } else {
+                              $('#town').append('<option value="' + items.id + '">' + items.name + '</option>');
+                          }
+                      });
+                  }
+              }
+          }
+      });
+  }
 </script>
 <link rel="stylesheet" type="text/css" href="__CSS__/file.css">
 <script type="text/javascript" src='__JS__/ajaxfileupload.js'></script>
 <body class="back-f1f1f1">
-    <div class="header center pr f18">发布游记
-      <div class="head_go pa">
-          <a href="{:U('Web/Note/index')}">
-              <img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
+    <div class="header center pr f18 fix-head">
+    <span id="page_title">发布游记</span>
+    <div class="head_go pa">
+      <a href="javascript:history.go(-1);" id="go_back">
+          <img src="__IMG__/go.jpg">
+      </a>
+      <span>&nbsp;</span>
     </div>
-    <form id='form' action="{:U('Web/Note/add')}" method="post">
+    </div>
+    <form id='form' action="{:U('Web/Note/add')}" method="post" style="margin-top:6rem">
         <div class="container">
             <div class="act_c">
                 <div class="lu_b">
-                    <input type="text" name="title" class="lu_text" placeholder="游记标题 :" required>
+                    <input type="text" name="title" class="lu_text" placeholder="游记标题：" required>
                 </div>
                 <div class="lu_b">
                     <textarea class="lu_text" placeholder="游记摘要 ：" name="description" required></textarea>
                 </div>
                 <div class="lu_b">
-                    <input type="text" name="fee" class="lu_text" placeholder="人均费用 :" required>
+                    <input type="text" name="fee" class="lu_text" placeholder="人均费用：" required>
+                </div>
+                <div class="lu_b">
+                    <input type="text" name="hotels" class="lu_text" placeholder="游记中出现的美宿：" required readonly id="select_hotel">
                 </div>
                 <div class="lu_b  lu_drop">
                     <div class="drop_left fl">地区：
@@ -80,29 +87,29 @@
                     <input type="text" name="address" class="lu_text" placeholder="详细地址 :">
                 </div>
             </div>
-
-
             <div class="yr">
                 <div class="yr-a center">出发时间</div>
                 <div class="yr-b">
-                    <div class="yr-c center fl">
+                    <div class="travel_time yr-c center fl" id="start_time" data-target="#starttime">
                         <div class="yr-c1">
                             <img src="__IMG__/date.jpg"></div>
                         <div class="yr-c2">开始时间</div>
                         <div class="yr-c3">
-                            <input class="ggo_text date starttime" type="date" name="begintime" value="{:date('Y-m-d')}" required>
+                            <input class="travel_time ggo_text date starttime" id="starttime" type="date" name="begintime" value="{:date('Y-m-d')}" style="display:none" required>
+                          <span></span>
                         </div>
                     </div>
                     <div class="yr-d fl pr">共<span id='day'>-</span>天
 					<input type="hidden" name="days" id="days" />
                         <div class="yr_line pa"></div>
                     </div>
-                    <div class="yr-c center fl">
+                    <div class="yr-c center fl travel_time" id="end_time" data-target="#endtime">
                         <div class="yr-c1">
                             <img src="__IMG__/date.jpg"></div>
                         <div class="yr-c2">结束时间</div>
                         <div class="yr-c3">
-                            <input class="ggo_text date endtime" type="date" name="endtime" value="{:date('Y-m-d')}" required>
+                            <input class="ggo_text date endtime" type="date" id="endtime" name="endtime" value="{:date('Y-m-d')}" required  style="display:none">
+                          <span></span>
                         </div>
                     </div>
                 </div>
@@ -127,19 +134,8 @@
                 </div>
                 <div class="jok_a">发布内容</div>
                 <div class="describe_list">
-                    <div class="imglist">
-                        <div class="jok_b">
-                            <img src="__IMG__/default.jpg" id="img_0">
-                            <input type="hidden" class="thumb" id="imglist_0" name="imglist[0][thumb]" value="">
-                        </div>
-                        <a href="javascript:;" class="file jok_btn">上传图片
-						<input type="file" name="Filedata" id="fileupload_0" style="width: 100%; height: 100%" onchange="ajaxFileUpload(0)">
-                        </a>
-                        <div class="lu_b">
-                            <textarea class="lu_text ltest" id="content_0" placeholder="描述 ：" name="imglist[0][content]"></textarea>
-                        </div>
-                    </div>
-                </div>
+        <!-- 图片list -->
+      </div>   
                 <input type="button" class="jok_btn jok_red qadd" value="添加图片和描述">
             </div>
             <div class="snail_d center trip_btn f16" style="margin: 2rem 2.5% 0">
@@ -148,10 +144,21 @@
                 <a href="javascript:;" id="save" class="snail_cut">发布</a>
             </div>
         </div>
+        <input type="hidden" name="hid" id="hid">
     </form>
-
+    <div id="time_box" style="position:fixed;bottom:0;left:0;right:0;display:none;">
+      <include file="Public:calendar" />
+    </div>
+    <div style="position:absolute;top:0;left:0;right:0;padding:7rem 10px;background:#fff;height:auto;z-index:1000;display:none" id="hotel_list">
+      <ul>
+        <volist name="hotels" id="hotel">
+          <li style="padding:8px;border-bottom:1px solid #efefef" class="ft14 s_h_itm" data-id="{$hotel.id}">{$hotel.title}</li>
+        </volist>
+      </ul>
+    </div>
     <script type="text/javascript">
         var xss = 0;
+        var selectHotels = {};
         $(function () {
             $(".date").change(function () {
                 var starttime = $(".starttime").val();
@@ -226,8 +233,8 @@
                 htmladd += "<div class=\"lu_b\">";
                 htmladd += "<textarea  class=\"lu_text ltest\" placeholder=\"描述 ：\" id=\"content_" + xss + "\" name=\"imglist[" + xss + "][content]\"></textarea>";
                 htmladd += "</div></div>";
-                var htmltr = $(htmladd);
-                $('.describe_list').append(htmltr);
+                // var htmltr = $(htmladd);
+                $('.describe_list').append(htmladd);
             })
         });
         //计算天数差的函数，通用  
@@ -259,6 +266,79 @@
             })
             return false;
         }
+    </script>
+    <script>
+      $('#select_hotel').click(function(evt) {
+        evt.preventDefault();
+        $('#hotel_list').show();
+        $('#page_title').html('选择美宿');
+        $('#go_back').click(function(evt) {
+          evt.preventDefault();
+          evt.preventDefault();
+          $('#hotel_list').hide();
+          $('#page_title').html("发布游记");
+          $(this).unbind('click');
+          var selectedStr = '';
+          var unionStr = '';
+          $.each(selectHotels, function(k, v) {
+            if(v) {
+              selectedStr += v + ',';
+              unionStr += k + ',';
+            }
+          });
+          selectedStr.substring(0, selectedStr.length - 1);
+          unionStr.substring(0, unionStr.length -1);
+          $('#select_hotel').val(selectedStr);
+          $('#hid').val(unionStr);
+        });
+      });
+      $('.s_h_itm').click(function(evt) {
+        evt.preventDefault();
+        var _this = $(this);
+        var chosen = _this.data('chosen');
+        var id = _this.data('id');
+        if(chosen) {
+          _this.removeClass('theme_color_blue');   
+          _this.data('chosen', 0);
+          selectHotels[id] = undefined;
+        } else {
+          _this.addClass('theme_color_blue');
+          _this.data('chosen', 1);
+          selectHotels[id] = _this.html();
+        }
+         
+      });
+    </script>
+    <script>
+      $('.travel_time').click(function(evt) {
+        evt.preventDefault();
+        var _me = $(this);
+        $('#time_box').show();
+        var target = _me.data('target');
+        console.log(target);
+        $('.day').unbind('click');
+        $('.day').click(function(evt) {
+          evt.preventDefault();
+          var month = $('.month').html().trim();
+          var dat = $(this).html().trim(); 
+          if(parseInt(dat) < 10) {
+            dat = '0' + dat.toString(); 
+          }
+          var d = month + '-' + dat;
+          $(target).val(d);
+          $(target).siblings().html(d);
+          $('#time_box').hide();
+          var starttime = $('#starttime').val();
+          var endtime = $('#endtime').val();
+          var sunix = $.myTime.DateToUnix(starttime);
+          var eunix = $.myTime.DateToUnix(endtime);
+          if(sunix > 0 && eunix > 0) {
+            var duration = (eunix - sunix)/(3600 * 24);
+            console.log(duration);
+            $('#day').html(duration);
+          }
+        });
+      });
     </script>
 </body>
 </html>

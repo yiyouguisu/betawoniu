@@ -122,7 +122,7 @@
                 <i>></i>
                 <a href="">名宿</a>
                 <i>></i>
-                <a href="">发布民宿</a>
+                <a href="">发布美宿</a>
             </div>
             <div class="Release_of_legend_temporary">
                 <div class="activity2_main">
@@ -140,11 +140,11 @@
                     </ul>
                 </div>
                 <div class="activity2_main2_01">
-                    <span class="middle">民宿名称 :</span>
+                    <span class="middle">美宿名称 :</span>
                     <input class="middle text4" style="width:670px;" type="text" />
                 </div>
                 <div class="activity2_main2_01">
-                    <span class="middle">民宿地址 : </span>
+                    <span class="middle">美宿地址 : </span>
                     <div class="middle activity2_main2_text3">
                         <select class="sc-wd chosen-select-no-single">
                             <option>主题</option>
@@ -167,7 +167,7 @@
                 </div>
                 <div style="margin-bottom:20px;"></div>
                 <div class="activity2_main">
-                    <span>上传民宿展示图</span>
+                    <span>上传美宿展示图</span>
                     <i>图片建议选择尺寸730像素 X 415像素 的图片 (建议上传7张以上)</i>
                     <ul class="hidden activity2_main_ul">
                         <li class="fl">
@@ -182,7 +182,7 @@
                 </div>
                 <div style="border-bottom:1px solid #e3e3e3;"></div>
                 <div class="Release_of_legend_main2">
-                    <span>民宿描述 : </span>
+                    <span>美宿描述 : </span>
                     <textarea></textarea>
                 </div>
                 <div class="Release_of_legend_main3">
@@ -501,7 +501,7 @@
         <div class="Release_of_legend_m5">
             <span>退订规则 : </span>
             <textarea></textarea>
-            <input type="submit" value="发布民宿" />
+            <input type="submit" value="发布美宿" />
         </div>
     </div>
 <include file="public:foot" />

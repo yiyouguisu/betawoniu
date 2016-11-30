@@ -125,7 +125,7 @@ $(function(){
    })
    
    $(".stay_right ul li").click(function(){
-	    $(this).addClass("stay_rightCut").siblings().removeClass("stay_rightCut")
+      $(this).toggleClass("stay_rightCut")
    })
    
    //弹窗

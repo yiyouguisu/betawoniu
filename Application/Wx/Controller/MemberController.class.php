@@ -344,7 +344,11 @@ class MemberController extends CommonController {
             if(empty($nickname)){
                 $this->ajaxReturn(array('code'=>0,'msg'=>'联系人不能为空'),'json');
             }
-            // $user=M('member')->where(array('id'=>$uid))->find();
+            $user=M('member')->where(array('id'=>$uid))->find();
+            if (!check_phone($phone)&&$user['phone']!=$phone) {
+                $this->ajaxReturn(array('code'=>-1,'msg'=>'手机号已被绑定，请使用该手机号直接登录'),'json');
+            } 
+            
             // if($user['phone']==$phone&&$user['nickname']==$nickname){
             //     $this->ajaxReturn(array('code'=>1,'msg'=>'提交成功'),'json');
             // }else{
@@ -361,6 +365,111 @@ class MemberController extends CommonController {
         }
 
         
+    }
+    public function ajax_login(){
+        if(IS_POST){
+            $phone=I('phone');
+            $password=I('password');
+            if(empty($phone)){
+                $this->ajaxReturn(array('code'=>0,'msg'=>'手机号码不能为空'),'json');
+            }
+            if(!isMobile($phone)){
+                $this->ajaxReturn(array('code'=>0,'msg'=>'手机号码格式错误'),'json');
+            }
+            if(empty($password)){
+                $this->ajaxReturn(array('code'=>0,'msg'=>'登录密码不能为空'),'json');
+            }
+            $status=$this->loginHome($phone, $password, 0);
+            if ($status==2) {
+                $this->ajaxReturn(array('code'=>1,'msg'=>'登录成功'),'json');
+            }elseif($status==0) {
+                $this->ajaxReturn(array('code'=>0,'msg'=>'登录失败'),'json');
+            }elseif($status==1) {
+                $this->ajaxReturn(array('code'=>0,'msg'=>'帐号被禁用,请联系蜗牛客客服'),'json');
+            }
+            
+        }else{
+            $this->ajaxReturn(array('code'=>0,'msg'=>'请求非法'),'json');
+        }
+
+        
+    }
+    /**
+     * 登陆
+     * @param int|string $identifier 用户ID,或者用户名
+     * @param string $password 用户密码，不能为空
+     * @param int $autotype 是否记住用户自动登录
+     * @return int 
+     */
+    public function loginHome($identifier, $password, $autotype = 0) {
+        if (empty($identifier) || empty($password)) {
+            return 0;
+        }else{
+            $user = D("member")->getLocalAdminUser($identifier, $password);
+            if (!$user) {
+                $this->recordLoginHome($identifier, $password, 0, "帐号密码错误");
+                return 0;
+            }elseif ($user['status'] == 0) {
+                $this->recordLoginHome($identifier, $password, 0, "帐号被禁止");
+                return 1;
+            }else{
+                session('username', $user['username']);
+                session('nickname', $user['nickname']);
+                session('phone', $user['phone']);
+                session('uid', $user['id']);
+
+                $invitecode=session("invitecode");
+                $tuijianuser=M('member')->where(array('tuijiancode'=>$invitecode))->find();
+                $groupid_id=0;
+                if($tuijianuser&&!empty($invitecode)){
+                    $groupid_id = $tuijianuser['id'];
+                    M('member')->where(array('id'=>$user['id']))->setField("groupid_id",$groupid_id);
+                }
+                if($tuijianuser&&!empty($invitecode)){
+                    M('invite')->add(array(
+                        'uid'=>$tuijianuser['id'],
+                        'tuid'=>$user['id'],
+                        'tuijiancode'=>$invitecode,
+                        'status'=>2,
+                        'inputtime'=>time()
+                        ));
+                    
+                }
+
+                if ($autotype == 1) {
+                    $autoinfo = $user['id'] . "|" . $user['username'] . "|" . get_client_ip();
+                    $auto = \Home\Common\CommonController::authcode($autoinfo, "ENCODE");
+                    cookie('auto', $auto, C('AUTO_TIME_LOGIN'));
+                }
+                M("member")->where(array("id" => $user['id']))->save(array(
+                    "lastlogin_time" => time(),
+                    "login_num" => $user["login_num"] + 1,
+                    "lastlogin_ip" => get_client_ip()
+                ));
+                return 2;
+            }
+        }
+        
+        
+    }
+
+    /**
+     * 记录前台登陆信息
+     * @param string $identifier 用户名
+     * @param string $password 用户密码
+     * @param int $status 状态 1登录成功 0登录失败
+     * @param string $info 备注
+     * @author yiyouguisu<741459065@qq.com> time|20151219
+     */
+    public function recordLoginHome($identifier, $password, $status, $info = "") {
+        M("userlog")->add(array(
+            "username" => $identifier,
+            "logintime" => date("Y-m-d H:i:s"),
+            "loginip" => get_client_ip(),
+            "status" => $status,
+            "password" => "***" . substr($password, 3, 4) . "***",
+            "info" => $info
+        ));
     }
     public function ajax_share(){
         $sharestatus=$_POST['sharestatus'];

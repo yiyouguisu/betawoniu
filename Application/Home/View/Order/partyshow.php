@@ -34,6 +34,7 @@
                         </neq>
                     </if>
                 </div>
+                <i>订单号：{$data['orderid']}</i>
                 <i>订单状态：<em>
                 	<eq name="data['status']" value="1">用户确认订单成功</eq>
                 	<eq name="data['status']" value="2">等待支付</eq>
@@ -57,6 +58,7 @@
                                 </eq>
                                 <eq name="data['refund_status']" value="3">
                                     取消报名审核失败
+                                    <span style="color:#666;margin-left: 20px;">失败原因：</span>{$data.refundreview_remark}
                                 </eq>
                             <else />
                             <eq name="data['refund_status']" value="0">
@@ -70,10 +72,12 @@
                             </eq>
                             <eq name="data['refund_status']" value="3">
                                 取消报名审核失败
+                                <span style="color:#666;margin-left: 20px;">失败原因：</span>{$data.refundreview_remark}
                             </eq>
                         </if>
                     </eq>
                 </em></i>
+
             </div>
             <div class="payment hidden">
                 <div class="middle payment_main_01">

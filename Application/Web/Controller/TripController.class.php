@@ -9,7 +9,7 @@ class TripController extends CommonController {
   public function _initialize() {
     $this->assign('TRIPCTRL', true); 
     if(!session('uid')) {
-      $this->redirect('Web/Member/login');
+      $this->redirect('Web/Member/wxlogin');
     }
   }
 

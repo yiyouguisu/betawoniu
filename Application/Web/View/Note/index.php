@@ -63,7 +63,7 @@
         });
     }
 </script>
-<div class="header center z-index112 pr f18">游记
+<div class="header center z-index112 pr f18 fix-head">游记
     <div class="head_go pa">
         <a href="{:U('Web/Index/index')}">
             <img src="__IMG__/go.jpg">
@@ -76,7 +76,7 @@
         </a>
     </div>
 </div>
-<div class="container">
+<div class="container" style="margin-top:6rem">
     <div class="land">
         <div class="tra_list pr z-index112 center f14">
             <div class="tra_li tra_li_on">按时间</div>
@@ -176,9 +176,6 @@
     var maxScrollY = 0;
     var hasMoreData = false;
 
-    document.addEventListener('touchmove', function (e) {
-        e.preventDefault();
-    }, false);
     $(function () {
         loaded();
         $(".mask").click(function () {

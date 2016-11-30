@@ -1,0 +1,3 @@
+<?php
+//000000000000a:19:{s:2:"id";s:1:"4";s:8:"username";s:8:"admin_kf";s:8:"password";s:32:"fb9adcb816b559f58947e5fdfe9c9911";s:5:"email";s:16:"kf@snailinns.com";s:8:"nickname";s:16:"蜗牛客-客服";s:3:"sex";s:1:"0";s:6:"status";s:1:"1";s:9:"login_num";s:2:"65";s:14:"lastlogin_time";s:10:"1480319001";s:12:"lastlogin_ip";s:14:"14.205.255.165";s:7:"content";s:23:" 平台管理员-客服";s:8:"group_id";s:1:"2";s:6:"verify";s:6:"uZytJl";s:4:"role";s:1:"1";s:8:"reg_time";s:10:"1470627511";s:4:"head";N;s:5:"phone";N;s:8:"realname";N;s:7:"storeid";N;}
+?>

@@ -48,8 +48,8 @@
                                                 <i>退订成功</i>
                                             </eq>
                                             <eq name="vo['refund_status']" value="3">
-                                                <i>审核失败</i>
-                                                <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                <i>待参加</i>
+                                                <!-- <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                             </eq>
                                             <else />
                                             <eq name="vo['refund_status']" value="0">
@@ -63,8 +63,8 @@
                                                 <i>退订成功</i>
                                             </eq>
                                             <eq name="vo['refund_status']" value="3">
-                                                <i>审核失败</i>
-                                                <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                <i>待参加</i>
+                                                <!-- <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                             </eq>
                                         </if>
                                     </div>
@@ -98,8 +98,8 @@
                                                 <i>退订成功</i>
                                             </eq>
                                             <eq name="vo['refund_status']" value="3">
-                                                <i>审核失败</i>
-                                                <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                <i>待参加</i>
+                                                <!-- <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                             </eq>
                                             <else />
                                             <eq name="vo['refund_status']" value="0">
@@ -113,8 +113,8 @@
                                                 <i>退订成功</i>
                                             </eq>
                                             <eq name="vo['refund_status']" value="3">
-                                                <i>审核失败</i>
-                                                <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                <i>待参加</i>
+                                                <!-- <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                             </eq>
                                         </if>
                                     </div>

@@ -10,7 +10,7 @@ class MemberModel extends Model {
         array('password', 'require', '密码不能为空！', 0, 'regex', 1),
     );
 
-    /**
+     /**
      * 对明文密码，进行加密，返回加密后的密码
      * @param $identifier 为数字时，表示uid，其他为用户名
      * @param type $pass 明文密码，不能为空
@@ -26,12 +26,12 @@ class MemberModel extends Model {
         $pass = md5($pass . md5($verify));
         return $pass;
     }
-
-    /**
+    
+      /**
      * 根据标识修改对应用户密码
      * @param type $identifier
      * @param type $password
-     * @return type
+     * @return type 
      */
     public function ChangePassword($identifier, $password) {
         if (empty($identifier) || empty($password)) {
@@ -116,7 +116,7 @@ class MemberModel extends Model {
         if ($data) {
             $data['reg_time']=time();
             $data['reg_ip']=get_client_ip();
-            $data['group_id']=1;
+
             //生成随机认证码
             $data['verify'] = \Api\Common\CommonController::genRandomString(6);
             $data['tuijiancode'] = \Api\Common\CommonController::genNumberString(7);//推荐邀请码
@@ -136,10 +136,10 @@ class MemberModel extends Model {
         }
     }
 
-    /**
+  /**
      * 根据提示符(username)和未加密的密码(密码为空时不参与验证)获取本地用户信息
      * @param type $identifier 为数字时，表示uid，其他为用户名
-     * @param type $password
+     * @param type $password 
      * @return 成功返回用户信息array()，否则返回布尔值false
      */
     public function getLocalAdminUser($identifier, $password = null) {
@@ -165,6 +165,6 @@ class MemberModel extends Model {
         }
         return $user;
     }
-
-
+   
+  
 }

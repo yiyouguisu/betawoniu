@@ -98,7 +98,7 @@ var GV = {
        <thead>
           <tr>
             <td width="4%" align="center" >序号</td>
-            <td width="12%" align="center" >用户名</td>
+            <td width="8%" align="center" >用户名</td>
             <td width="6%" align="center" >用户类型</td>
             <td width="5%" align="center" >性别</td>
             <td width="10%" align="center" >手机号</td>
@@ -108,7 +108,7 @@ var GV = {
             <td width="6%"  align="center" >登陆次数</td>
             <td width="10%"  align="center" >注册时间</td>
             <td width="10%"  align="center" >推荐码</td>
-            <td width="7%" align="center" >操作</td> 
+            <td width="12%" align="center" >操作</td> 
           </tr>
         </thead>
         <tbody>
@@ -143,6 +143,9 @@ var GV = {
                     <?php if(authcheck('Admin/Review/index')): ?><a href="<?php echo U('Admin/Review/index',array('uid'=>$vo['id']));?>" >评论管理 </a>  |
                             <?php else: ?>
                             <font color="#cccccc">评论管理</font> |<?php endif; ?>  
+                        <?php if(authcheck('Admin/Thirdmessage/index')): ?><a href="<?php echo U('Admin/Thirdmessage/index',array('uid'=>$vo['id']));?>" >聊天管理 </a>  |
+                            <?php else: ?>
+                            <font color="#cccccc">聊天管理</font> |<?php endif; ?>  
                   <?php if(authcheck('Admin/Member/edit')): ?><a href="<?php echo U('Admin/Member/edit',array('id'=>$vo['id']));?>" >修改基本资料 </a>  |
                             <?php else: ?>
                             <font color="#cccccc">修改基本资料</font> |<?php endif; ?>  

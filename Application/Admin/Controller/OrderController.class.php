@@ -59,7 +59,7 @@ class OrderController extends CommonController {
         $search = I('get.search');
         $where = array();
         $where['b.close_status']=0;
-        $where['b.cancel_status']=0;
+        //$where['b.cancel_status']=0;
         $where['a.ordertype']=1;
         if(!empty($_GET['rid'])){
             $where['c.rid']=$_GET['rid'];
@@ -110,7 +110,7 @@ class OrderController extends CommonController {
         $search = I('get.search');
         $where = array();
         $where['b.close_status']=0;
-        $where['b.cancel_status']=0;
+        //$where['b.cancel_status']=0;
         $where['a.ordertype']=2;
         if(!empty($_GET['aid'])){
             $where['c.aid']=$_GET['aid'];

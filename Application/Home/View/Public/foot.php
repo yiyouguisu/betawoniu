@@ -84,8 +84,9 @@
         </div>
     </div>
 </div>
-<script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
-
+<script src="https://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script>
+<!-- <script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
+ -->
     <script>
     RongIMClient.init("cpj2xarljz3ln");
     var token = "{$user.rongyun_token}";

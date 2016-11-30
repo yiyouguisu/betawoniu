@@ -9,7 +9,8 @@
   <meta name="viewport" content="width=device-width,user-scalable=0,minimum-scale=1,maximum-scale=1"/>
   <meta name="x5-fullscreen" content="true" />
   <script src="__JS__/jquery-1.11.1.min.js"></script>
-  <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=7XTgXXqefgTIH3cwTLsbnR7P&s=1"></script>
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=GxLrHBjtGLbOk23xtDXL1nh5PVsEq77n&s=1"></script>
+<script type="text/javascript" src="https://api.map.baidu.com/getscript?v=2.0&ak=GxLrHBjtGLbOk23xtDXL1nh5PVsEq77n&services=&t=20161124185815"></script>
   <style>
     html, body {
       width: 100%;

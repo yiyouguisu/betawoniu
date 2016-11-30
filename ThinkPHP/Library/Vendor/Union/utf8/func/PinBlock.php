@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 	/**
 	 * Author: gu_yongkang 
 	 * data: 20110510

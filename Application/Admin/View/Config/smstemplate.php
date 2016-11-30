@@ -90,6 +90,20 @@
                         </td>
                     </tr>
                     <tr>
+                        <th width="140">美宿订单支付倒计时提醒:</th>
+                        <td>
+                            <textarea name="sms_waitpay_hostel" style="width:350px; height:100px;">{$Site.sms_waitpay_hostel}</textarea>  
+                            <span class="gray"><font color="red">{#hostel#}</font>代表美宿名称</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th width="140">活动订单支付倒计时提醒:</th>
+                        <td>
+                            <textarea name="sms_waitpay_party" style="width:350px; height:100px;">{$Site.sms_waitpay_party}</textarea>  
+                            <span class="gray"><font color="red">{#party#}</font>代表活动名称</span>
+                        </td>
+                    </tr>
+                    <tr>
                         <th width="140">房东提现成功:</th>
                         <td>
                             <textarea name="sms_withdrawsuccess" style="width:350px; height:100px;">{$Site.sms_withdrawsuccess}</textarea>  

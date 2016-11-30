@@ -7,7 +7,7 @@ use Api\Common\CommonController;
 class PayController extends CommonController {
 
   var $pay_config;
-	public function _initialize(){
+    public function _initialize(){
         parent::_initialize();
         $this->Configobj = D("Config");
         $ConfigData=F("web_config");
@@ -99,11 +99,11 @@ class PayController extends CommonController {
         $WxPayApi = new \WxPayApi();
         $WxPayConfig=array(
              'APPID' => 'wxea98c16a0c02eefa',
-	           'MCHID' => '1354896002',
-	           'KEY' => 'shanghainonglvxinxiwoniuke201606',
+               'MCHID' => '1354896002',
+               'KEY' => 'shanghainonglvxinxiwoniuke201606',
              'NOTIFY_URL'=>'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/weixinnotify')
             );
-        $money="0.01";
+        //$money="0.01";
         $tools = new \JsApiPay();
         $input = new \WxPayUnifiedOrder();
         $input->SetBody($body);
@@ -185,6 +185,55 @@ class PayController extends CommonController {
             echo "FAIL";
         }
     }
+
+    //微信公众号支付通知
+    public function weixinwapnotify(){
+      Vendor('Wxpay.lib.WxPay#Api');
+      Vendor('Wxpay.lib.WxPay#Notify');
+      $xml=$GLOBALS['HTTP_RAW_POST_DATA']; 
+      $data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);  
+      $input = new \WxPayOrderQuery();
+      M('thirdparty_data')->add(array(
+          'post'=>serialize($data),
+          'type'=>"weixinnotify",
+          'ispc'=>0,
+          'inputtime'=>time()
+          ));
+      $input->SetTransaction_id($data["transaction_id"]);
+      $WxPayApi = new \WxPayApi();
+		  $input->SetAppid("wx670ea712732e93f5");//公众账号ID
+		  $input->SetMch_id("1355088902");//商户号
+      $result = $WxPayApi->wapOrderQuery($input);
+      M('thirdparty_data')->add(array(
+          'post'=>serialize($result),
+          'type'=>"weixinquery",
+          'ispc'=>0,
+          'inputtime'=>time()
+          ));
+      $orderid=$result['out_trade_no'];
+      $orderid=substr($orderid,0,strlen($orderid)-6);
+      $trade_state=$result['trade_state'];
+      if ($trade_state == "SUCCESS") {
+          $status = self::checkorderstatus($orderid);
+          if (!$status) {
+              $parameter = array(
+                  "out_trade_no" => $orderid, //商户订单编号；
+                  "trade_no" => $result['transaction_id'],
+                  "total_fee" => $result['total_fee']/100, //交易金额；
+                  "trade_status" => $trade_state, //交易状态
+                  "notify_id" => $result['sign'], //通知校验ID。
+                  "notify_time" => date("Y-m-d H:i:s", time()), //通知的发送时间。
+              );
+              self::orderhandle($parameter);
+              echo "SUCCESS";
+          }else{
+              echo "SUCCESS";
+          }
+      } else {
+          echo "FAIL";
+      }
+    }
+
     public function union_apppay($orderid,$title,$body,$money){
         // include_once VENDOR_PATH . '/Union/utf8/func/common.php';
         // include_once VENDOR_PATH . '/Union/utf8/func/SDKConfig.php';
@@ -196,30 +245,30 @@ class PayController extends CommonController {
         Vendor('Union.utf8.func.httpClient');
 
         $UnionPayConfig=array(
-	         'merId' => '898320548160545',
+             'merId' => '898320548160545',
              'FRONT_NOTIFY_URL'=>'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/unionnotify'),
              'BACK_NOTIFY_URL'=>'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/unionnotify'),
              'App_Request_Url'=>'https://gateway.95516.com/gateway/api/appTransReq.do'
              );
-        $total_fee = 1; 
-        //$total_fee = $money*100; 
+        //$total_fee = 1; 
+        $total_fee = $money*100; 
         $params = array(
-                'version' => '5.0.0',				//版本号
-                'encoding' => 'utf-8',				//编码方式
-                'certId' => getSignCertId(),			//证书ID
-                'txnType' => '01',				//交易类型	
-                'txnSubType' => '01',				//交易子类
-                'bizType' => '000201',				//业务类型
-                'frontUrl' =>  $UnionPayConfig['FRONT_NOTIFY_URL'],  		//前台通知地址，控件接入的时候不会起作用
-                'backUrl' => $UnionPayConfig['BACK_NOTIFY_URL'],		//后台通知地址	
-                'signMethod' => '01',		//签名方法
-                'channelType' => '08',		//渠道类型，07-PC，08-手机
-                'accessType' => '0',		//接入类型
-                'merId' => $UnionPayConfig['merId'],	//商户代码，请改自己的测试商户号
-                'orderId' => $orderid,	//商户订单号，8-40位数字字母
-                'txnTime' => date('YmdHis'),	//订单发送时间
-                'txnAmt' => $total_fee,		//交易金额，单位分
-                'currencyCode' => '156',	//交易币种
+                'version' => '5.0.0',               //版本号
+                'encoding' => 'utf-8',              //编码方式
+                'certId' => getSignCertId(),            //证书ID
+                'txnType' => '01',              //交易类型  
+                'txnSubType' => '01',               //交易子类
+                'bizType' => '000201',              //业务类型
+                'frontUrl' =>  $UnionPayConfig['FRONT_NOTIFY_URL'],         //前台通知地址，控件接入的时候不会起作用
+                'backUrl' => $UnionPayConfig['BACK_NOTIFY_URL'],        //后台通知地址    
+                'signMethod' => '01',       //签名方法
+                'channelType' => '08',      //渠道类型，07-PC，08-手机
+                'accessType' => '0',        //接入类型
+                'merId' => $UnionPayConfig['merId'],    //商户代码，请改自己的测试商户号
+                'orderId' => $orderid,  //商户订单号，8-40位数字字母
+                'txnTime' => date('YmdHis'),    //订单发送时间
+                'txnAmt' => $total_fee,     //交易金额，单位分
+                'currencyCode' => '156',    //交易币种
                 // 'orderDesc' => $body,  //订单描述，可不上送，上送时控件中会显示该信息
                 'reqReserved' =>' 透传信息', //请求方保留域，透传字段，查询、通知、对账文件中均会原样出现
                 );
@@ -300,7 +349,7 @@ class PayController extends CommonController {
             "out_trade_no" => $orderid,
             "subject" => "test",
             "body" => "test",
-            "total_fee" => "0.01",
+            "total_fee" => $money,
             "notify_url" => 'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/alipaynotify'),
             "service" => "mobile.securitypay.pay",
             "payment_type" => "1",
@@ -444,7 +493,10 @@ class PayController extends CommonController {
             }
             $money=$order['money'];
             $account=M('account')->where(array('uid'=>$data['houseownerid']))->find();
-
+            if(empty($account)){
+                M('account')->add(array('uid'=>$data['houseownerid']));
+                $account=M('account')->where(array('uid'=>$data['houseownerid']))->find();
+            }
             $mid=M('account')->where(array('uid'=>$data['houseownerid']))->save(array(
                 'total'=>$account['total']+floatval($money),
                 'waitmoney'=>$account['waitmoney']+floatval($money),
@@ -498,7 +550,7 @@ class PayController extends CommonController {
        }
     }
     static public function checkorderstatus($orderid) {
-        $ordstatus = M('order_time')->where('orderid=' . $orderid)->getField('pay_status');
+        $ordstatus = M('order_time')->where(array('orderid'=>$orderid))->getField('pay_status');
         if ($ordstatus == 1) {
             return true;
         } else {
@@ -578,8 +630,8 @@ class PayController extends CommonController {
         $WxPayApi = new \WxPayApi();
         $WxPayConfig=array(
              'APPID' => 'wxea98c16a0c02eefa',
-	           'MCHID' => '1354896002',
-	           'KEY' => 'shanghainonglvxinxiwoniuke201606',
+               'MCHID' => '1354896002',
+               'KEY' => 'shanghainonglvxinxiwoniuke201606',
              'NOTIFY_URL'=>'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/weixinnotify')
             );
         $money = "0.1";

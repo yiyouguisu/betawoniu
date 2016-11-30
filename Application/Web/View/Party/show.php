@@ -151,8 +151,7 @@
                         <notempty name="full">
                             <a href="javascript:void(0);" class="" style="border-radius:0">报名人数已满</a>
                             <else />
-                            <a href="{:U('Web/Order/joinparty',array('id'=>$id))}" style="border-radius:0"
-                            class="snail_cut">我要报名</a>
+                            <a href="{:U('Web/Order/joinparty',array('id'=>$id))}" style="border-radius:0" id="go_join" class="snail_cut">我要报名</a>
                         </notempty>
                     </notempty>
                 </notempty>
@@ -387,6 +386,16 @@
           }
           return domList;
         }
+        $('#go_join').click(function(evt) {
+          evt.preventDefault();
+          var is_owner = '{$is_owner}';
+          if(is_owner) {
+            alert('不能报名参加自己的活动！');  
+          } else {
+            var href = $(this).attr('href');
+            window.location.href = href;
+          }
+        });
     </script>
     <include file="public:Recommend" />
 </body>

@@ -53,7 +53,7 @@
         </div> 
         <br>
         <div class="login_b f16">
-            <input type="button" value="确定">
+            <input type="button" value="确定" style="width:100%">
         </div>
         </div>
       </div>
@@ -159,6 +159,7 @@
     evt.preventDefault()
     var _this = $(this);
     var phone = $('#phone');
+    var openid = $('input[name=openid]');
     if(!phone.val() || phone.val().length != 11) {
       alert('请输入有效11位手机号码');
       return;
@@ -177,8 +178,9 @@
       'success': function(data) {
         if(data.code == 200) {
           $('#message').html('您已注册蜗牛客，将跳转到登录页！');
-          window.url = '"http://' + window.location.hostname + '{:U("member/login")}?phone=' + $('#phone').val() + '&openid={$userinfo["openid"]}&unionid={$userinfo["unionid"]}}' + '"';
-          setTimeout('window.location.href=' + window.url, 2500);
+          //window.url = '"https://' + window.location.hostname + '{:U("member/login")}?phone=' + $('#phone').val() + '&openid={$userinfo["openid"]}&unionid={$userinfo["unionid"]}}' + '"';
+          window.url = "{:U('Member/login')}?phone" + phone.val() + '&openid=' + openid.val();
+          setTimeout('window.location.href="' + window.url + '"', 2500);
         } else {
           $('#message').html('请继续补全信息');
           _this.hide();

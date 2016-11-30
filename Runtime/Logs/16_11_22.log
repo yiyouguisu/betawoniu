@@ -1,0 +1,102 @@
+[ 2016-11-22T11:05:03+08:00 ] 127.0.0.1 /
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000055s ]
+INFO: [ app_init ] --END-- [ RunTime:0.001630s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCacheBehavior [ RunTime:0.002122s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.002404s ]
+NOTIC: [8192] mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead C:\wamp64\www\woniu\ThinkPHP\Library\Think\Db\Driver\Mysql.class.php 第 52 行.
+SQL: SHOW COLUMNS FROM `zz_link` [ RunTime:0.004152s ]
+SQL: SELECT * FROM `zz_link` WHERE ( catid=1 ) ORDER BY `listorder` desc,`id` desc  [ RunTime:0.001221s ]
+SQL: SHOW COLUMNS FROM `zz_config` [ RunTime:0.004444s ]
+SQL: SELECT * FROM `zz_config` WHERE ( `groupid` IN ('1','5','6','7','8') )  [ RunTime:0.002289s ]
+SQL: SHOW COLUMNS FROM `zz_member` [ RunTime:0.004944s ]
+SQL: SELECT `nickname`,`sex`,`birthday`,`area`,`hometown`,`education`,`school`,`zodiac`,`constellation`,`bloodtype`,`info`,`characteristic`,`hobby` FROM `zz_member` WHERE ( id= ) LIMIT 1   [ RunTime:0.000659s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') LIMIT 1' at line 1
+ [ SQL语句 ] : SELECT `nickname`,`sex`,`birthday`,`area`,`hometown`,`education`,`school`,`zodiac`,`constellation`,`bloodtype`,`info`,`characteristic`,`hobby` FROM `zz_member` WHERE ( id= ) LIMIT 1  
+NOTIC: [2] Invalid argument supplied for foreach() C:\wamp64\www\woniu\Application\Home\Common\CommonController.class.php 第 145 行.
+NOTIC: [2] Division by zero C:\wamp64\www\woniu\Application\Home\Common\CommonController.class.php 第 152 行.
+NOTIC: [8] Undefined variable: cityname C:\wamp64\www\woniu\Application\Home\Common\CommonController.class.php 第 51 行.
+SQL: SHOW COLUMNS FROM `zz_area` [ RunTime:0.004331s ]
+SQL: SELECT `id` FROM `zz_area` WHERE ( `parentid` = 0 ) AND ( `id` NOT IN ('2','3','4','5') )  [ RunTime:0.002859s ]
+SQL: SELECT `id`,`name`,`fletter`,`ishot`,`thumb` FROM `zz_area` WHERE (  ( `parentid` IN ('6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','3358') ) OR ( `id` IN ('2','3','4','5') ) ) AND ( `ishot` = 1 )  [ RunTime:0.005108s ]
+SQL: SHOW COLUMNS FROM `zz_review` [ RunTime:0.004140s ]
+SQL: SHOW COLUMNS FROM zz_hostel a [ RunTime:0.000437s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'a' at line 1
+ [ SQL语句 ] : SHOW COLUMNS FROM zz_hostel a
+SQL: SELECT a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.hit,a.score as evaluation,a.scorepercent as evaluationpercent,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime,c.reviewnum FROM zz_hostel a left join zz_member b on a.uid=b.id left join ( SELECT `value`,count(value) as reviewnum FROM `zz_review` WHERE ( `isdel` = 0 ) AND ( `varname` = 'hostel' ) GROUP BY value  ) c on a.id=c.value  WHERE ( a.status = 2 ) AND ( a.isdel = 0 ) AND ( a.isoff = 0 ) ORDER BY a.hit desc,a.id desc LIMIT 6   [ RunTime:0.003763s ]
+ERR: 1054:Unknown column 'a.isoff' in 'where clause'
+ [ SQL语句 ] : SELECT a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.hit,a.score as evaluation,a.scorepercent as evaluationpercent,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime,c.reviewnum FROM zz_hostel a left join zz_member b on a.uid=b.id left join ( SELECT `value`,count(value) as reviewnum FROM `zz_review` WHERE ( `isdel` = 0 ) AND ( `varname` = 'hostel' ) GROUP BY value  ) c on a.id=c.value  WHERE ( a.status = 2 ) AND ( a.isdel = 0 ) AND ( a.isoff = 0 ) ORDER BY a.hit desc,a.id desc LIMIT 6  
+NOTIC: [2] Invalid argument supplied for foreach() C:\wamp64\www\woniu\Application\Home\Controller\IndexController.class.php 第 37 行.
+SQL: SHOW COLUMNS FROM zz_activity a [ RunTime:0.000494s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'a' at line 1
+ [ SQL语句 ] : SHOW COLUMNS FROM zz_activity a
+SQL: SELECT a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.starttime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime FROM zz_activity a left join zz_member b on a.uid=b.id  WHERE ( a.status = 2 ) AND ( a.isdel = 0 ) AND ( a.isoff = 0 ) ORDER BY a.hit desc,a.listorder desc,a.id desc LIMIT 4   [ RunTime:0.003439s ]
+ERR: 1054:Unknown column 'a.isoff' in 'where clause'
+ [ SQL语句 ] : SELECT a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.starttime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime FROM zz_activity a left join zz_member b on a.uid=b.id  WHERE ( a.status = 2 ) AND ( a.isdel = 0 ) AND ( a.isoff = 0 ) ORDER BY a.hit desc,a.listorder desc,a.id desc LIMIT 4  
+SQL: SHOW COLUMNS FROM zz_note a [ RunTime:0.000442s ]
+ERR: 1064:You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'a' at line 1
+ [ SQL语句 ] : SHOW COLUMNS FROM zz_note a
+SQL: SELECT a.id,a.title,a.thumb,a.description,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,a.type,c.reviewnum FROM zz_note a left join zz_member b on a.uid=b.id left join ( SELECT `value`,count(value) as reviewnum FROM `zz_review` WHERE ( `isdel` = 0 ) AND ( `varname` = 'note' ) GROUP BY value  ) c on a.id=c.value  WHERE ( a.status = 2 ) AND ( a.isdel = 0 ) AND ( a.isoff = 0 ) ORDER BY a.hit desc LIMIT 10   [ RunTime:0.004237s ]
+ERR: 1054:Unknown column 'a.isoff' in 'where clause'
+ [ SQL语句 ] : SELECT a.id,a.title,a.thumb,a.description,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,a.type,c.reviewnum FROM zz_note a left join zz_member b on a.uid=b.id left join ( SELECT `value`,count(value) as reviewnum FROM `zz_review` WHERE ( `isdel` = 0 ) AND ( `varname` = 'note' ) GROUP BY value  ) c on a.id=c.value  WHERE ( a.status = 2 ) AND ( a.isdel = 0 ) AND ( a.isoff = 0 ) ORDER BY a.hit desc LIMIT 10  
+NOTIC: [2] Invalid argument supplied for foreach() C:\wamp64\www\woniu\Application\Home\Controller\IndexController.class.php 第 87 行.
+SQL: SELECT a.id,a.title,a.thumb,a.description,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,a.type,c.reviewnum FROM zz_note a left join zz_member b on a.uid=b.id left join ( SELECT `value`,count(value) as reviewnum FROM `zz_review` WHERE ( `isdel` = 0 ) AND ( `varname` = 'note' ) GROUP BY value  ) c on a.id=c.value  WHERE ( a.status = 2 ) AND ( a.isdel = 0 ) AND ( a.isoff = 0 ) ORDER BY a.id desc LIMIT 10   [ RunTime:0.001634s ]
+ERR: 1054:Unknown column 'a.isoff' in 'where clause'
+ [ SQL语句 ] : SELECT a.id,a.title,a.thumb,a.description,a.area,a.city,a.address,a.lat,a.lng,a.hit,a.begintime,a.endtime,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,a.type,c.reviewnum FROM zz_note a left join zz_member b on a.uid=b.id left join ( SELECT `value`,count(value) as reviewnum FROM `zz_review` WHERE ( `isdel` = 0 ) AND ( `varname` = 'note' ) GROUP BY value  ) c on a.id=c.value  WHERE ( a.status = 2 ) AND ( a.isdel = 0 ) AND ( a.isoff = 0 ) ORDER BY a.id desc LIMIT 10  
+NOTIC: [2] Invalid argument supplied for foreach() C:\wamp64\www\woniu\Application\Home\Controller\IndexController.class.php 第 112 行.
+SQL: SHOW COLUMNS FROM `zz_tripinfo` [ RunTime:0.004537s ]
+SQL: SELECT `city`,`cityname`,count(city) as citynum FROM `zz_tripinfo` GROUP BY city  [ RunTime:0.001423s ]
+SQL: SHOW COLUMNS FROM `zz_ad` [ RunTime:0.004008s ]
+SQL: SELECT * FROM `zz_ad` WHERE ( `catid` = 11 ) ORDER BY `listorder` desc,`id` desc LIMIT 1   [ RunTime:0.001641s ]
+INFO: [ view_parse ] --START--
+INFO: [ template_filter ] --START--
+INFO: Run Behavior\ContentReplaceBehavior [ RunTime:0.001627s ]
+INFO: [ template_filter ] --END-- [ RunTime:0.001927s ]
+NOTIC: [8] Undefined variable: arrparentid C:\wamp64\www\woniu\Runtime\Cache\Home\74c9bdbded7009a43a281be8a565b911.php 第 197 行.
+NOTIC: [8] Undefined variable: user C:\wamp64\www\woniu\Runtime\Cache\Home\74c9bdbded7009a43a281be8a565b911.php 第 811 行.
+NOTIC: [8] Undefined variable: user C:\wamp64\www\woniu\Runtime\Cache\Home\74c9bdbded7009a43a281be8a565b911.php 第 849 行.
+NOTIC: [8] Undefined variable: user C:\wamp64\www\woniu\Runtime\Cache\Home\74c9bdbded7009a43a281be8a565b911.php 第 887 行.
+NOTIC: [8] Undefined variable: user C:\wamp64\www\woniu\Runtime\Cache\Home\74c9bdbded7009a43a281be8a565b911.php 第 920 行.
+NOTIC: [8] Undefined variable: user C:\wamp64\www\woniu\Runtime\Cache\Home\74c9bdbded7009a43a281be8a565b911.php 第 953 行.
+NOTIC: [8] Undefined variable: user C:\wamp64\www\woniu\Runtime\Cache\Home\74c9bdbded7009a43a281be8a565b911.php 第 1025 行.
+NOTIC: [8] Undefined variable: user C:\wamp64\www\woniu\Runtime\Cache\Home\74c9bdbded7009a43a281be8a565b911.php 第 1166 行.
+INFO: Run Behavior\ParseTemplateBehavior [ RunTime:0.134134s ]
+INFO: [ view_parse ] --END-- [ RunTime:0.134431s ]
+INFO: [ view_filter ] --START--
+INFO: Run Behavior\WriteHtmlCacheBehavior [ RunTime:0.001737s ]
+INFO: [ view_filter ] --END-- [ RunTime:0.001985s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTraceBehavior [ RunTime:0.002531s ]
+INFO: [ app_end ] --END-- [ RunTime:0.002812s ]
+
+[ 2016-11-22T11:05:04+08:00 ] 127.0.0.1 /index.php/Home/Public/getareachildren.html?id=0
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000052s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000909s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCacheBehavior [ RunTime:0.000853s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.001064s ]
+NOTIC: [8] Undefined index: uid C:\wamp64\www\woniu\Application\Home\Controller\PublicController.class.php 第 30 行.
+NOTIC: [8192] mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead C:\wamp64\www\woniu\ThinkPHP\Library\Think\Db\Driver\Mysql.class.php 第 52 行.
+SQL: SHOW COLUMNS FROM `zz_area` [ RunTime:0.001899s ]
+NOTIC: [8] unserialize(): Error at offset 0 of 7262 bytes C:\wamp64\www\woniu\ThinkPHP\Library\Think\Cache\Driver\File.class.php 第 104 行.
+SQL: SELECT * FROM `zz_area` WHERE ( `parentid` = 0 )  [ RunTime:0.001185s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTraceBehavior [ RunTime:0.000917s ]
+INFO: [ app_end ] --END-- [ RunTime:0.001147s ]
+
+[ 2016-11-22T11:05:04+08:00 ] 127.0.0.1 /index.php/Home/Public/getareachildren.html?id=0
+INFO: [ app_init ] --START--
+INFO: Run Behavior\BuildLiteBehavior [ RunTime:0.000052s ]
+INFO: [ app_init ] --END-- [ RunTime:0.000856s ]
+INFO: [ app_begin ] --START--
+INFO: Run Behavior\ReadHtmlCacheBehavior [ RunTime:0.001401s ]
+INFO: [ app_begin ] --END-- [ RunTime:0.001681s ]
+NOTIC: [8] Undefined index: uid C:\wamp64\www\woniu\Application\Home\Controller\PublicController.class.php 第 30 行.
+NOTIC: [8192] mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead C:\wamp64\www\woniu\ThinkPHP\Library\Think\Db\Driver\Mysql.class.php 第 52 行.
+SQL: SHOW COLUMNS FROM `zz_area` [ RunTime:0.001816s ]
+INFO: [ app_end ] --START--
+INFO: Run Behavior\ShowPageTraceBehavior [ RunTime:0.001040s ]
+INFO: [ app_end ] --END-- [ RunTime:0.001278s ]
+

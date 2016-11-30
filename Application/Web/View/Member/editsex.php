@@ -2,7 +2,7 @@
 <body class="back-f1f1f1">
 <div class="header center z-index112 pr f18">
       修改性别
-      <div class="head_go pa"><a href=""><img src="__IMG__/go.jpg"></a></div>
+      <div class="head_go pa" onclick="history.go(-1)"><img src="__IMG__/go.jpg"></div>
 </div>
 
 <div class="container">

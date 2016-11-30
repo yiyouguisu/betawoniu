@@ -22,12 +22,13 @@ return array(
     'DB_HOST' => '127.0.0.1', // 服务器地址
     'DB_NAME' => 'woniu', // 数据库名
     'DB_USER' => 'root', // 用户名
-    'DB_PWD' => '123456', // 密码
-    'DB_PORT' => '3306', // 端口
+    'DB_PWD' => 'CCUwoniuke2016+', // 密码
+    'DB_PORT' => '33066', // 端口
     'DB_PREFIX' => 'zz_', // 数据库表前缀
     'APP_SUB_DOMAIN_DEPLOY'   =>    1,
     'APP_SUB_DOMAIN_RULES'    =>    array(
-        'admin.snailinn.cn'  => 'Admin',
-        'm.snailinn.cn'  => 'Web',
+        'admin.snailinns.com'  => 'Admin',
+        'm.snailinns.com'  => 'Wx',
+        'mobile.snailinns.com'  => 'Web'
     )
 );

@@ -2,7 +2,8 @@
 <body class="back-f1f1f1">
 <div class="header center z-index112 pr f18">
       修改手机号码
-      <div class="head_go pa"><a href="" onclick="history.go(-1)"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
+      <div class="head_go pa" onclick="history.go(-1)"><img src="__IMG__/go.jpg"></div>
+      <!-- <div class="head_go pa"><a href="{:U('Web/Member/myinfo')}"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div> -->
 </div>
 
 <div class="container">

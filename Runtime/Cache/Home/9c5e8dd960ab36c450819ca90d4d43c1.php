@@ -47,7 +47,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -65,6 +70,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -115,7 +122,7 @@
                 <div class="main_top2 pr">
                     <div class="main3_05 hidden">
                         <input type="hidden" name="arrparentid" id="arrparentid" value="<?php echo ($arrparentid); ?>">
-                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"上海"); ?></span>
+                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"请选择"); ?></span>
                     </div>
                     <div class="pa main3_03span_float hide">
                         <div class="main3_03span_float_top1">
@@ -152,7 +159,7 @@
                     <a href="<?php echo U('Home/Woniu/index');?>">蜗牛</a>
                 </li>
                 <li class="fl">|</li>
-                <li <?php if(($controller_url) == "Home/About"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
+                <li <?php if(($current_url) == "Home/About/app"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
                     <a href="<?php echo U('Home/About/app');?>">APP下载</a>
                 </li>
             </ul>
@@ -384,6 +391,11 @@
                             投诉建议
                         </a>
                     </li>
+                    <li <?php if(($current_url) == "Home/About/app"): ?>class="About_us_list"<?php endif; ?>>
+                        <a href="<?php echo U('Home/About/app');?>">
+                            APP下载
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="fl Complaints">
@@ -464,11 +476,11 @@
                     <div class="foot1_li3_01">
                         <img src="/Public/Home/images/logo2.png"  />
                         <i>snailinns</i>
-                        <a href="" class="foot_a">
+                        <a href="<?php echo U('Home/About/app');?>" class="foot_a">
                             <img src="/Public/Home/images/Icon/img12.png" />
                             IOS
                         </a>
-                        <a href="">
+                        <a href="<?php echo U('Home/About/app');?>">
                             <img src="/Public/Home/images/Icon/img13.png" />
                             安卓
                         </a>

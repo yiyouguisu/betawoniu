@@ -85,7 +85,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -103,6 +108,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -153,7 +160,7 @@
                 <div class="main_top2 pr">
                     <div class="main3_05 hidden">
                         <input type="hidden" name="arrparentid" id="arrparentid" value="<?php echo ($arrparentid); ?>">
-                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"上海"); ?></span>
+                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"请选择"); ?></span>
                     </div>
                     <div class="pa main3_03span_float hide">
                         <div class="main3_03span_float_top1">
@@ -546,7 +553,7 @@
                                         </div>
                                         <div class="activity_chang2_list3_center">
                                             <p>时间 :<em><?php echo (date("Y-m-d",$vo["starttime"])); ?> - <?php echo (date("Y-m-d",$vo["endtime"])); ?></em></p>
-                                            <p>地点 :<em><?php echo ($vo["address"]); ?> </em></p>
+                                            <p>地点 :<em><?php echo getarea($vo['area']); echo ($vo["address"]); ?> </em></p>
                                         </div>
                                         <div class="hmain5_r5_list2_2 hidden">
                                             <div class="fl">
@@ -588,7 +595,7 @@
                     <?php if(is_array($hotnote)): $i = 0; $__LIST__ = $hotnote;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
                             <div class="activity_main2_02-1_list">
                                 <div class="travels_main_x pr">
-                                   <img src="<?php echo ($vo["thumb"]); ?>" style="width:339px;height:213px" onclick="window.location.href='<?php echo U('Home/Party/show',array('id'=>$vo['id']));?>'" />
+                                   <img src="<?php echo ($vo["thumb"]); ?>" style="width:339px;height:213px" onclick="window.location.href='<?php echo U('Home/Note/show',array('id'=>$vo['id']));?>'" />
                                    <div class="travels_main2_img">
                                         <a href="<?php echo U('Home/Member/detail',array('uid'=>$vo['uid']));?>">
                                             <img src="<?php echo ($vo["head"]); ?>"  width="55px" height="55px" />
@@ -615,7 +622,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Party/index/partytype/1.html";
+                p['url']="/index.php/Home/Party/index.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -733,8 +740,9 @@
         </div>
     </div>
 </div>
-<script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
-
+<script src="https://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script>
+<!-- <script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
+ -->
     <script>
     RongIMClient.init("cpj2xarljz3ln");
     var token = "<?php echo ($user["rongyun_token"]); ?>";

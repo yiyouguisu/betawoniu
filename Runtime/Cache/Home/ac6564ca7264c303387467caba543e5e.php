@@ -52,7 +52,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -70,6 +75,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -120,7 +127,7 @@
                 <div class="main_top2 pr">
                     <div class="main3_05 hidden">
                         <input type="hidden" name="arrparentid" id="arrparentid" value="<?php echo ($arrparentid); ?>">
-                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"上海"); ?></span>
+                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"请选择"); ?></span>
                     </div>
                     <div class="pa main3_03span_float hide">
                         <div class="main3_03span_float_top1">
@@ -387,7 +394,7 @@
                 <span onclick="window.location.href='<?php echo U('Home/Note/index',array('type'=>1));?>'" <?php if(($_GET['type']) == "1"): ?>class="activity_span"<?php endif; ?>>热门游记</span>
                 <span onclick="window.location.href='<?php echo U('Home/Note/index',array('type'=>2));?>'" <?php if(!empty($_GET['type'])): if(($_GET['type']) == "2"): ?>class="activity_span"<?php endif; else: ?>class="activity_span"<?php endif; ?>>最新发布</span>
                 <a href="<?php echo U('Home/Note/add');?>">
-                    <img src="/Public/Home/images/Icon/img19.png" />
+                    <img src="/Public/Home/images/Icon/pen.png" />
                     发布游记
                 </a>
             </div>
@@ -525,7 +532,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Note/index/month/6.html";
+                p['url']="/index.php/Note/index.html?p=49&type=1";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -643,8 +650,9 @@
         </div>
     </div>
 </div>
-<script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
-
+<script src="https://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script>
+<!-- <script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
+ -->
     <script>
     RongIMClient.init("cpj2xarljz3ln");
     var token = "<?php echo ($user["rongyun_token"]); ?>";

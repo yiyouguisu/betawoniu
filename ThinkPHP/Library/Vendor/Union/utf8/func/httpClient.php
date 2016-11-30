@@ -1,5 +1,5 @@
-<?php
-header ( 'Content-type:text/html;charset=UTF-8' );
+﻿<?php
+header ( 'Content-type:text/html;charset=utf-8' );
 /**
  * 后台交易 HttpClient通信
  * @param unknown_type $params

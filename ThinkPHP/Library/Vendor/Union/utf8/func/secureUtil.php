@@ -1,8 +1,8 @@
-<?php
-include_once 'SDKConfig.php';
-include_once 'PublicEncrypte.php';
-include_once 'common.php';
-include_once 'log.class.php';
+﻿<?php
+include_once $_SERVER ['DOCUMENT_ROOT'] . '/Union/utf8/func/SDKConfig.php';
+include_once $_SERVER ['DOCUMENT_ROOT'] . '/Union/utf8/func/PublicEncrypte.php';
+include_once $_SERVER ['DOCUMENT_ROOT'] . '/Union/utf8/func/common.php';
+include_once $_SERVER ['DOCUMENT_ROOT'] . '/Union/utf8/func/log.class.php';
 
 // 初始化日志
 //$log = new PhpLog ( SDK_LOG_FILE_PATH, "PRC", SDK_LOG_LEVEL );

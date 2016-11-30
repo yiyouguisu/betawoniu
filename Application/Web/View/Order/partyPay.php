@@ -4,8 +4,13 @@
 </style>
 <body class="back-f1f1f1">
 <div class="header center z-index112 pr f18 fix-head">
-      活动付款
-      <div class="head_go pa"><a href="" onclick="history.go(-1)"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
+  活动付款
+  <div class="head_go pa">
+    <a href="{:U('Order/party_order_detail')}?orderid={$order.orderid}">
+      <img src="__IMG__/go.jpg">
+    </a>
+    <span>&nbsp;</span>
+  </div>
 </div>
 <div class="container padding_0" style="margin-top:6rem">
   <form action="{:U('Web/Order/dopay')}" method="get" id='form'>
@@ -33,12 +38,14 @@
          <option value="0" selected>选择支付方式</option>
          <option value='1' id="alipay_item">支付宝</option>
          <option value='2' id="wxpay_item">微信支付</option>
-         <option value='3'>银联支付</option>
+         <!-- <option value='3'>银联支付</option> -->
        </select>
      </div>
      <div class="act_e_r">
-          <div class="act_f pr"><span>总价格 :</span><em>￥</em><i class="total">{$order.total}</i>
+          <div class="act_f pr"><span>总价格 :</span><em>￥</em><i class="total ft16">{$order.total}</i>
                 <div class="act_font pa">（{$order.num}人）</div>
+          </div>
+          <div class="act_f pr"><span>实付金额 :</span><em>￥</em><i class="total money">{$order.money}</i>
           </div>
           <div class="help_a common_click act_h ft14"><img src="__IMG__/bi.jpg">是否有优惠券？</div>
           <if condition='($order.couponsid eq NULL) OR ($order.couponsid eq 0)'>

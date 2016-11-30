@@ -220,7 +220,7 @@ var GV = {
 <?php } ?>
         <div class="common-form">
             <!---->
-            <form method="post" action="<?php echo U('Admin/Party/add');?>">
+            <form method="post" action="<?php echo U('Admin/Party/add');?>" onsubmit="return checkForm();">
                 <div class="h_a">活动信息</div>
                 <div class="table_full">
                     <table width="100%" class="table_form contentWrap">
@@ -230,7 +230,7 @@ var GV = {
                                 <td>
                                     <span class="must_red">*</span>
                                     <input type="hidden" name="uid" id="uid" value="" />
-                                    <input type="text" class="input length_4 input_hd" placeholder="请选择发布者" id="username" value="" readonly required>
+                                    <input type="text" class="required input length_4 input_hd" placeholder="请选择发布者" id="username" value="" readonly required data-content="发布者">
                                     <input type="button" class="button" value="选择" onclick="omnipotent('selectid','<?php echo U('Admin/Member/select',array('type'=>2));?>','请选择发布者',1,700,400)">
                                 </td>
                             </tr>
@@ -238,7 +238,7 @@ var GV = {
                                 <th width="80">标题</th>
                                 <td>
                                     <span class="must_red">*</span>
-                                    <input type="text" name="title" class="input length_6 input_hd" placeholder="请输入标题" id="title" value="<?php echo ($data["title"]); ?>">
+                                    <input type="text" name="title" class="required input length_6 input_hd" placeholder="请输入标题" id="title" value="<?php echo ($data["title"]); ?>" data-content="标题">
                                 </td>
                             </tr>
                             
@@ -269,7 +269,7 @@ var GV = {
                                 <th width="80">适用美宿</th>
                                 <td>
                                     <span class="must_red">*</span>
-                                    <select class="select_2" name="hid" id="hostel">
+                                    <select class="required select_2" name="hid" id="hostel" data-content="美宿">
                                         <option value="">请选择适用美宿</option>
                                     </select>
                                 </td>
@@ -278,7 +278,7 @@ var GV = {
                                 <th width="80">活动特色</th>
                                 <td>
                                     <span class="must_red">*</span>
-                                    <select class="select_2" name="catid">
+                                    <select class="required select_2" name="catid" data-content="活动特色">
                                         <option value="">请选择活动特色</option>
                                         <?php if(is_array($partycate)): $i = 0; $__LIST__ = $partycate;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><option value="<?php echo ($vo["id"]); ?>"><?php echo ($vo["catname"]); ?></option><?php endforeach; endif; else: echo "" ;endif; ?>
                                     </select>
@@ -289,7 +289,7 @@ var GV = {
                                 <th width="80">报名费用</th>
                                 <td>
                                     <span class="must_red">*</span>
-                                    <input type="text" name="money" class="input length_6 input_hd" placeholder="请输入报名费用" id="money" value="<?php echo ($data["money"]); ?>">
+                                    <input type="text" name="money" class="required input length_6 input_hd" placeholder="请输入报名费用" id="money" value="<?php echo ($data["money"]); ?>" data-content="报名费">
                                     <input type="checkbox" name="isfree" value="1" />免费活动
                                 </td>
                             </tr>
@@ -424,6 +424,28 @@ var GV = {
                 }
             });
         });
+    </script>
+    <script>
+      function checkForm() {
+        var pass = true;
+        var notice = '';
+        $('.required').each(function(i, t) {
+          var val = $(t).val(); 
+          if(val == '' || val == undefined || val == null) {
+            if(!notice) {
+              notice += '表单未完成！\n';
+            }
+            var content = $(t).data('content');
+            var id = $(t).attr('id');
+            notice += '请正确填写/选择：' + content + '！' + '\n'; 
+            pass = false;
+          }
+        });
+        if(notice) {
+          alert(notice); 
+        }
+        return pass;
+      }
     </script>
 </body>
 </html>

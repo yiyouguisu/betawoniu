@@ -1,0 +1,3 @@
+<?php
+//000000000000a:19:{s:2:"id";s:2:"21";s:8:"username";s:12:"admin_zhangy";s:8:"password";s:32:"04ea788ec1c1eb109b2b30a83dfa49cd";s:5:"email";s:22:"yu.zhang@snailinns.com";s:8:"nickname";s:6:"张羽";s:3:"sex";s:1:"0";s:6:"status";s:1:"1";s:9:"login_num";s:2:"77";s:14:"lastlogin_time";s:10:"1480238714";s:12:"lastlogin_ip";s:14:"183.192.18.211";s:7:"content";s:12:"运营编辑";s:8:"group_id";s:1:"2";s:6:"verify";s:6:"aphf8A";s:4:"role";s:1:"1";s:8:"reg_time";s:10:"1476511002";s:4:"head";N;s:5:"phone";N;s:8:"realname";N;s:7:"storeid";N;}
+?>

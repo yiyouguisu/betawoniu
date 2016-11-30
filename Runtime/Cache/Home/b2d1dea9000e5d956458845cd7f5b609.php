@@ -43,7 +43,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -61,6 +66,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -111,7 +118,7 @@
                 <div class="main_top2 pr">
                     <div class="main3_05 hidden">
                         <input type="hidden" name="arrparentid" id="arrparentid" value="<?php echo ($arrparentid); ?>">
-                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"上海"); ?></span>
+                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"请选择"); ?></span>
                     </div>
                     <div class="pa main3_03span_float hide">
                         <div class="main3_03span_float_top1">
@@ -788,8 +795,9 @@
         </div>
     </div>
 </div>
-<script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
-
+<script src="https://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script>
+<!-- <script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
+ -->
     <script>
     RongIMClient.init("cpj2xarljz3ln");
     var token = "<?php echo ($user["rongyun_token"]); ?>";

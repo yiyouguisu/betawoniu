@@ -60,7 +60,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -78,6 +83,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -128,7 +135,7 @@
                 <div class="main_top2 pr">
                     <div class="main3_05 hidden">
                         <input type="hidden" name="arrparentid" id="arrparentid" value="<?php echo ($arrparentid); ?>">
-                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"上海"); ?></span>
+                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"请选择"); ?></span>
                     </div>
                     <div class="pa main3_03span_float hide">
                         <div class="main3_03span_float_top1">
@@ -384,8 +391,13 @@
                             <div class="center_ul_list middle">
                                 <img src="/Public/Home/images/Icon/img10.png" /><i><em><?php echo ((isset($data["reviewnum"]) && ($data["reviewnum"] !== ""))?($data["reviewnum"]):"0"); ?></em>条评论</i>
                             </div>
+                            <div class="middle Event_details8_list2_03 ">
+                                <?php if(($data['ishit']) == "1"): ?><img src="/Public/Home/images/dianzan.png" class="zanbg1" data-id="<?php echo ($data["id"]); ?>"/>
+                                    <?php else: ?>
+                                    <img src="/Public/Home/images/Icon/img9.png" class="zanbg1" data-id="<?php echo ($data["id"]); ?>"/><?php endif; ?>
+                                <i class="zannum"><?php echo ((isset($data["hit"]) && ($data["hit"] !== ""))?($data["hit"]):"0"); ?></i>
+                            </div>
                         </div>
-
                     </div>
                     <div class="middle Inn_introduction_main_bottom3">
                         <a href="" class="a1"><img src="/Public/Home/images/Icon/img24.png" /></a>
@@ -551,7 +563,7 @@
 
             <div class="Inn_introduction_main3">
                 <div class="Inn_introduction_main3_top">
-                    <a href="">
+                    <a href="<?php echo U('Home/Member/detail',array('uid'=>$data['uid']));?>">
                         <div>
                             <img src="<?php echo ($data["head"]); ?>" />
                         </div>
@@ -591,7 +603,7 @@
 
                 <div class="Inn_introduction_main3_bottom">
                     <!-- <a href="" class="a1">预订房间</a> -->
-                    <a href="<?php echo U('Home/Woniu/chatdetail',array('tuid'=>$data['uid']));?>" class="a2">在线咨询房东</a>
+                    <a href="<?php echo U('Home/Woniu/chatdetail',array('tuid'=>$data['uid'],'type'=>'hostel'));?>" class="a2">在线咨询房东</a>
                 </div>
 
 
@@ -694,9 +706,9 @@
                     </div>
                 </div>
                 <div class="center2">
-                    <span>房间面积：<em><?php echo ((isset($vo["area"]) && ($vo["area"] !== ""))?($vo["area"]):"0.0"); ?>m2 </em></span>
+                    <span>房间面积：<em><?php echo ((isset($vo["area"]) && ($vo["area"] !== ""))?($vo["area"]):"0.0"); ?>平米 </em></span>
                     <span>床型信息：<em><?php echo ($vo["bedtype"]); ?></em></span>
-                    <span>最多入住：<em><?php echo ((isset($vo["mannum"]) && ($vo["mannum"] !== ""))?($vo["mannum"]):"0"); ?>人</em></span>
+                    <span>房间数量：<em><?php echo ((isset($vo["mannum"]) && ($vo["mannum"] !== ""))?($vo["mannum"]):"0"); ?>间</em></span>
                 </div>
                 <div class="bottom">
                     <?php if(is_array($vo['support'])): $i = 0; $__LIST__ = $vo['support'];if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$v): $mod = ($i % 2 );++$i;?><i>
@@ -1089,7 +1101,7 @@
             var uid="<?php echo ($user["id"]); ?>";
             if(uid==''){
                 alert("请先登录！");var p={};
-                    p['url']="/index.php/Home/Hostel/show/id/7.html";
+                    p['url']="/index.php/Home/Hostel/show/id/165.html";
                     $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                         if(data.code=200){
                             window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1166,7 +1178,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Hostel/show/id/7.html";
+                p['url']="/index.php/Home/Hostel/show/id/165.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1204,7 +1216,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Hostel/show/id/7.html";
+                p['url']="/index.php/Home/Hostel/show/id/165.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1242,7 +1254,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Hostel/show/id/7.html";
+                p['url']="/index.php/Home/Hostel/show/id/165.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1275,7 +1287,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Hostel/show/id/7.html";
+                p['url']="/index.php/Home/Hostel/show/id/165.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1308,7 +1320,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Hostel/show/id/7.html";
+                p['url']="/index.php/Home/Hostel/show/id/165.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1421,8 +1433,9 @@
         </div>
     </div>
 </div>
-<script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
-
+<script src="https://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script>
+<!-- <script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
+ -->
     <script>
     RongIMClient.init("cpj2xarljz3ln");
     var token = "<?php echo ($user["rongyun_token"]); ?>";

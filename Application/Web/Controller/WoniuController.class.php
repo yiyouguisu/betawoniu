@@ -8,6 +8,9 @@ class WoniuController extends CommonController {
 
     public function _initialize(){
     	parent::_initialize();
+      if(!session('uid')) {
+        return $this->redirect('Member/wxlogin');
+      }
       Vendor("pingpp.init");
       $ConfigData=F("web_config");
       if(!$ConfigData){
@@ -33,6 +36,24 @@ class WoniuController extends CommonController {
         foreach ($data as $key => $value) {
           $data[$key]['fansnum']=M('attention')->where('tuid=' . $value['uid'])->count();
           $data[$key]['attentionnum']=M('attention')->where('fuid=' . $value['uid'])->count();
+          $lastMessage = M('thirdmessage_log')
+            ->where(array(
+              'fromUserId' => $uid,
+              'toUserId' => $value['uid'],
+              '_logic' => 'OR'
+            ))
+            ->order('id desc')
+            ->limit(1)
+            ->find();
+          $time = '';
+          if($lastMessage) {
+            if($lastMessage['inputtime'] > strtotime(date('Y-m-d'))) {
+              $time = date('H:i:s', $lastMessage['inputtime']);
+            } else {
+              $time = date('Y-m-d', $lastMessage['inputtime']);
+            }
+          }
+          $data[$key]['last_time'] = $time;
         }
         $data=!empty($data)?$data:null;
         $this->assign("data",$data);

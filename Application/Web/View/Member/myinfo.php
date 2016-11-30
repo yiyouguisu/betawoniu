@@ -36,6 +36,10 @@
           <div class="land_btm">
                 <div class="ht_colot"></div>
                 <div class="det_box arrow_jk">
+                      <a href="{:U('Web/Member/editnickname')}"><div class="det_list">
+                            <div class="det_a fl">昵称 :</div>
+                            <div class="det_b fr">{$data.nickname}</div>
+                      </div></a>
                       <a href="{:U('Web/Member/editphone')}"><div class="det_list">
                             <div class="det_a fl">手机 :</div>
                             <div class="det_b fr">{$data.phone}</div>
@@ -54,7 +58,7 @@
                       </div></a>
                       <a href="{:U('Web/Member/editbirthday')}"><div class="det_list">
                             <div class="det_a fl">出生日期 :</div>
-                            <div class="det_b fr">{$data.birthday|date='Y年m月d日',###}</div>
+                            <div class="det_b fr">{$data.birthday}</div>
                       </div></a>
                       <a href="{:U('Web/Member/editinfo')}"><div class="det_list">
                             <div class="det_a fl">个性签名 :</div>

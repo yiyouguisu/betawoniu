@@ -23,9 +23,11 @@ return array(
     'WEB_URL' => 'http://' . $_SERVER['HTTP_HOST'], // 网站域名
 
     'WEI_XIN_INFO' => array(
-	// 'APP_ID'         => 'wxc3fdd30f0bf9d5a6',
-	// 'APP_SECRET'   	 => '49694f321bc4e5bb09d9001ec417c837',
-    'APP_ID'         => 'wxa20cb3ee5f9b058e',
-    'APP_SECRET'      => 'b1bc90fa401f965118761ce60076a058',
+	'APP_ID'         => 'wx670ea712732e93f5',
+	'APP_SECRET'   	 => 'a2986c48c1e57403b7a239c3fad9f212',
 	),
+    // 'WEI_XIN_INFO' => array(
+    // 'APP_ID'         => 'wx4794b5fd7bcc91aa',
+    // 'APP_SECRET'     => '8386068e175fff0064645ecac61f4202',
+    // ),
 );

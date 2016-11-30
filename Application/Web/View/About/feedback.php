@@ -16,6 +16,7 @@
                     <a class="snail_cut">发布</a>
                 </div>
             </div>
+            <input type="text" hidden="true" name="uid" value="{$user.id}">
         </div>
     </form>
 </div>

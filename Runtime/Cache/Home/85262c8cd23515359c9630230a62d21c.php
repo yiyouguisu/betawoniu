@@ -59,19 +59,23 @@
                     onHide:function(){
                         var starttime=$(".starttime").val();
                         var endtime=$(".endtime").val();
-                        console.log(starttime)
-                        console.log(endtime)
+                        var roomnum=$("input[name='roomnum']").val();
+                        var nowdate="<?php echo date('Y-m-d');?>";
+                        if(Date.parse(starttime)-Date.parse(nowdate)<0){
+                            alert("请填写正确日期");
+                            $(".starttime").val();
+                            return false;
+                        }
                         if(starttime!=''&&endtime!=''){
-                            if(Date.parse(endtime) - Date.parse(starttime)==0){
+                            if(Date.parse(endtime) - Date.parse(starttime)<=0){
                                 alert("请填写正确日期");
                                 $(".endtime").val();
                                 return false;
                             }else{
                                 var rid="<?php echo ($data["rid"]); ?>";
-                                $.post("<?php echo U('Home/Room/ajax_checkdate');?>",{"rid":rid,"starttime":starttime,"endtime":endtime},function(d){
+                                $.post("<?php echo U('Home/Room/ajax_checkdate');?>",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
                                     if(d.code==200){
                                         var days=DateDiff(starttime,endtime);
-                                        console.log(days)
                                         $("#days").val(Number(days));
                                         $("#totalmoney").text(d.totalmoney);
                                         $("input[name='totalmoney']").val(d.totalmoney);
@@ -111,7 +115,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -129,6 +138,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -179,7 +190,7 @@
                 <div class="main_top2 pr">
                     <div class="main3_05 hidden">
                         <input type="hidden" name="arrparentid" id="arrparentid" value="<?php echo ($arrparentid); ?>">
-                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"上海"); ?></span>
+                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"请选择"); ?></span>
                     </div>
                     <div class="pa main3_03span_float hide">
                         <div class="main3_03span_float_top1">
@@ -216,7 +227,7 @@
                     <a href="<?php echo U('Home/Woniu/index');?>">蜗牛</a>
                 </li>
                 <li class="fl">|</li>
-                <li <?php if(($controller_url) == "Home/About"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
+                <li <?php if(($current_url) == "Home/About/app"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
                     <a href="<?php echo U('Home/About/app');?>">APP下载</a>
                 </li>
             </ul>
@@ -439,7 +450,7 @@
                         <div class="center2">
                             <span>房间面积：<em><?php echo ((isset($data["area"]) && ($data["area"] !== ""))?($data["area"]):"0.0"); ?>m2 </em></span>
                             <span>床型信息：<em><?php echo ($data["bedtype"]); ?></em></span>
-                            <span>房间数：<em><?php echo ((isset($data["mannum"]) && ($data["mannum"] !== ""))?($data["mannum"]):"0"); ?>人</em></span>
+                            <span>房间数：<em><?php echo ((isset($data["mannum"]) && ($data["mannum"] !== ""))?($data["mannum"]):"0"); ?>间</em></span>
                         </div>
                     </div>
                     <div class="middle Inn_introduction_main_bottom3">
@@ -517,7 +528,7 @@
                 $PauseOnHover: 1,                                //[Optional] Whether to pause when mouse over if a slider is auto playing, 0 no pause, 1 pause for desktop, 2 pause for touch device, 3 pause for desktop and touch device, 4 freeze for desktop, 8 freeze for touch device, 12 freeze for desktop and touch device, default value is 1
 
                 $DragOrientation: 3,                                //[Optional] Orientation to drag slide, 0 no drag, 1 horizental, 2 vertical, 3 either, default value is 1 (Note that the $DragOrientation should be the same as $PlayOrientation when $DisplayPieces is greater than 1, or parking position is not 0)
-                $ArrowKeyNavigation: true,   			            //[Optional] Allows keyboard (arrow key) navigation or not, default value is false
+                $ArrowKeyNavigation: true,                          //[Optional] Allows keyboard (arrow key) navigation or not, default value is false
                 $SlideDuration: 760,                                //Specifies default duration (swipe) for slide in milliseconds
 
                 $SlideshowOptions: {                                //[Optional] Options to specify and enable slideshow or not
@@ -571,7 +582,7 @@
 
 
         /* initialize the external events
-		-----------------------------------------------------------------*/
+        -----------------------------------------------------------------*/
 
         $('#external-events div.external-event').each(function () {
             // it doesn't need to have a start or end
@@ -592,7 +603,7 @@
 
         
         /* initialize the calendar
-		-----------------------------------------------------------------*/
+        -----------------------------------------------------------------*/
         var date = new Date();
         var d = date.getDate();
         var m = date.getMonth();
@@ -601,9 +612,8 @@
 
 
 
-
+        var currentdate = $('#calendar').fullCalendar('getDate');
         $('#calendar').fullCalendar({
-           
             header: {
                 left: 'prev',
                 center: 'title,monthNames',
@@ -612,30 +622,8 @@
             lang: currentLangCode,
             editable: true,
             droppable: false, // this allows things to be dropped onto the calendar !!!
-            drop: function (date, allDay) { // this function is called when something is dropped
-
-                // retrieve the dropped element's stored Event Object
-                var originalEventObject = $(this).data('eventObject');
-
-                // we need to copy it, so that multiple events don't have a reference to the same object
-                var copiedEventObject = $.extend({}, originalEventObject);
-
-                // assign it the date that was reported
-                copiedEventObject.start = date;
-                copiedEventObject.allDay = allDay;
-
-                // render the event on the calendar
-                $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
-
-                // is the "remove after drop" checkbox checked?
-                if ($('#drop-remove').is(':checked')) {
-                    // if so, remove the element from the "Draggable Events" list
-                    $(this).remove();
-                }
-
-            },
             columnFormat: {
-                week: 'ddd M-d', // Mon 9/7		
+                week: 'ddd M-d', // Mon 9/7     
             },
             eventClick: function(event) {
                 if (event.url) {
@@ -645,6 +633,9 @@
             },
             monthNames: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"],
             events: <?php echo ($data['jsonlist']); ?>,
+            // events: {
+            //     url: "<?php echo U('Home/Room/ajax_getdate',array('rid'=>$data['rid']));?>?currentdate="+currentdate.format(),
+            // },
         });
 
 
@@ -701,7 +692,7 @@
                 <form id="bookform" action="<?php echo U('Home/Order/bookroom');?>" method="post">
                     <div class="Hotel_Details_b">
                         <span class="middle">
-                            离住
+                            住离
                         </span>
                         <div class="pr middle">
                             <input type="text" class="J_date starttime" name="starttime" value="" />
@@ -725,19 +716,19 @@
                         <div class="Hotel_Details_c2">
                             <i class="middle">入住人数 :</i>
                             <div class="Hotel_Details_c3 middle">
-                                <span class="prev2 f18 mannum" onselectstart="return false;">+</span>
+                                <span class="next2 f24 mannum" onselectstart="return false;">-</span>
                                 <i id="mannum">0</i>
                                 <input type="hidden" name="mannum" value="0">
-                                <span class="next2 f24 mannum" onselectstart="return false;">-</span>
+                                <span class="prev2 f18 mannum" onselectstart="return false;">+</span>
                             </div>
                         </div>
                         <div class="Hotel_Details_c2">
                             <i class="middle">入住间数 :</i>
                             <div class="Hotel_Details_c3 middle">
-                                <span class="prev2 f18 roomnum" onselectstart="return false;">+</span>
+                                <span class="next2 f24 roomnum" onselectstart="return false;">-</span>
                                 <i id="roomnum">0</i>
                                 <input type="hidden" name="roomnum" value="0">
-                                <span class="next2 f24 roomnum" onselectstart="return false;">-</span>
+                                <span class="prev2 f18 roomnum" onselectstart="return false;">+</span>
                             </div>
                         </div>
                     </div>
@@ -808,6 +799,25 @@
                     $("input[name='mannum']").val(i);
                 }else if($(this).hasClass("roomnum")){
                     $("input[name='roomnum']").val(i);
+                    var starttime=$(".starttime").val();
+                    var endtime=$(".endtime").val();
+                    var roomnum=i;
+                    if(starttime!=''&&endtime!=''){
+                        if(Date.parse(endtime) - Date.parse(starttime)==0){
+                            alert("请填写正确日期");
+                            $(".endtime").val();
+                            return false;
+                        }else{
+                            var rid="<?php echo ($data["rid"]); ?>";
+                            $.post("<?php echo U('Home/Room/ajax_checkdate');?>",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
+                                if(d.code==200){
+                                    $("#totalmoney").text(d.totalmoney);
+                                    $("input[name='totalmoney']").val(d.totalmoney);
+                                }
+                            });
+                        }
+
+                    }
                 }
             })
             $(".Hotel_Details_c3 .next2").click(function () {
@@ -821,6 +831,25 @@
                         $("input[name='mannum']").val(i);
                     }else if($(this).hasClass("roomnum")){
                         $("input[name='roomnum']").val(i);
+                        var starttime=$(".starttime").val();
+                        var endtime=$(".endtime").val();
+                        var roomnum=i;
+                        if(starttime!=''&&endtime!=''){
+                            if(Date.parse(endtime) - Date.parse(starttime)==0){
+                                alert("请填写正确日期");
+                                $(".endtime").val();
+                                return false;
+                            }else{
+                                var rid="<?php echo ($data["rid"]); ?>";
+                                $.post("<?php echo U('Home/Room/ajax_checkdate');?>",{"rid":rid,"starttime":starttime,"endtime":endtime,"roomnum":roomnum},function(d){
+                                    if(d.code==200){
+                                        $("#totalmoney").text(d.totalmoney);
+                                        $("input[name='totalmoney']").val(d.totalmoney);
+                                    }
+                                });
+                            }
+
+                        }
                     }
                 }
             })
@@ -1016,7 +1045,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Room/show/id/70.html";
+                p['url']="/index.php/Home/Room/show/id/952.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1049,7 +1078,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Room/show/id/70.html";
+                p['url']="/index.php/Home/Room/show/id/952.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1087,7 +1116,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Room/show/id/70.html";
+                p['url']="/index.php/Home/Room/show/id/952.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1120,7 +1149,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Room/show/id/70.html";
+                p['url']="/index.php/Home/Room/show/id/952.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1190,7 +1219,7 @@
                 </li>
                 <li class="fl foot1_li2">
                     <p>帮助中心</p>
-                    <a href="<?php echo U('Home/About/quesion');?>">常见问题</a>
+                    <a href="<?php echo U('Home/About/question');?>">常见问题</a>
                     <a href="<?php echo U('Home/About/privacy');?>">隐私政策</a>
                     <a href="<?php echo U('Home/About/service');?>">服务条款</a>
                     <a href="<?php echo U('Home/Member/index');?>">个人中心</a>
@@ -1208,11 +1237,11 @@
                     <div class="foot1_li3_01">
                         <img src="/Public/Home/images/logo2.png"  />
                         <i>snailinns</i>
-                        <a href="" class="foot_a">
+                        <a href="<?php echo U('Home/About/app');?>" class="foot_a">
                             <img src="/Public/Home/images/Icon/img12.png" />
                             IOS
                         </a>
-                        <a href="">
+                        <a href="<?php echo U('Home/About/app');?>">
                             <img src="/Public/Home/images/Icon/img13.png" />
                             安卓
                         </a>
@@ -1233,8 +1262,9 @@
         </div>
     </div>
 </div>
-<script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
-
+<script src="https://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script>
+<!-- <script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
+ -->
     <script>
     RongIMClient.init("cpj2xarljz3ln");
     var token = "<?php echo ($user["rongyun_token"]); ?>";

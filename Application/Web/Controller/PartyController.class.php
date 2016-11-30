@@ -37,6 +37,11 @@ class PartyController extends CommonController {
             $endtime = strtotime($endtime);
             $where["a.endtime"] = array("ELT", $endtime);
         }
+        $time = I('time');
+        if($time) {
+          $where['a.starttime'] = array('elt', strtotime($time));
+          $where['a.endtime'] = array('egt', strtotime($time));
+        }
         $catid=I('catid');
         if(!empty($catid)){
             $where['a.catid']=$catid;
@@ -280,8 +285,11 @@ class PartyController extends CommonController {
             ->join("left join zz_member b on a.uid=b.id")
             ->join("left join {$sqlI} c on a.id=c.value")
             ->where(array('a.id'=>$id))
-            ->field('a.id,a.catid,a.title,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.money,a.partytype,a.starttime,a.endtime,a.content,a.start_numlimit,a.end_numlimit,a.yes_num,a.view,a.uid,b.nickname,b.head,b.realname_status,b.houseowner_status,b.rongyun_token,a.inputtime,c.reviewnum')
+            ->field('a.uid,a.id,a.catid,a.title,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.money,a.partytype,a.starttime,a.endtime,a.content,a.start_numlimit,a.end_numlimit,a.yes_num,a.view,a.uid,b.nickname,b.head,b.realname_status,b.houseowner_status,b.rongyun_token,a.inputtime,c.reviewnum')
             ->find();
+        if($uid == $data['uid']) {
+          $this->assign('is_owner', 1);
+        }
         $data['catname']=M('partycate')->where(array('id'=>$data['catid']))->getField("catname");  
         if(empty($data['reviewnum'])) $data['reviewnum']=0;
         $joinnum=M('activity_apply')
@@ -533,5 +541,16 @@ class PartyController extends CommonController {
       $this->assign('count', $count);
       $this->assign('data', $data); 
       $this->display('Public/all_review_list');
+    }
+    public function review() {
+      $orderid = $_GET['orderid'];
+      $aid = M('activity_apply')->where(array('orderid' => $orderid))->getField('aid');
+      $activity = M('activity')->where(array('id' => $aid))->find();
+      $uid = session('uid');
+      $this->assign('activity', $activity);
+      $this->assign('aid', $aid);
+      $this->assign('uid', $uid);
+      $this->assign('orderid', $orderid);
+      $this->display(); 
     }
 }

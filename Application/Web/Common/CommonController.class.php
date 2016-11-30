@@ -23,8 +23,8 @@ class CommonController extends Controller {
         $this->assign('site', $site);
         $this->autologin();
         $jssdk = new JSSDK(C('WEI_XIN_INFO.APP_ID'), C("WEI_XIN_INFO.APP_SECRET"));        
-        $jssdk->debug = false;    //启用本地调试模式,将官方的两个json文件放到入口文件index.php同级目录即可!
-        $signPackage = $jssdk->GetSignPackage();
+        $jssdk->debug = true;    //启用本地调试模式,将官方的两个json文件放到入口文件index.php同级目录即可!
+        //$signPackage = $jssdk->GetSignPackage();
         $this->assign("signPackage",$signPackage);
 
         $share['title']=$site['software_share_title'];

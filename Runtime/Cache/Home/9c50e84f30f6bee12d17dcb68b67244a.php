@@ -58,7 +58,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -76,6 +81,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -126,7 +133,7 @@
                 <div class="main_top2 pr">
                     <div class="main3_05 hidden">
                         <input type="hidden" name="arrparentid" id="arrparentid" value="<?php echo ($arrparentid); ?>">
-                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"上海"); ?></span>
+                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"请选择"); ?></span>
                     </div>
                     <div class="pa main3_03span_float hide">
                         <div class="main3_03span_float_top1">
@@ -496,7 +503,7 @@
                         if(uid==''){
                             alert("请先登录！");
                             var loginp={};
-                            loginp['url']="/index.php/Home/Party/show/id/28.html";
+                            loginp['url']="/index.php/Home/Party/show/id/1.html";
                             $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",loginp,function(data){
                                 if(data.code=200){
                                     window.location.href="<?php echo U('Home/Member/login');?>";
@@ -594,7 +601,7 @@
                 <div class="Event_details5_2_01">
                     <span>活动发起人</span>
                     <div class="Event_details5_2_05">
-                        <a href="">
+                        <a href="<?php echo U('Home/Member/detail',array('uid'=>$data['uid']));?>">
                             <div class="Event_details5_2_02">
                                 <img src="<?php echo ($data["head"]); ?>" width="104px" height="104px"/>
                             </div>
@@ -622,10 +629,12 @@
                     <?php if($data['endtime'] <= time()): ?><a class="a1" href="javascript:;">已过期</a>
                     <?php elseif($data['end_numlimit'] <= $data['joinnum']): ?>
                         <a class="a1" href="javascript:;">报名人数已满</a>
+                    <?php elseif($data['isjoin'] == 1): ?>
+                        <a class="a1" href="javascript:;">已报名</a>
                     <?php else: ?>
                         <a class="a1" href="<?php echo U('Home/Order/joinparty',array('aid'=>$data['id']));?>">我要报名</a><?php endif; ?>
                     
-                    <a class="a2" href="<?php echo U('Home/Woniu/chatdetail',array('tuid'=>$data['uid']));?>">在线咨询</a>
+                    <a class="a2" href="<?php echo U('Home/Woniu/chatdetail',array('tuid'=>$data['uid'],'type'=>'party'));?>">在线咨询</a>
                 </div>
             </div>
         </div>
@@ -665,7 +674,7 @@
                 var uid="<?php echo ($user["id"]); ?>";
                 if(uid==''){
                     alert("请先登录！");var p={};
-                    p['url']="/index.php/Home/Party/show/id/28.html";
+                    p['url']="/index.php/Home/Party/show/id/1.html";
                     $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                         if(data.code=200){
                             window.location.href="<?php echo U('Home/Member/login');?>";
@@ -822,7 +831,7 @@
             if(uid==''){
                 alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Party/show/id/28.html";
+                p['url']="/index.php/Home/Party/show/id/1.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -899,7 +908,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Party/show/id/28.html";
+                p['url']="/index.php/Home/Party/show/id/1.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -937,7 +946,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Party/show/id/28.html";
+                p['url']="/index.php/Home/Party/show/id/1.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -975,7 +984,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Party/show/id/28.html";
+                p['url']="/index.php/Home/Party/show/id/1.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1008,7 +1017,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Party/show/id/28.html";
+                p['url']="/index.php/Home/Party/show/id/1.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";
@@ -1041,7 +1050,7 @@
             if(!uid){
               alert("请先登录！");
                 var p={};
-                p['url']="/index.php/Home/Party/show/id/28.html";
+                p['url']="/index.php/Home/Party/show/id/1.html";
                 $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
                     if(data.code=200){
                         window.location.href="<?php echo U('Home/Member/login');?>";

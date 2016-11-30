@@ -80,6 +80,19 @@
 
         </div>
     </div>
+    <div class="sign_pop hide">
+        <div class="sign_mask"></div>
+        <div class="sign_content">
+            <p>登录</p>
+            <span>请输入用户名和密码</span>
+            <input type="text" class="sign_text phone" placeholder="输入用户名" name="usernmae" value="" readonly/>
+            <input type="password" class="sign_text" placeholder="输入密码"  name="password" value="" />
+            <div class="sign_input">
+                <input type="button" class="cancellogin" value="取消" />
+                <input type="button" class="sign_btn" value="登录" />
+            </div>
+        </div>
+    </div>
     <script type="text/javascript">
         $(function () {
             $(".main_3 img").height(($(document).height()) + 40);
@@ -132,6 +145,13 @@
                             "top": "0",
                             "left": "0"
                         });
+                    }else if(data.code==-1){
+                      $.hideLoading();
+                      $.alert(data.msg,function(){
+                        $(".phone").val(phone);
+                        $(".sign_pop").show();
+                      })
+                      
                     }else{
                         $.hideLoading();
                         $.alert(data.msg);
@@ -142,6 +162,41 @@
             });
 
         })
+
+        $(".sign_btn").click(function(){
+            var phone = $(".phone").val();
+            var password = $("input[name='password']").val();
+            
+            if (password == '') {
+                $.alert("请输入登录密码");
+                return false;
+            }
+            $.showLoading("正在提交中...");
+            $.ajax({
+                type: "POST",
+                url: "{:U('Wx/Member/ajax_login')}",
+                data: {'phone':phone,'password':password},
+                dataType: "json",
+                success: function(data){
+                    if(data.code==1){
+                        $.hideLoading();
+                        $(".sign_pop").hide();
+                        window.location.reload();
+                    }else{
+                        $.hideLoading();
+                        $.alert(data.msg);
+                        return false;
+                    }
+
+                }
+            });
+
+        })
+
+
+            $(".sign_mask,.cancellogin").click(function () {
+                $(".sign_pop").hide();
+            })
         
     })
 </script>

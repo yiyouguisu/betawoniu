@@ -32,21 +32,49 @@
                 </div>
                 <div class="login_list">
                     <div class="login_a">
-                        <input id="invite_code" name="invite_code" type="text" class="login_text f14" placeholder="请输入邀请码 :" readonly="true" value="{$invitecode}">
+                      <notempty name="invitecode">
+                          <input id="invite_code" name="invite_code" type="text" class="login_text f14" placeholder="请输入邀请码 :"  value="{$invitecode}" readonly>
+                      <else />
+                          <input id="invite_code" name="invite_code" type="text" class="login_text f14" placeholder="请输入邀请码 :"  value="">
+                      </notempty>
                     </div>
                 </div>
             </div>
             <div class="login_b f16">
-                <a id="regsubmit">立即注册</a></div>
-
+                <a id="regsubmit">立即注册</a>
+            </div>
+            <div style="padding:8px 0;">
+              <a href="{:U('Member/login')}" class="ft14">有账号？去登录</a>
+            </div>
             <div class="infor_btm f13">
-                <a href="javascript:;">点击立即注册表示您已同意蜗牛壳APP使用协议</a></div>
+                <a href="{:U('Member/service_intro')}">
+                  点击立即注册表示您已<span style="text-decoration:underline;">同意《蜗牛壳APP使用协议》</span>
+                </a>
+            </div>
         </div>
     </div>
     <script type="text/javascript">
         var InterValObj; //timer变量，控制时间
         var count = 60; //间隔函数，1秒执行
         var curCount;//当前剩余秒数
+        var reged = false;
+        $('#btnSendCode').attr('disabled', 'disabled');
+        $('#phone').change(function(evt) {
+          evt.preventDefault();
+          rawPost('{:U("/Api/Member/check_register")}', {
+            phone: $(this).val()
+          }, function(data) {
+            if(data.code == 200) {
+              alert('此手机号已注册，请直接登录或检查号码填写是否正确！');
+              return; 
+            } else {
+              $('#btnSendCode').removeAttr('disabled');
+            }
+          }, function(err, data) {
+            alert('网络错误，请检查您的网络！');
+            console.log(err); 
+          });
+        });
         function sendMessage() {
             var phone = $('#phone').val();
             if (phone == '') {
@@ -93,7 +121,6 @@
         $(function () {
             var regsubmit = $('#regsubmit');
             regsubmit.click(function () {
-                alert('aaaa');
                 var phone = $('#phone').val();
                 var telverify = $("input[name='telverify']").val();
                 var password = $("input[name='password']").val();

@@ -443,7 +443,8 @@ class MemberController extends CommonController {
 	 * 获取会员的基本信息
 	 */
 	public function ucenter(){
-		$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+		//$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+    $ret = file_get_contents('php://input');
 		$ret=json_decode($ret,true);
 		$uid = intval(trim($ret['uid']));
 
@@ -483,13 +484,16 @@ class MemberController extends CommonController {
 
 			$realname_status=$user['realname_status'];
 			$apply=M('realname_apply')->where(array('uid'=>$uid))->find();
-			if($apply['status']==1){
+			if(intval($apply['status'])===1){
 				$realname_status=-1;
 			}
+      if(intval($apply['status'])===2) {
+        $dataset['alipayaccount'] = $apply['alipayaccount'];
+      }
 			$dataset['realname_status'] = $realname_status;
 			$houseowner_status=$user['houseowner_status'];
 			$apply=M('houserowner_apply')->where(array('uid'=>$uid))->find();
-			if($apply['status']==1){
+			if(intval($apply['status'])===1){
 				$houseowner_status=-1;
 			}
 			$dataset['houseowner_status'] = $houseowner_status;
@@ -759,6 +763,13 @@ class MemberController extends CommonController {
 					'alipayaccount'=>$alipayaccount,
 					'inputtime'=>time()
 			));
+      M('alipayaccount')->add(array(
+        'realname' => $realname,
+        'uid' => $uid,
+        'alipayaccount' => $alipayaccount,
+        'idcard' => $idcard,
+        'inputtime' => time()
+      ));
 			if($id){
 				UtilController::addmessage($uid,"申请实名认证","申请认证成功，等待审核！","申请认证成功，等待审核！","applyrealname",$uid);
 				exit(json_encode(array('code'=>200,'msg'=>"申请成功")));
@@ -815,7 +826,8 @@ class MemberController extends CommonController {
 	 *设置密码
 	 */
 	public function setpassword(){
-		$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+		//$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+    $ret = file_get_contents("php://input");
 		$ret=json_decode($ret,true);
 		$telverify=trim($ret['telverify']);
 		$new_password=trim($ret['new_password']);
@@ -1865,6 +1877,95 @@ class MemberController extends CommonController {
       return $this->jsonFailedResponse(NULL, -201);
     } elseif($vouchers == false) {
       return $this->jsonFailedResponse('db_err', -202);
+    }
+  }
+
+  /*
+   * 获取用户支付宝账号信息(用户实名认证通过后可获得)
+   */
+  public function get_alipayaccount() {
+    $inputs = json_decode(file_get_contents("php://input"), true);
+
+    if(!$inputs) {
+      $this->jsonFailedResponse("Request parameter is null", -200);
+    } 
+    $uid = $inputs['uid'];
+
+    $status = M('realname_apply')->where(array('uid' => $uid))->getField('status');
+    if($status != 2) {
+      return $this->jsonFailedResponse('not pass', -200); 
+    }
+    
+    $account = M('alipayaccount')->where(array('uid' => $uid))->find();
+    if($account == false) {
+      $this->jsonFailedResponse('db error.', -202); 
+    } elseif ($account == null) {
+      $this->jsonFailedResponse('empty data.', -201);
+    } else {
+      $this->jsonSuccessResponse($account); 
+    }
+  }
+
+  /*
+   * 用户推荐名宿
+   */
+  public function recommend_hotel() {
+    $inputs = json_decode(file_get_contents("php://input"), true); 
+    if(!$inputs) {
+      return $this->jsonFailedResponse('empty inputs.', -200); 
+    }
+
+    $data = array(
+      'uid' => $inputs['uid'],
+      'hotel_name' => $inputs['hotel_name'],
+      'province' => $inputs['province'],
+      'city' => $inputs['city'],
+      'address' => $inputs['address'],
+      'low_price' => $inputs['low_price'],
+      'high_price' => $inputs['high_price'],
+      'contact' => $inputs['contact'],
+      'phone' => $inputs['phone'],
+      'img_list' => json_encode($inputs['img_list']),
+      'description' => $inputs['description']
+    );
+
+    foreach($data as $key => $value) {
+      if($value == null || strlen($value) == 0) {
+        return $this->jsonFailedResponse($key . ' empty.', -200); 
+      } 
+    }
+
+    $res = M('recommend_hotel')->add($data);
+
+    if($res == false) {
+      return $this->jsonFailedResponse('db err.', -202); 
+    } else {
+      return $this->jsonSuccessResponse(NULL); 
+    }
+  }
+
+  public function get_last_realname_apply() {
+    $inputs = json_decode(file_get_contents("php://input"), true);
+    if(empty($inputs)) {
+      return $this->jsonFailedResponse('empty inputs.', -200); 
+    }
+    $apply = M('realname_apply')->where(array('uid' => $inputs['uid']))->order('id desc')->select();
+    if($apply == false) {
+      return $this->jsonFailedResponse('db err.', -202); 
+    } elseif($apply == null) {
+      return $this->jsonFailedResponse('empty data', -201); 
+    } else {
+      return $this->jsonSuccessResponse($apply[0]);
+    }
+  }
+
+  public function check_register() {
+    $inputs = $this->getInputs(); 
+    $member = M('member')->where(array('phone' => $inputs['phone']))->find();
+    if(!$member) {
+      return $this->jsonFailedResponse('not found', -200); 
+    } else {
+      return $this->jsonSuccessResponse('found'); 
     }
   }
 }

@@ -11,4 +11,7 @@ schtasks /create /sc minute /mo 1 /tn "SgxsautoPush" /tr "explorer.exe http://12
 
 schtasks /create /sc minute /mo 1 /tn "SgxsautoPush" /tr C:\Users\cmc\Desktop\push.vbs
 
-schtasks /create /sc minute /mo 1 /tn "WoniuPush" /tr D:\wwwroot\betawoniu\wwwroot\autoExecute\push.vbs
+schtasks /create /sc minute /mo 1 /tn "WoniuPush" /tr D:\web\wwwroot\autoExecute\push.vbs
+
+schtasks /create /sc minute /mo 1 /tn "WoniuUpdateAccount" /tr D:\web\wwwroot\autoExecute\updateaccount.vbs
+schtasks /create /sc minute /mo 1 /tn "WoniuBirthdayPush" /tr D:\web\wwwroot\autoExecute\birthday.vbs

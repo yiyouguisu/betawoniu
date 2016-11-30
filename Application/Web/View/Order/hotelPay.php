@@ -36,7 +36,7 @@
          <option value="0" selected>选择支付方式</option>
          <option value='1' id="alipay_item">支付宝</option>
          <option value='2' id="wxpay_item">微信支付</option>
-         <option value='3'>银联支付</option>
+         <!-- <option value='3'>银联支付</option> -->
        </select>
      </div>
      <div class="act_e_r">
@@ -132,6 +132,9 @@ $(function(){
   } else {
     $('#wxpay_item').remove();
   }
+  window.onbeforeunload = function() {
+    return '123123';
+  };
 </script>
 </body>
 </html>

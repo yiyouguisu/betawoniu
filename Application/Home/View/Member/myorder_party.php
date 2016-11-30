@@ -25,7 +25,41 @@
 
         </div>
     </div>
+    <div class="My_message_details_main2 hide">
+        <div class="My_message_details_main3">
+        </div>
+        <div class="My_message_details_main4">
+            <div class="My_message_details_m4top">
+                <span>失败原因</span>
+                <div class="My_message_details_m4topf"></div>
+            </div>
+            <div class="My_message_details_m4bottom">
+                <span id="remark"></span>
+                
+            </div>
+        </div>
+    </div>
+    <div class="Mask3 hide">
+    </div>
     <script type="text/javascript">
+        $(function(){
+            $(".remark").live("click",function(){
+                var obj=$(this);
+                var remark=obj.data("remark");
+                $("#remark").text(remark);
+                $(".My_message_details_main2").show();
+                $("html,body").css({
+                    "overflow-y": "hidden",
+                })
+                
+            })
+            $(".My_message_details_main3,.My_message_details_m4topf").click(function () {
+                $(".My_message_details_main2").hide();
+                $("html,body").css({
+                    "overflow-y": "auto",
+                })
+            })
+        })
         function showBorrow(obj){
             $(obj).blur();
             var varname=$(obj).attr("data");

@@ -13,9 +13,10 @@
     <link rel="stylesheet" href="__PUBLIC__/Public/css/weui.css">
     <link rel="stylesheet" href="__PUBLIC__/Public/css/jquery-weui.css">
     <link rel="stylesheet" href="__CSS__/base.css">
-    <link rel="stylesheet" href="__CSS__/style.css">
+    <link rel="stylesheet" href="__CSS__/style.css?v=0.1">
     <link rel="stylesheet" href="__CSS__/clndr.css">
     <link rel="stylesheet" href="__CSS__/jquery-ui.min.css">
+    <link rel="stylesheet" href="__CSS__/jquery.range.css">
     <script src="__JS__/jquery-1.11.1.min.js"></script>
     <script src="__PUBLIC__/Public/js/jquery-weui.js"></script>
     <script src="__JS__/Action.js"></script>
@@ -128,18 +129,16 @@
     <script>
       getLocation();
       function getLocation() {
-        console.log('getLocation');
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, errorPosition);
-        }
-        else {
-           console.log('浏览器不支持定位！');
+          console.log('location start.');
+          navigator.geolocation.getCurrentPosition(showPosition, errorPosition);
+        } else {
+          console.log('浏览器不支持定位！');
         }
       }
       function showPosition(position) {
         var data = { 'position': position.coords.longitude + ',' + position.coords.latitude };
         $.post("{:U('Web/Index/cacheposition')}", data, function (res) {
-          console.log(typeof(getHotelDistance));
           if(typeof(getHotelDistance) == 'function') {
             var pos = JSON.parse(res);
             getHotelDistance(pos.lat, pos.lng);
@@ -151,6 +150,7 @@
         });
       }
       function errorPosition(err) {
+        console.log(err);
         console.warn('ERROR(' + err.code + '): ' + err.message);
       }
     </script>
@@ -165,6 +165,15 @@
           'error': err
         });
       }
+    </script>
+    <include file="public:share" />
+    <script>
+      var inviteCode = '{$inviteCode}';
+      window.onload = function() {
+        if(inviteCode) {
+          setTimeout("alert('请先注册，更多精彩！');window.location.href='{:U('Member/reg')}?invitecode={$inviteCode}'", 5000);
+        } 
+      };
     </script>
 </head>
 <body style="min-height:100%">

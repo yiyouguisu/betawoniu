@@ -50,8 +50,8 @@ class AlipaySubmit {
 
 	/**
      * 生成要请求给支付宝的参数数组
-     * @param $para_temp 请求前的参数数组
-     * @return 要请求的参数数组
+     * @param array para_temp 请求前的参数数组
+     * @return array 要请求的参数数组
      */
 	function buildRequestPara($para_temp,$isapp) {
 		//除去待签名参数数组中的空值和签名参数

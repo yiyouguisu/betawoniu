@@ -13,7 +13,7 @@
       <div class="clndr-next-button"></div>
   </div>
   <div class="clndr-grid">
-      <div class="days-of-the-week">
+      <div class="days-of-the-week" style="color:#000 !important">
           <% _.each(daysOfTheWeek, function(day) { %>
               <div class="header-day">
                   <%=day %>
@@ -40,6 +40,9 @@
             ready: function()
             {
               getMoney();
+              if(typeof(partydate) == 'function') {
+                partydate(); 
+              }
             },
             clickEvents:
             {
@@ -50,6 +53,9 @@
               onMonthChange: function()
               {
                 getMoney();
+                if(typeof(partydate) == 'function') {
+                  partydate(); 
+                }
               },
             },
             showAdjacentMonths: true,
@@ -129,6 +135,8 @@ function getMoney() {
                 var htm = ob.html().trim();
                 if(me.isbook) {
                   ob.html(htm + '<br>已预订');   
+                } else if (me.isgone) {
+                  ob.html(htm + '<br><span style="color:#ccc">' + '订完了' + '</span>');   
                 } else {
                   if(me.isweek) {
                     ob.html(htm + '<br><span style="color:#ccc">¥' + week + '</span>');   

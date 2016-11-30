@@ -55,9 +55,17 @@
                             <img src="{$data.productinfo.thumb}" width="184" height="115" />
                       </div>
                       <div style="float:left; margin-left:20px;">
-                            <div align="left"><a href="javascript:;">{$data.productinfo.title}</a>
+                        <div align="left"><a href="javascript:;">{$data.productinfo.title}</a></div>
+                        <p>活动人数 : {$data.productinfo.start_numlimit|default="0"}-{$data.productinfo.end_numlimit|default="0"}人</p>
+                        <div>
+                          <p style="display: inline-block; *dispaly:inline; *zoom:1; vertical-align: middle;"> 已参与 : </p>
+                          <volist name="data['productinfo']['joinlist']" id="vo">
+                          <a href="javascript:;" style="width:30px;height:30px;border-radius:50%; margin-right: 6px; display: inline-block; *dispaly:inline; *zoom:1; vertical-align: middle;" class="midden hidden">
+                            <img style="width:30px;height:30px;border-radius:50%; " src="{$vo.head}">
+                          </a>
+                          </volist>
+                          <span sytle="display: inline-block; *dispaly:inline; *zoom:1; vertical-align: middle; font-size: 14px; color: #666666;">( {$data.productinfo.joinnum|default="0"}人 )</span>
                         </div>
-                            <p>活动人数 : {$data.productinfo.start_numlimit|default="0"}-{$data.productinfo.end_numlimit|default="0"}人</p>
                       </div>
                       
                   </th>
@@ -72,7 +80,7 @@
                         <p>
                             <span style="width:85px; display:inline-block; *display:inline; *zoom:1;">活动时间：</span>
                             <i style="font-style: normal;">开始：{$data.productinfo.starttime|date="Y年m月d日",###}</i>
-                            <i style="font-style: normal;">{$data.productinfo.days|default="0"}天</i>
+                            <i style="font-style: normal;">至</i>
                             <i style="font-style: normal;">结束：{$data.productinfo.endtime|date="m月d日",###}</i>
                         </p>
                         <p>
@@ -85,7 +93,7 @@
                 <tr>
                   <td colspan="2">
                     <div align="left" style="overflow:hidden;">
-                            <p style="float:left;">￥{$data.productinfo.money|default="0.00"} （活动费用 x {$data.productinfo.num|default="0"}间） — ￥{$data.discount|default="0.00"} （优惠券） = ￥{$data.money|default="0.00"}</span>
+                            <p style="float:left;">￥{$data.productinfo.money|default="0.00"} （活动费用 x {$data.productinfo.num|default="0"}人） — ￥{$data.discount|default="0.00"} （优惠券） = ￥{$data.money|default="0.00"}</span>
                       <p style="float:right;">订单金额 : <i>￥<em>{$data.money|default="0.00"}</em></i></p>
                     </div>
                   </td>

@@ -26,7 +26,7 @@
                     <a id='login'>立即登录</a></div>
                 <div class="login_c f16">
                     <a href="{:U('Web/Member/reg')}">快速注册</a>
-                    <a href="{:U('Web/Member/forgot')}" class="fr">忘记密码?</a>
+                    <a href="{:U('Web/Member/forget')}" class="fr">忘记密码?</a>
                 </div>
             </div>
 
@@ -35,17 +35,18 @@
                     <div class="login_d1 pr f14">第三方账号登录</div>
                     <div class="login_d2 pa"></div>
                 </div>
-                <div class="login_e">
-                    <div class="login_e1">
-                        <a href="">
+                <div class="login_e" style="text-align:center">
+                    <div class="login_e1" id="wx_login">
+                        <a href="javascript:;">
                             <img src="__IMG__/tb_1.jpg"></a></div>
-                    <div class="login_e1">
+                    <div class="login_e1 not_wx">
                         <a href="">
                             <img src="__IMG__/tb_2.jpg"></a></div>
-                    <div class="login_e1">
+                    <div class="login_e1 not_wx">
                         <a href="">
                             <img src="__IMG__/tb_3.jpg"></a></div>
                 </div>
+                <div style="text-align:center;color:#fff" class="ft12">非微信注册用户请使用手机号码登录</div>
             </div>
         </div>
     </div>
@@ -71,7 +72,12 @@
                     var data = { 'username': name, 'password': pwd, 'openid': '{$openid}', 'unionid': '{$unionid}' }
                     $.post("{:U('Web/Member/ajax_login')}", data, function (res) {
                         if (res.code == 200) {
-                            window.location.href = "{:U('Web/Index/index')}";
+                            var referer = "{$referer}";
+                            if(referer) {
+                              window.location.href = referer;
+                            } else {
+                              window.location.href = "{:U('Web/Index/index')}";
+                            }
                         }
                         else {
                             alert(res.msg);
@@ -96,9 +102,17 @@
                     tpwd.val(pwdtext);
                 }
             })
-
         })
     </script>
+    <script>
+      if(is_weixin()) {
+        $('.not_wx').hide();
+        $('#wx_login').removeClass('login_e1').css({'width': '15%', 'margin': 'auto'});
+        $('#wx_login').click(function(evt) {
+          evt.preventDefault();
+          window.location.href = "{:U('Member/wxlogin')}"; 
+        });
+      }
+    </script>
 </body>
-
 </html>

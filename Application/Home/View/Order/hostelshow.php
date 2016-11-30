@@ -37,6 +37,7 @@
                     </if>
                     
                 </div>
+                <i>订单号：{$data['orderid']}</i>
                 <i>订单状态：<em>
                     <eq name="data['status']" value="1">等待房东确认</eq>
                     <eq name="data['status']" value="2">等待支付</eq>
@@ -64,6 +65,7 @@
                                 </eq>
                                 <eq name="data['refund_status']" value="3">
                                     退订审核失败
+                                    <span style="color:#666;margin-left: 20px;">失败原因：</span>{$data.refundreview_remark}
                                 </eq>
                             </eq>
                             <else />
@@ -78,10 +80,12 @@
                             </eq>
                             <eq name="data['refund_status']" value="3">
                                 退订审核失败
+                                <span style="color:#666;margin-left: 20px;">失败原因：</span>{$data.refundreview_remark}
                             </eq>
                         </if>   
                     </eq>
-                    <eq name="data['status']" value="5">预定审核失败</eq>
+                    <eq name="data['status']" value="5">预定审核失败
+                                <span style="color:#666;margin-left: 20px;">失败原因：</span>{$data.review_remark}</eq>
                 </em></i>
             </div>
             <div class="payment hidden">

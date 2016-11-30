@@ -35,11 +35,13 @@ class WalletController extends CommonController {
    * 使用记录
    */
   public function use_log() {
-    $member = M('member')->where(array('id' => $this->uid))->find();
+    $member = M('member')
+      ->where(array('id' => $this->uid))
+      ->find();
 
     #TODO 后期换ajax 刷新模式，整体钱包都需要改版
     $accountLog = M('account_log')
-      ->where(array('uid' => $uid))
+      ->where(array('uid' => $this->uid))
       ->order('id desc')
       ->select();
     $this->assign('logs', $accountLog);
@@ -51,7 +53,7 @@ class WalletController extends CommonController {
    */
   public function withdraw_cash() {
     $alipayaccount = M('alipayaccount')->where(array('uid' => $this->uid))->find();
-    $this->assign('waitmoney', $this->account['waitmoney']);
+    $this->assign('waitmoney', $this->account['usemoney']);
     $this->assign('alipayaccount', $alipayaccount);
     $this->display();
   }

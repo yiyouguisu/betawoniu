@@ -84,6 +84,7 @@ class JsApiPay
 		$result = strtoupper($string);
 		return $result;
 	}
+	
 	public function GetOpenidFromMp($code)
 	{
 		$url = $this->__CreateOauthUrlForOpenid($code);

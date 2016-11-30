@@ -1,6 +1,6 @@
-<?php
-	include_once('SDKConfig.php');
-	include_once 'PinBlock.php';
+﻿<?php
+	include_once($_SERVER ['DOCUMENT_ROOT'].'/Union/utf8/func/SDKConfig.php');
+	include_once $_SERVER ['DOCUMENT_ROOT'].'/Union/utf8/func/PinBlock.php';
 	
 	function EncryptedPin($sPin, $sCardNo ,$sPubKeyURL)
 	{

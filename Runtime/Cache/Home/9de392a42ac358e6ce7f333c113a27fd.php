@@ -152,7 +152,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -170,6 +175,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -220,7 +227,7 @@
                 <div class="main_top2 pr">
                     <div class="main3_05 hidden">
                         <input type="hidden" name="arrparentid" id="arrparentid" value="<?php echo ($arrparentid); ?>">
-                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"上海"); ?></span>
+                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"请选择"); ?></span>
                     </div>
                     <div class="pa main3_03span_float hide">
                         <div class="main3_03span_float_top1">
@@ -488,11 +495,11 @@
                 <span>常用联系人</span>
             </a>
         </li>
-        <li <?php if(($current_url) == "Home/Member/help"): ?>class="pd_main2_li pd_b6" <?php else: ?>class="pd_b6"<?php endif; ?>>
+        <!-- <li <?php if(($current_url) == "Home/Member/help"): ?>class="pd_main2_li pd_b6" <?php else: ?>class="pd_b6"<?php endif; ?>>
             <a href="<?php echo U('Home/Member/help');?>">
                 <span>帮助手册</span>
             </a>
-        </li>
+        </li> -->
     </ul>
 </div>
         <div class="fl pd_main3">
@@ -568,6 +575,7 @@
                         <option <?php if('硕士' == $userinfo['education']): ?>selected<?php endif; ?>>硕士</option>
                         <option <?php if('本科' == $userinfo['education']): ?>selected<?php endif; ?>>本科</option>
                         <option <?php if('专科' == $userinfo['education']): ?>selected<?php endif; ?>>专科</option>
+                        <option <?php if('其他' == $userinfo['education']): ?>selected<?php endif; ?>>其他</option>
                     </select>
                 </div>
                 <div class="pd_main3_bottom">
@@ -628,7 +636,7 @@
                 <div class="pd_main4_bottom">
                     <div class="pd_main4_bottom2" style="overflow: hidden;">
                         <span>个人标签：</span>
-                        <i class="c333 f16">特性</i>
+                        <i class="c333 f16">特性(最多3个)</i>
                         
                     </div>
                     <div class="pd_main4_bottom3 hidden">
@@ -650,7 +658,7 @@
                     
                     <div class="pd_main4_bottom5">
                         <div class="hidden">
-                            <label>爱好</label>
+                            <label>爱好(最多3个)</label>
                         </div>
                         <ul class="pd_main4_bottom5_ul">
                             <?php if(is_array($hobby)): $i = 0; $__LIST__ = $hobby;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li data-value="<?php echo ($vo["value"]); ?>" <?php if(in_array(($vo['value']), is_array($user["hobby"])?$user["hobby"]:explode(',',$user["hobby"]))): ?>class="pd_main4_bottom5_chang"<?php endif; ?>>

@@ -1,17 +1,33 @@
 <include file="public:head" />
 <body class="back-f1f1f1">
-<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=7XTgXXqefgTIH3cwTLsbnR7P&s=1"></script>
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=EdOBKRNGYWwo9ZKhqMSRjgbdGHIHH2Gh&s=1"></script>
 <div class="container padding_0">
    <div class="land">
                 <div class="act_g pr">
-                    <div class="act_g1"><img src="{$data.thumb}"  style="width: 100%;height: 60vw;"></div>
-                    <div class="history pa"><a style="display:block" href="javascript:history.go(-1)"><img src="__IMG__/go.png"></a><span>&nbsp;</span></div>
+                    <div id="slideBox" class="slideBox">
+                       <div class="bd">
+                          <ul>
+                            <volist name="imglist" id="img">
+                              <li>
+                                <a class="pic" href="javascript:;">
+                                  <img src="{$img}" style="width:100%;height:280px;" />
+                                </a>
+                              </li>
+                            </volist>
+                          </ul>
+                       </div>
+                    </div>   
+                    <div class="history pa">
+                      <a style="display:block" href="javascript:history.back();">
+                        <img src="__IMG__/go.png">
+                      </a><span>&nbsp;</span>
+                    </div>
                     <div class="recom_c pa"><div class="recom_gg collect <if condition='$data.iscollect eq 1'>recom_c_cut</if> "  data-id="{$data.id}"></div>
                                             <span><a href=""><img src="__IMG__/share.png"></a></span>
-                                            <span><a href="{:U('Web/Note/add')}"><img src="__IMG__/recom_a3.png"></a></span>
+                                            <span><a class="add_to_trip" href="{:U('Web/Note/add')}"><img src="__IMG__/recom_a3.png"></a></span>
                     </div>
                     <div class="act_g2 f16 center pa">
-                            <em>￥</em><span>{$data.money|default="0.00"}</span><em>起</em>
+                      <em>￥</em><span>{$data.money|default="0.00"}</span><em>起</em>
                     </div>
                </div>  
                <div class="det_box">
@@ -62,11 +78,11 @@
                <div class="snake">
                     <div class="vb_c1 snake_a center">我们的房间</div>
                         <volist name='data["room"]' id='vo'>
-                            <if condition="$vo.isowner eq 1">
-                              <a href="javascript:void(0);">
-                            <else />
-                              <a href="{:U('Web/Room/show',array('id'=>$vo['rid']))}">
-                            </if>
+                          <if condition="$i gt 3">
+                            <a href="{:U('Web/Room/show',array('id'=>$vo['rid']))}" class="hide_items" style="display:none;">
+                          <else />
+                            <a href="{:U('Web/Room/show',array('id'=>$vo['rid']))}">
+                          </if>
                                 <div class="snake_list f14">
                                        <div class="land_d pr f0">
                                             <div class="land_e vertical" style="padding: 0 10px;">
@@ -74,7 +90,7 @@
                                             </div>
                                             <div class="land_f vertical">
                                                   <div class="land_f1 f16">{$vo.title}</div>
-                                                  <div class="land_f2 f13">{$data.area}M<sup>2</sup> {$vo.bedtype}</div>
+                                                  <div class="land_f2 f13">{$vo.area}M<sup>2</sup> {$vo.bedtype}</div>
                                                   <br>
                                                   <div class="land_f3 f0" style="padding:15px 0 0 0">
                                                      <div class="land_money ft18">¥ {$vo.money}
@@ -82,16 +98,15 @@
                                                       </div>
                                                   </div>
                                             </div>
-                            <if condition="$vo.isowner neq 1">
                                             <div style="width:20%;vertical-align:middle" class="fr">
                                               <div style="padding:12px;background:#ff715f;color:#fff;width:40px;height:40px;font-size:14px;text-align:center">立即预订</div>
                                             </div>
-                            </if>
                                        </div>
                                 </div>
                             </a>
                         </volist>
-                    <div class="scr_d snake_b center">显示全部{$roomcount}个房间<img src="__IMG__/drop_f.jpg"></div> 
+                      <div class="scr_d snake_b center" data-content="收起">显示全部{$roomcount}个房间<img src="__IMG__/drop_f.jpg"></div> 
+                    </div>
                </div>
                
                <div class="vb_d center">
@@ -165,10 +180,11 @@
                     </div>
                </div>
      </neq>
-              
+     <div class="add_to_trip back_blue ft16" style="padding:10px;color:#fff;text-align:center;margin-top:15px">
+      添加到行程
+     </div> 
    </div>   
 </div>
-
 <div class="big_mask"></div>
 <div class="pyl">
     <div class="pyl_top pr">房间简介
@@ -182,64 +198,130 @@
         </div>
     </div>
 </div>
+<div id="new_trip" class="hide">
+  <div class="trip_cover"></div>
+  <div class="trip_pre_content">
+    <div style="padding:10px;font-size:14px;">
+      <div style="width:30%" class="fl">
+        <a href="#" id="dismiss_edit" style="color:#aaa">取消</a>
+      </div> 
+      <div style="width:40%;color:#56c3cf" class="fl tc">编辑行程信息</div> 
+      <div style="width:30%" class="fl tr">
+        <a href="#" style="color:#56c3cf" id="save_trip">保存</a>
+      </div> 
+      <div style="clear:both"></div>
+    </div>
+    <div style="padding:10px;">
+      <form action="{:U('Trip/add')}" method="post" id="post_add">
+        <div class="form-group">
+          <input type="hidden" value="" name="hotels">
+          <input class="required form-control form-inline" type="text" name="trip_title" placeholder="行程标题：" data-content="行程标题">
+        </div>
+        <div class="form-group">
+          <input class="required form-control form-inline" type="date" name="start_date" placeholder="出发时间：" value="" data-content="出发时间">
+        </div>
+        <div class="form-group">
+          <input class="required form-control form-inline" type="number" name="trip_days" placeholder="出行天数：" data-content="出行天数">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
   $(function(){
     collect();
     hit();
   })
-    function collect(){
-        // 收藏
-        $('.collect').click(function(){
-          var self=$(this);
-          var id=self.data('id');
-          var data={'type':2,'id':id};
-          console.log(data);
-          $.post("{:U('Web/Ajaxapi/collection')}",data,function(res){
-            console.log(res);
-            if(res.code==200)
-            {
-              self.addClass('recom_c_cut');
-            }
-            else if(res.code==300){
-              self.removeClass('recom_c_cut');
-            }
-            else{
-              alert(res.msg);
-            }
-          });
-        })
-    }
 
-    function hit(){
-        // 收藏
-        $('.hit').click(function(){
-          var self=$(this);
-          var id=self.data('id');
-          var data={'type':2,'id':id};
-          var hit=self.text();
-          console.log(data);
-          $.post("{:U('Web/Ajaxapi/hit')}",data,function(res){
-            console.log(res);
-            if(res.code==200)
-            {
-                self.find('span').text(Number(hit)+1)
-                self.find('img').attr('src','__IMG__/poin_1.png');
-                var num = $('#hitnum').val();
-                $('#hitnum').val(num + 1);
-            }
-            else if(res.code==300){
-                self.find('span').text(Number(hit)-1)
-                self.find('img').attr('src','__IMG__/poin.png');
-                var num = $('#hitnum').val();
-                $('#hitnum').val(num - 1);
-            }
-            else{
-              alert(res.msg);
-            }
-          });
-        })
+  var selectedHotel = [];
+  var hotelId = {$data.id};
+  $('.add_to_trip').click(function(evt) {
+    evt.preventDefault();
+    selectedHotel.push(hotelId);
+    if(selectedHotel.length == 0) {
+      alert('请至少选择一个美宿或景点！');
+      return;
     }
+    $('#new_trip').removeClass('hide');
+    $('.mask').hide();
+  });
+  $('#dismiss_edit').click(function(evt) {
+    evt.preventDefault();
+    $('#new_trip').addClass('hide');
+    $('.required').val('');
+  });
+  $('#save_trip').click(function(e) {
+    e.preventDefault();
+    var filled = true;
+    var notice = '';
+    $('input[name=hotels]').val(selectedHotel.join(','));
+    $('.required').each(function(i, t) {
+      var val = $(t).val();
+      if(!val) {
+        filled = false;  
+        notice += $(t).data('content') + '必须填写！\n';
+      }
+    });
+    if(filled) {
+      $('#post_add')[0].submit();
+    } else {
+      alert(notice); 
+    }
+  });
+
+  function collect(){
+      // 收藏
+      $('.collect').click(function(){
+        var self=$(this);
+        var id=self.data('id');
+        var data={'type':2,'id':id};
+        console.log(data);
+        $.post("{:U('Web/Ajaxapi/collection')}",data,function(res){
+          console.log(res);
+          if(res.code==200)
+          {
+            self.addClass('recom_c_cut');
+          }
+          else if(res.code==300){
+            self.removeClass('recom_c_cut');
+          }
+          else{
+            alert(res.msg);
+          }
+        });
+      })
+  }
+
+  function hit(){
+      // 收藏
+      $('.hit').click(function(){
+        var self=$(this);
+        var id=self.data('id');
+        var data={'type':2,'id':id};
+        var hit=self.text();
+        console.log(data);
+        $.post("{:U('Web/Ajaxapi/hit')}",data,function(res){
+          console.log(res);
+          if(res.code==200)
+          {
+              self.find('span').text(Number(hit)+1)
+              self.find('img').attr('src','__IMG__/poin_1.png');
+              var num = $('#hitnum').val();
+              $('#hitnum').val(num + 1);
+          }
+          else if(res.code==300){
+              self.find('span').text(Number(hit)-1)
+              self.find('img').attr('src','__IMG__/poin.png');
+              var num = $('#hitnum').val();
+              $('#hitnum').val(num - 1);
+          }
+          else{
+            alert(res.msg);
+          }
+        });
+      })
+  }
 </script>
 <include file="public:chat_uitls" />
 </body>
@@ -292,6 +374,7 @@
     evt.preventDefault();
     window.location.href="{:U('Public/big_map')}?lng={$data.lng}&lat={$data.lat}";
   });
+
 </script>
 <input type='hidden' id='getid' value='{$data.id}'> 
 <script src="__JS__/islider.js"></script>
@@ -352,5 +435,29 @@
           islider4.bindMouse();
 
 
+</script>
+<script src="__JS__/TouchSlide.1.1.js"></script>
+<script type="text/javascript">
+  TouchSlide({ 
+     slideCell:"#slideBox",
+     mainCell:".bd ul", 
+     effect:"leftLoop", 
+     autoPlay:true //自动播放
+  });
+</script>
+<script>
+var initHide = true;
+$('.snake_b').click(function(evt) {
+  evt.preventDefault();
+  if(initHide) {
+    $('.hide_item').show();
+  } else {
+    $('.hide_item').hide();
+  }
+  var htmContent = $(this).html();
+  var tmp_content = $(this).data('content');
+  $(this).html(tmp_content);
+  $(this).data('content', htmContent);
+});
 </script>
 </html>

@@ -13,7 +13,7 @@ class AutoUpdateAccountController extends CommonController {
         set_time_limit(0);
     }
 	
-	public function updateaccount(){
+	  public function updateaccount(){
         $strOut="";
         $where=array('c.pay_status'=>1,'c.updateaccount_status'=>0);
         $field=array('a.orderid,a.money,a.ordertype');
@@ -50,7 +50,7 @@ class AutoUpdateAccountController extends CommonController {
                 $mid=M('account')->where(array('uid'=>$productinfo['houseownerid']))->save(array(
                     'usemoney'=>$account['usemoney']+floatval($money),
                     'waitmoney'=>$account['waitmoney']-floatval($money),
-                    ));
+                ));
                 if($mid){
                   switch ($value['ordertype']) {
                     case '1':
@@ -83,26 +83,26 @@ class AutoUpdateAccountController extends CommonController {
                           'addtime'=>time()
                           ));
                         break;
+                  }
+
+                  $id=M('order_time')->where(array('orderid'=>$value['orderid']))->save(array(
+                      'updateaccount_status'=>1,
+                      'updateaccount_time'=>time()
+                  ));
+                  if($id){
+                      $strOut.="系统自动更新房东账户余额处理成功\r\n";
+                  }else{
+                      $strOut.="系统自动更新房东账户余额处理失败\r\n";
+                  }
                 }
 
-                $id=M('order_time')->where(array('orderid'=>$value['orderid']))->save(array(
-                    'updateaccount_status'=>1,
-                    'updateaccount_time'=>time()
-                ));
-                if($id){
-                    $strOut.="系统自动更新房东账户余额处理成功\r\n";
-                }else{
-                    $strOut.="系统自动更新房东账户余额处理失败\r\n";
-                }
-            }
-
-        	
+        	 }
         }
         $log = array(
 	        "task_info" => $strOut,
 	        "add_time" => date("Y-m-d H:i:s"),
 	        "run_time" => (microtime(true)-$this->runTime_1)
-	    );
-	    M("task_log")->add($log);
+	      );
+	      M("task_log")->add($log);
     }
 }

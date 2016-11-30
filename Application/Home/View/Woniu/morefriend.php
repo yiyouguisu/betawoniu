@@ -3,7 +3,7 @@
 <link href="__CSS__/chosen.css" rel="stylesheet" />
 <script src="__JS__/jquery-ui.min.js"></script>
 <link href="__CSS__/jquery-ui.min.css" rel="stylesheet" />
-<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=GxLrHBjtGLbOk23xtDXL1nh5PVsEq77n"></script>
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=GxLrHBjtGLbOk23xtDXL1nh5PVsEq77n&s=1"></script>
 <include file="public:mheader" />
 <div class="wrap">
         <div class="activity_main">

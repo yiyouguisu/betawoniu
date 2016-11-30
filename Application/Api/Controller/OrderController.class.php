@@ -318,7 +318,8 @@ class OrderController extends CommonController
      */
     public function editorder_party()
     {
-        $ret = $GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret = $GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret = file_get_contents('php://input');
         $ret = json_decode($ret, true);
         $orderid = trim($ret['orderid']);
         $aid = intval(trim($ret['aid']));
@@ -571,9 +572,13 @@ class OrderController extends CommonController
             exit(json_encode(array('code' => -200, 'msg' => "The User is not exist!")));
         } elseif (empty($order)) {
             exit(json_encode(array('code' => -200, 'msg' => "The Order is not exist!")));
-        } elseif ($order['status'] == 2) {
-            exit(json_encode(array('code' => -200, 'msg' => "该订单不能关闭")));
-        } else {
+        } elseif($order['status']==2||$order['status']==5){
+           exit(json_encode(array('code'=>-200,'msg'=>"该订单已经审核")));
+        }elseif($order['status']==4){
+           exit(json_encode(array('code'=>-200,'msg'=>"该订单已经完成")));
+        }elseif($order['status']==3){
+           exit(json_encode(array('code'=>-200,'msg'=>"该订单已经取消")));
+        }else {
             $select['orderid'] = $orderid;
             $id = M('order_time')->where($select)->save(array(
                 'status' => $status,
@@ -731,6 +736,8 @@ class OrderController extends CommonController
             exit(json_encode(array('code'=>-200,'msg'=>"该订单不能重复审核")));
         }elseif($status==2&&empty($money)){
             exit(json_encode(array('code'=>-200,'msg'=>"请填写退款金额")));
+        }elseif($money>$order['total']){
+            exit(json_encode(array('code'=>-200,'msg'=>"退款金额大于订单实际支付金额")));
         }else{
             $id=M('refund_apply')->where(array('orderid'=>$orderid))->save(array(
                     'money'=>$money,
@@ -742,10 +749,9 @@ class OrderController extends CommonController
             if($id){
                 if($status==2){
                     $account=M('account')->where(array('uid'=>$uid))->find();
-
                     $mid=M('account')->where(array('uid'=>$uid))->save(array(
-                        'usemoney'=>$account['usemoney']-floatval($money),
-                        ));
+                      'usemoney'=>$account['usemoney']-floatval($money),
+                    ));
                     if($mid){
                         switch ($type)
                         {

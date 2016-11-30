@@ -374,7 +374,7 @@ class RoomController extends CommonController {
         $room= M('Room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.id'=>$rid))->field("a.*,b.title as hostel,b.uid as houseownerid")->find();
         $apply= M('book_room')->where(array('rid'=>$rid,'uid'=>$uid,'_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))->find();
 
-        $booknum=M('book_room')->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))->sum('num');
+        $booknum=M('book_room')->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime",'rid'=>$rid))->sum('roomnum');
         if($uid==''||$rid==''||$num==''||$roomnum==''||$days==''||$starttime==''||$endtime==''||$realname==''||$idcard==''||$phone==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }elseif(empty($user)){
@@ -385,7 +385,7 @@ class RoomController extends CommonController {
             exit(json_encode(array('code'=>-200,'msg'=>"不能预定自己的房间")));
         }elseif($roomnum>$room['mannum']){
             exit(json_encode(array('code'=>-200,'msg'=>"房间数超过限制")));
-        }elseif($room['mannum']-$booknum<$num){
+        }elseif($room['mannum']-intval($booknum)<$num){
             exit(json_encode(array('code'=>-200,'msg'=>"入住人数超过限制")));
         }elseif(!empty($apply)&&$apply['paystatus']==1){
             exit(json_encode(array('code'=>-200,'msg'=>"已经预定")));
@@ -616,7 +616,8 @@ class RoomController extends CommonController {
         }
     }
     public function edit_linkman(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret=file_get_contents('php://input');
         $ret=json_decode($ret,true);
         $uid=intval(trim($ret['uid']));
         $lmid=intval(trim($ret['lmid']));
@@ -625,18 +626,18 @@ class RoomController extends CommonController {
         $phone=trim($ret['phone']);
         $user=M('Member')->where(array('id'=>$uid))->find();
         $linkman= M('linkman')->where(array('id'=>$lmid))->find();
-        $linkman_idcard=M('linkman')->where(array('idcard'=>$idcard))->find();
-        $linkman_phone=M('linkman')->where(array('phone'=>$phone))->find();
+        //$linkman_idcard=M('linkman')->where(array('idcard'=>$idcard))->find();
+        //$linkman_phone=M('linkman')->where(array('phone'=>$phone))->find();
         if($uid==''||$lmid==''||$realname==''||$idcard==''||$phone==''){
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }elseif(empty($user)){
             exit(json_encode(array('code'=>-200,'msg'=>"用户不存在")));
         }elseif(empty($linkman)){
             exit(json_encode(array('code'=>-200,'msg'=>"联系人不存在")));
-        }elseif(!empty($linkman_idcard)){
-            exit(json_encode(array('code'=>-200,'msg'=>"身份证号已经存在")));
-        }elseif(!empty($linkman_phone)){
-            exit(json_encode(array('code'=>-200,'msg'=>"手机号码已经存在")));
+        //}elseif(!empty($linkman_idcard)){
+           // exit(json_encode(array('code'=>-200,'msg'=>"身份证号已经存在")));
+        //}elseif(!empty($linkman_phone)){
+            //exit(json_encode(array('code'=>-200,'msg'=>"手机号码已经存在")));
         }else{
             $data['uid']=$uid;
             $data['realname']=$realname;

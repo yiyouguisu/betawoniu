@@ -53,8 +53,9 @@
       </div>
     </div>
     <script type="text/javascript">
+        var imgCount = 0;
         $(function () {
-            var z = '<form id= "uploadForm" enctype="multipart/form-data" method="post" ><div class="file_img"><img src="__IMG__/hm_c2.jpg" id="zheng"></div><input type="file"  name="Filedata" class="input_file"  onchange="doUpload()" ></form> ';
+            var z = '<form id= "uploadForm" enctype="multipart/form-data" method="post" ><div class="file_img"><img src="__IMG__/hm_c2.jpg" id="img0"></div><input type="file"  name="Filedata0" class="input_file"  onchange="doUpload()" ></form> ';
             $('#zfile').append(z);
             var f = '<form id= "uploadForm1"><div class="file_img"><img src="__IMG__/hm_c2.jpg"></div><input type="file" name="Filedata" onchange="doUpload1()" class="input_file"></form>';
             $('#ffile').append(f);
@@ -90,9 +91,16 @@
                 contentType: false,
                 processData: false,
                 success: function (returndata) {
-                    $('#upf').attr('src', returndata);
-                    $('#idcard_back').val(returndata);
-                    var htm = <>
+                    // $('#upf').attr('src', returndata);
+                    // $('#idcard_back').val(returndata);
+                    $('#img' + imgCount).attr('src',returndata);
+                    $('#Filedata' + imgCount).val(returndata);
+                    imgCount ++;
+                    if(imgCount < 3){
+                    var z = '<form id= "uploadForm" enctype="multipart/form-data" method="post" ><div class="file_img"><img src="__IMG__/hm_c2.jpg" id="img'+imgCount+'"></div><input type="file" id="Filedata'+imgCount+'"  name="Filedata'+imgCount+'" class="input_file"  onchange="doUpload()" ></form> ';
+                    $('#zfile').append(z);
+                    }
+                    // var htm = <>
                 },
                 error: function (returndata) {
                     alert(returndata);

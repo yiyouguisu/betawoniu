@@ -7,6 +7,12 @@ use Web\Common\CommonController;
 use Org\Util\Page;
 
 class OrderController extends CommonController {
+
+    public function _initialize() {
+      if(!session('uid')) {
+        return $this->redirect('member/login');
+      }
+    }
     
     public function index(){
       $uid = session('uid');
@@ -232,11 +238,26 @@ class OrderController extends CommonController {
     }
 
     public function bookroom(){
+        /*
+         * 预定房间逻辑重构 @2016-11-11 by Meroc.
+         */
+
+        //判断用户是否登录.
         $uid = session('uid');
-        $this->assign('uid', $uid);
         if (!$uid) {
+          if($_GET['weixin'] == 1) {
+            $this->redirect(U('Web/Member/wxlogin'));
+          } else {
             $this->error('请先登录！',U('Web/Member/login'));
+          }
         }
+
+        //为表单添加token，避免重复提交。
+        $this->assign('uid', $uid);
+        $_token = md5($uid . time());
+        $this->assign('_token', $_token);
+
+        //查询房间信息
         $rid=I('id');
         $data=array();
         $htitle=M('hostel a')
@@ -245,34 +266,23 @@ class OrderController extends CommonController {
           ->field('a.bookremark,a.id as hid,a.thumb,a.title t,b.title,b.thumb,b.mannum,b.nomal_money,b.id,b.holiday_money,b.week_money')
           ->select();
         $data=$htitle[0];
-        $people=json_decode(cookie('add'));
-        if(!$people) $people = array();
-        foreach ($people as $key => $value) {
-          $people[$key]=(array)$value;
-        }
-        $pcount = count($people) + 1;
+
+        //获取明天, 后天的时间
         $tomorrow = date('Y-m-d', strtotime('+1 day'));
+        $afterTomorrow = date('Y-m-d', strtotime('+2 day'));
+
         $member = M('member')
           ->where(array('id' => session('uid')))
           ->find();
         $data['rid'] = $rid;
-        $startTime = cookie('start_time');
-        $endTime = cookie('end_time');
-        $roomNum = cookie('room_num');
-        $days = cookie('days');
-        if($startTime) {
-          $this->assign('startTime', $startTime);
-        }
-        if($endTime) {
-          $this->assign('endTime', $endTime); 
-        }
-        if($roomNum) {
-          $this->assign('roomNum', $roomNum);
-        }
-        if($days) {
-          $this->assign('days', $days); 
-        }
-        $afterTomorrow = date('Y-m-d', strtotime('+2 day'));
+
+        //获取常用人
+        $linkmen = M('linkman')
+          ->where(array('uid' => $uid))
+          ->order('id desc')
+          ->select();
+
+        $this->assign('linkmen', $linkmen);
         $this->assign('pcount', $pcount);
         $this->assign('member', $member);
         $this->assign('tomorrow', $tomorrow);
@@ -282,6 +292,8 @@ class OrderController extends CommonController {
         $this->assign('id',$rid);
 
         $hid=$data['hid'];
+
+        //获取用户优惠券
         $catids=M('vouchers')->where(array('status'=>1))->getField("id",true);
         $city=M('hostel')->where(array('id'=>$hid))->getField("city");
         $where=array();
@@ -291,145 +303,203 @@ class OrderController extends CommonController {
         $where['_string']="(b.voucherstype='hostel' and (b.voucherscale='all' or (b.voucherscale='area' and city='".$city."') or (b.voucherscale='assign' and a.hid LIKE '%,".$hid.",%'))) or (b.voucherstype='all' and (b.voucherscale='all' or (b.voucherscale='area' and city='".$city."') or (b.voucherscale='assign' and a.hid LIKE '%,".$hid.",%')))";
         $where['b.id']=array('in',$catids);
         $coupon = M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where($where)->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,b.price,b.hid,b.aid,b.city,b.`range`,b.validity_endtime,a.`status`")->order(array('b.validity_endtime'=>'asc','a.`status`'=>'asc','a.inputtime'=>'desc'))->select();
-        //echo M('vouchers_order a')->_sql();
+
         $this->assign("coupon",$coupon);
         $this->display();
+
     }
 
     public function createbook(){
-        // 房间id
-        $rid=intval(trim($_POST['rid']));
-        $uid=session("uid");
-        // 真实姓名
-        $realname=trim($_POST['realname']);
-        $idcard=trim($_POST['idcard']);
-        $phone=trim($_POST['phone']);
-        $num=intval(trim($_POST['people']));
-        $rooms = intval(trim($_POST['rooms']));
-        $starttime=intval(strtotime(trim($_POST['starttime'])));
-        $endtime=intval(strtotime(trim($_POST['endtime'])));
-        $days=intval(trim($_POST['days']));
-        // 人数从cookie中获取
-        $ret['memberids']=json_decode(cookie('add'));
-        $memberids=$ret['memberids'];
-        // 优惠券没做
-        $couponsid=intval(trim($_POST['couponsid']));
-        $discount=floatval(trim($_POST['discount']));
-        // 总金额
-        $money=floatval(trim($_POST['money']));
+      //先判断表单是否被重复提交，如果是，重定向到美宿详情页.
+      $origin_token = session('bookroom_token');   
+      $_token = $_POST['_token'];
+      if($origin_token != $_token) {
+        //若token值不相等，则该表单是最新提交的表单，应该接受，并覆盖session中的token值。
+        session('bookroom_token', $_token);
+      } else {
+        //若token值相等，则说明该表单已被提交的过，该表单不被接受。
+        $this->error('该订单已经提交，请勿重复提交，可到我的订单查看订单详情！'); 
+      }
 
-        $user=M('Member')->where(array('id'=>$uid))->find();
-        $room= M('Room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.id'=>$rid))->field("a.*,b.title as hostel,b.uid as houseownerid")->find();
-        $apply= M('book_room')->where(array('rid'=>$rid,'uid'=>$uid))->find();
+      // 房间id
+      $rid=intval(trim($_POST['rid']));
+      $uid=session("uid");
 
-        $booknum=M('book_room')
-          ->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))
-          ->sum('num');
-        /*
-        if($booknum>=$room['mannum']){
-            $this->error("入住人数超过限制");
-        }elseif($room['mannum']-$booknum<$num){
-            $this->error("入住人数超过限制");
+      // 真实姓名
+      $realname=trim($_POST['realname']);
+      $idcard=trim($_POST['idcard']);
+      $phone=trim($_POST['phone']);
+      $num=intval(trim($_POST['people']));
+      $rooms = intval(trim($_POST['rooms']));
+      $starttime=intval(strtotime(trim($_POST['starttime'])));
+      $endtime=intval(strtotime(trim($_POST['endtime'])));
+      $days=intval(trim($_POST['days']));
+
+      // 获取入住人信息
+      $ret['partners']= $_POST['partners'];
+      $partners =$ret['partners'];
+
+      // 优惠券没做
+      $couponsid=intval(trim($_POST['couponsid']));
+      $discount=floatval(trim($_POST['discount']));
+      // 总金额
+      $money=floatval(trim($_POST['money']));
+
+      //获取房间信息
+      $user=M('Member')->where(array('id'=>$uid))->find();
+      $room= M('Room a')
+        ->join("left join zz_hostel b on a.hid=b.id")
+        ->where(array('a.id'=>$rid))
+        ->field("a.*,b.title as hostel,b.uid as houseownerid")
+        ->find();
+      $apply= M('book_room')->where(array('rid'=>$rid,'uid'=>$uid))->find();
+
+      $booknum=M('book_room')
+        ->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))
+        ->sum('num');
+      $orderid="hc".date("YmdHis", time()) . rand(100, 999);
+      $premoney=$room['money'];
+
+      //构造订单
+      if(empty($premoney)||$premoney=='0.00'||$money=='0.00'){
+          $data['paystatus']=1;
+      }
+      $data['rid']=$rid;
+      $data['hid']=$room['hid'];
+      $data['uid']=$uid;
+      $data['orderid']=$orderid;
+      $data['num']=$num;
+      $data['roomnum'] = $rooms;
+      $data['days']=$days;
+      $data['realname']=$realname;
+      $data['idcard']=$idcard;
+      $data['phone']=$phone;
+      $data['starttime']=$starttime;
+      $data['endtime']=$endtime;
+      $data['couponsid']=$couponsid;
+      $data['discount']=$discount;
+      $data['money']=$money;
+      $data['total']=$money;
+      $data['inputtime']=time();
+
+      $hOwnerId = M('hostel')->where(array('id' => $room['hid']))->getField('uid');
+
+      //生成美宿预订订单
+      $id=M("book_room")->add($data);
+      if($id){
+        $bookin = false;
+        if(!empty($partners)){
+          //添加入住人信息。
+          $links = '';
+          foreach ($partners as $value)
+          {
+            $info = explode(',', $value);
+            if($info[0] == $realname && $info[1] == $phone && $info[2] == $idcard) {
+              $bookin = true; 
+            }
+            M('book_member')->add(array(
+                'uid'=>$uid,
+                'rid'=>$rid,
+                'orderid'=>$orderid,
+                'realname'=>$info[0],
+                'phone'=>$info[1],
+                'idcard'=>$info[2],
+                'inputtime'=>time()
+            ));
+            $exist = M('linkman')->where(array('phone' => $info[1], 'idcard' => $info[2]))->find();
+            if(!$exist) {
+              $adl = M('linkman')
+                ->add(array(
+                  'uid' => $uid,
+                  'realname' => $info[0],
+                  'phone' => $info[1],
+                  'idcard' => $info[2],
+                  'inputtime' => time()
+                ));  
+              $links .= $adl . ',';
+            } else {
+              $links .= $exist['id'] . ',';
+            }
+          }
+          $links = substr($links, 0, strlen($links) - 1);
+          M('book_room')->where(array('orderid' => $orderid))->setFeild('memberids', $links);
         }
-         */
-        //else{
-            $orderid="hc".date("YmdHis", time()) . rand(100, 999);
-            $premoney=$room['money'];
-            if(empty($premoney)||$premoney=='0.00'||$money=='0.00'){
-                $data['paystatus']=1;
-            }
-            $data['rid']=$rid;
-            $data['hid']=$room['hid'];
-            $data['uid']=$uid;
-            $data['orderid']=$orderid;
-            $data['num']=$num;
-            $data['roomnum'] = $rooms;
-            $data['days']=$days;
-            $data['realname']=$realname;
-            $data['idcard']=$idcard;
-            $data['phone']=$phone;
-            $data['starttime']=$starttime;
-            $data['endtime']=$endtime;
-            $data['couponsid']=$couponsid;
-            $data['discount']=$discount;
-            $data['money']=$money;
-            $data['total']=$money;
-            $data['memberids']=$memberids;
-            $data['inputtime']=time();
-            $id=M("book_room")->add($data);
-            if($id){
-                if(!empty($memberids)){
-                    foreach ($memberids as $value)
-                    {
-                        M('book_member')->add(array(
-                            'uid'=>$uid,
-                            'rid'=>$rid,
-                            'orderid'=>$orderid,
-                            'realname'=>$value->realname,
-                            'idcard'=>$value->idcard,
-                            'phone'=>$value->phone,
-                            'inputtime'=>time()
-                            ));
-                    }
-                    cookie('add',null);
-                }
-                M('book_member')->add(array(
-                    'rid'=>$rid,
-                    'uid'=>$uid,
-                    'orderid'=>$orderid,
-                    'realname'=>$realname,
-                    'idcard'=>$idcard,
-                    'phone'=>$phone,
-                    'inputtime'=>time()
-                ));
 
-                $order=M('order')->add(array(
-                    'title'=>"蜗牛客慢生活-订单编号".$orderid,
-                    'uid'=>$uid,
-                    'orderid'=>$orderid,
-                    'nums'=>1,
-                    'money'=>$money,
-                    'total'=>$money,
-                    'discount'=>$discount,
-                    'couponsid'=>$couponsid,
-                    'inputtime'=>time(),
-                    'ordertype'=>1
-                    ));
-                if($order){
-                    if(empty($premoney)||$premoney=='0.00'){
-                        M('order_time')->add(array(
-                        'orderid'=>$orderid,
-                        'status'=>1,
-                        'pay_status'=>1,
-                        'pay_time'=>time(),
-                        'inputtime'=>time()
-                        ));
-                    }else{
-                        M('order_time')->add(array(
-                        'orderid'=>$orderid,
-                        'status'=>1,
-                        'inputtime'=>time()
-                        ));
-                    }
-                }
-                $data['orderid']=$orderid;
-                M("message")->add(array(
-                    'r_id'=>$room['houseownerid'],
-                    'title'=>"申请入住",
-                    'content'=>"您有新的房间预定订单需要审核，请尽快处理。",
-                    'varname'=>"applybookhouse",
-                    'value'=>$orderid,
-                    'inputtime'=>time()
+        //预订人必须入住，所以，入住人中没有预订人的，将预定人信息添加到入住人信息里
+        if(!$bookin) {
+          M('book_member')->add(array(
+              'rid'=>$rid,
+              'uid'=>$uid,
+              'orderid'=>$orderid,
+              'realname'=>$realname,
+              'idcard'=>$idcard,
+              'phone'=>$phone,
+              'inputtime'=>time()
+          ));
+        }
+
+        //生成订单
+        $order=M('order')->add(array(
+            'title'=>"蜗牛客慢生活-订单编号".$orderid,
+            'uid'=>$uid,
+            'orderid'=>$orderid,
+            'nums'=>1,
+            'money'=>$money,
+            'total'=>$money,
+            'discount'=>$discount,
+            'couponsid'=>$couponsid,
+            'inputtime'=>time(),
+            'ordertype'=>1
+            ));
+        if($order){
+            if(empty($premoney)||$premoney=='0.00'){
+                M('order_time')->add(array(
+                'orderid'=>$orderid,
+                'status'=>1,
+                'pay_status'=>1,
+                'pay_time'=>time(),
+                'inputtime'=>time()
                 ));
-                if(empty($premoney)||$premoney=='0.00'){
-                    $this->redirect("Home/Order/bookfinish",array('orderid'=>$orderid));
-                }else{
-                    $this->redirect("Web/Order/bookconfirm",array('orderid'=>$orderid));
-                }
             }else{
-                $this->error("提交失败");
+                M('order_time')->add(array(
+                'orderid'=>$orderid,
+                'status'=>1,
+                'inputtime'=>time()
+                ));
             }
-        //}
+        }
+        $data['orderid']=$orderid;
+        M("message")->add(array(
+            'r_id'=>$room['houseownerid'],
+            'title'=>"申请入住",
+            'content'=>"您有新的房间预定订单需要审核，请尽快处理。",
+            'varname'=>"applybookhouse",
+            'value'=>$orderid,
+            'inputtime'=>time()
+        ));
+
+        $data['orderid']=$orderid;
+
+        \Api\Controller\UtilController::addmessage($hOwnerId,"申请入住","您有新的房间预定订单需要审核，请尽快处理。","您有新的房间预定订单需要审核，请尽快处理。","applybookhouse",$orderid);
+        $Ymsms = A("Api/Ymsms");
+        $content=$Ymsms->getsmstemplate("sms_applybookhouse");
+        $data=json_encode(
+          array(
+            'content'=>$content,
+            'type'=>"sms_applybookhouse",
+            'r_id'=>$hOwnerId
+          )
+        );
+        $statuscode=$Ymsms->sendsms($data);
+
+        if(empty($premoney)||$premoney=='0.00'){
+            $this->redirect("Home/Order/bookfinish",array('orderid'=>$orderid));
+        }else{
+            $this->redirect("Web/Order/bookconfirm",array('orderid'=>$orderid));
+        }
+      }else{
+          $this->error("提交失败");
+      }
     }
     // 预定成功 
     public function bookconfirm() {
@@ -471,57 +541,142 @@ class OrderController extends CommonController {
     }
 
     public function editconfirm() {
-        if (!session('uid')) {
-            $this->redirect('Home/Member/login');
-        } else {
-            $orderid=I('orderid');
-            $order=M('book_room')->where(array('orderid'=>$orderid))->find();
-            $id=$order['rid'];
-            $uid=session("uid");
-            $data=M("Room a")
-              ->join("left join zz_hostel b on a.hid=b.id")
-              ->join("left join zz_member d on b.uid=d.id")
-              ->where(array('a.id'=>$id))
-              ->field('a.id as rid,a.hid,b.uid,d.nickname,d.head,d.realname_status,d.houseowner_status,d.rongyun_token,a.title,a.thumb,a.hit,a.area,a.nomal_money,a.week_money,a.holiday_money,a.money,a.mannum,a.support,a.mannum,a.inputtime,b.title as hostel,b.area as hostelarea,b.address as hosteladdress,b.lat,b.lng')
-                ->find();
-            if(empty($data['reviewnum'])) $data['reviewnum']=0;
-            $this->assign("data",$data);
-            $this->assign("order",$order);
-
-            $where=array();
-            $where['a.hid']=$data['hid'];
-            $where['a.isdel']=0;
-            $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'room'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
-            $house_owner_room=M("Room a")
-                ->join("left join {$sqlI} c on a.id=c.value")
-                ->join("left join zz_bedcate b on a.roomtype=b.id")
-                ->where($where)
-                ->order(array('id'=>"desc"))
-                ->field('a.id,a.title,a.thumb,a.hit,a.area,a.nomal_money,a.week_money,a.holiday_money,a.money,a.mannum,a.support,a.conveniences,a.bathroom,a.media,a.food,a.mannum,a.content,a.inputtime,c.reviewnum,b.catname')
-                ->select();
-            $this->assign("house_owner_room",$house_owner_room);
-            $this->assign("count",count($house_owner_room));
-            $this->display();
+      $uid = session('uid');
+      if (!$uid) {
+          $this->redirect('Home/Member/login');
+      } else {
+        $orderid=I('orderid');
+        $bookinfo=M('book_room')->where(array('orderid'=>$orderid))->find();
+        if(!$bookinfo) {
+          $this->error('订单错误，请联系系统管理员！', U('Order/party_order_detail', array('orderid' => $orderid)));
         }
-    
-    
+        $id=$bookinfo['rid'];
+        $starttime = strtotime(I('starttime'));
+        $endtime = strtotime(I('endtime'));
+        $days = I('days');
+        $roomnum = I('rooms');
+        $pnum = I('people');
+        $money = I('money');
+        $realname = I('realname');
+        $phone = I('phone');
+        $idcard = I('idcard');
+        $partners = I('partners');
+
+        //修改预订信息
+        if($starttime) {
+          $bookinfo['starttime'] = $starttime;
+        }
+        if($endtime) {
+          $bookinfo['endtime'] = $endtime;
+        }
+        if($days) {
+          $bookinfo['days'] = $days;
+        }
+        if($roomnum) {
+          $bookinfo['roomnum'] = $roomnum;
+        }
+        if($realname) {
+          $bookinfo['realname'] = $realname;
+        }
+        if($phone) {
+          $bookinfo['phone'] = $phone;
+        }
+        if($idcard) {
+          $bookinfo['idcard'] = $idcard;
+        }
+
+        $bookinfo['money'] = $money;
+
+        //保存修改后的订单
+        D('book_room')->save($bookinfo);
+
+          //修改入住人
+        M('book_member')->where(array('orderid' => $orderid))->delete();
+        foreach($partners as $partner) {
+          $infos = explode(',', $partner); 
+          $m = M('book_member')->add(array(
+            'uid' => $uid,
+            'rid' => $bookinfo['rid'],
+            'orderid' => $orderid,
+            'realname' => $infos[0],
+            'phone' => $infos[1],
+            'idcard' => $infos[2],
+            'inputtime' => time()
+          ));
+        }
+        M('book_member')->add(array(
+          'uid' => $uid,
+          'rid' => $bookinfo['rid'],
+          'orderid' => $orderid,
+          'realname' => $realname,
+          'phone' => $phone,
+          'idcard' => $infos[2],
+          'inputtime' => time()
+        ));
+
+        //修改订单
+        $order=M('order')->where(array('orderid' => $orderid))->find();
+        $order['money'] = $money;
+        $order['total'] = $money;
+        $order['discount'] = $discount;
+        $order['couponsid'] = $couponsid;
+        $result = D('order')->save($order);
+        if($result){
+          if(empty($money)||$money=='0.00'){
+            M('order_time')->add(array(
+              'orderid'=>$orderid,
+              'status'=>1,
+              'pay_status'=>1,
+              'pay_time'=>time(),
+              'inputtime'=>time()
+            ));
+          }else{
+            M('order_time')->add(array(
+              'orderid'=>$orderid,
+              'status'=>1,
+              'inputtime'=>time()
+            ));
+          }
+        }
+        
+        $this->assign('data', $bookinfo);
+        $this->display();
+      }
     }
+
     // 参加活动
     public function joinparty(){
+        /*
+         * 参加活动重构 @2016-11-11 by Meroc.
+         */
         $uid=session('uid');
+
+        //判断登录
         if (!$uid) {
-            $this->error('请先登录！',U('Web/Member/login'));
-        } else {
-            $pid=I('id');
-            $data=M('activity')->where(array('id'=>$pid))->find();
-            $people=json_decode(cookie('add'));
-            foreach ($people as $key => $value) {
-                $people[$key]=(array)$value;
-            }
-            $this->assign('people',$people);
-            $this->assign('data',$data);
-            $this->assign('pid',$pid);
+          $this->error('请先登录！',U('Web/Member/login'));
         }
+
+        $this->assign('uid', $uid);
+
+        //为表单添加token，防止重复提交.
+        $token = md5($uid . time());
+        $this->assign('_token', $token);
+
+        $pid=I('id');
+
+        //获取活动详情
+        $data=M('activity')->where(array('id'=>$pid))->find();
+        $this->assign('data',$data);
+        $this->assign('pid',$pid);
+
+        //获取常用人
+        $linkmen = M('linkman')
+          ->where(array('uid' => $uid))
+          ->order('id desc')
+          ->select();
+
+        $this->assign('linkmen', $linkmen);
+
         $where=array();
         $member = M('member')->where(array('id' => $uid))->find();
         $this->assign('member', $member);
@@ -536,7 +691,9 @@ class OrderController extends CommonController {
         $coupon = M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where($where)->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,b.price,b.hid,b.aid,b.city,b.`range`,b.validity_endtime,a.`status`")->order(array('b.validity_endtime'=>'asc','a.`status`'=>'asc','a.inputtime'=>'desc'))->select();
         $this->assign("coupon",$coupon);
         $this->display();
+
     }
+      
     // 生成活动订单
     public function createAct(){
         $uid=session('uid');
@@ -552,31 +709,54 @@ class OrderController extends CommonController {
         $data['discount']=intval(trim($_POST['discount']));
         $data['money']=floatval(trim($_POST['money']));
         $data['total']=$_POST['money'];
-        $memberids=json_decode(cookie('add'));
-        dump($memberids);exit;
+
+        //获取入住人信息
+        $memberids=$_POST['partners'];
+        $data['inputtime']=time();
+
+        /*
+         * 生成预订信息
+         */
+        $id=M("activity_apply")->add($data);
+
+        /*
+         * 记录参与人
+         */
+        $links = '';
         foreach ($memberids as $value)
         {
+          $infos = explode(',', $value);
           $res = M('activity_member')->add(array(
             'uid'=>$uid,
             'aid'=>$aid,
-            'linkmanid'=>$value->id,
             'orderid'=>$orderid,
-            'realname'=>$value->realname,
-            'idcard'=>$value->idcard,
-            'phone'=>$value->phone,
+            'realname'=>$infos[0],
+            'phone'=>$infos[1],
+            'idcard'=>$infos[2],
             'inputtime'=>time()
           ));
-          dump($res);exit;
+          $exist = M('linkman')->where(array('phone' => $infos[1], 'idcard' => $infos[2]))->find();
+          if(!$exist) {
+            $lid = M('linkman')
+              ->add(array(
+                'realname' => $infos[0],
+                'phone' => $infos[1],
+                'idcard' => $infos[2],
+                'uid' => $uid,
+                'inputtime' => time()
+              ));
+            $links .= $lid . ',';
+          } else {
+            $links .= $exist['id'] . ',';
+          }
         }
-        $data['inputtime']=time();
-        foreach ($memberids as $key => $value) {
-           $memberids.=$value->id.",";
-        }
-        $data['memberids']=$memberids;
-        $id=M("activity_apply")->add($data);
+        M('activity_apply')
+          ->where(array('orderid' => $orderid))
+          ->setField('memberids', substr($links, 0, strlen($links) - 1));
 
-        // 清除COOKIE中存在的联系人
-        cookie('add',null);
+        /*
+         * 将报名人加入参与人
+         */
         M('activity_member')->add(array(
           'uid'=>$uid,
           'aid'=>$aid,
@@ -586,6 +766,8 @@ class OrderController extends CommonController {
           'phone'=>$data['phone'],
           'inputtime'=>time()
         ));
+
+        //生成订单
         $order=M('order')->add(array(
             'title'=>"蜗牛客慢生活-订单编号".$orderid,
             'uid'=>$uid,
@@ -614,6 +796,14 @@ class OrderController extends CommonController {
                 'inputtime'=>time()
                 ));
             }
+
+            $data['orderid']=$orderid;
+            \Api\Controller\UtilController::addmessage($room['houseownerid'],"申请入住","您有新的房间预定订单需要审核，请尽快处理。","您有新的房间预定订单需要审核，请尽快处理。","applybookhouse",$orderid);
+            $Ymsms = A("Api/Ymsms");
+            $content=$Ymsms->getsmstemplate("sms_applybookhouse");
+            $data=json_encode(array('content'=>$content,'type'=>"sms_applybookhouse",'r_id'=>$room['houseownerid']));
+            $statuscode=$Ymsms->sendsms($data);
+
             $data['orderid']=$orderid;
             $premoney=$data['total'];
             if(empty($premoney)||$premoney=='0.00'){
@@ -621,15 +811,16 @@ class OrderController extends CommonController {
             }else{
                 $this->redirect("Web/Order/partyPay",array('orderid'=>$orderid));
             }
-            
         }
-        //}
     }
+
     public function joinsuccess(){
         $orderid=I('orderid');
         $order=M('activity_apply')->where(array('orderid'=>$orderid))->find();
         $id=$order['aid'];
         $uid=session("uid");
+        $this->assign('order', $order);
+
         $data=M("activity a")
             ->join("left join zz_member b on a.uid=b.id")
             ->where(array('a.id'=>$id))
@@ -679,9 +870,12 @@ class OrderController extends CommonController {
     }
     public function partyPay(){
         $uid=session('uid');
+        if(!$uid) {
+          $this->error('请先登录！', U('member/login')); 
+        }
         $orderid=I('orderid');
         $order=M('activity_apply')->where(array('orderid'=>$orderid))->find();
-        $coupons=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$order['couponsid']))->field("b.title,b.price")->find();
+        $coupons=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$order['couponsid']))->field("b.title,a.price")->find();
         $order['coupon_name']=$coupons['title']."(￥".$coupons['price']."元)";
         $id=$order['aid'];
         $uid=session("uid");
@@ -716,9 +910,9 @@ class OrderController extends CommonController {
         $where['b.validity_endtime']=array('egt',time());
         $where['_string']="(b.voucherstype='party' and (b.voucherscale='all' or (b.voucherscale='area' and city='".$city."') or (b.voucherscale='assign' and a.aid LIKE '%,".$aid.",%'))) or (b.voucherstype='all' and (b.voucherscale='all' or (b.voucherscale='area' and city='".$city."') or (b.voucherscale='assign' and a.aid LIKE '%,".$aid.",%')))";
         $where['b.id']=array('in',$catids);
-        $coupon = M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where($where)->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,b.price,b.hid,b.aid,b.city,b.`range`,b.validity_starttime,b.validity_endtime,a.`status`")->order(array('b.validity_endtime'=>'asc','a.`status`'=>'asc','a.inputtime'=>'desc'))->select();
+        $coupon = M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where($where)->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,a.price,b.hid,b.aid,b.city,b.`range`,b.validity_starttime,b.validity_endtime,a.`status`")->order(array('b.validity_endtime'=>'asc','a.`status`'=>'asc','a.inputtime'=>'desc'))->select();
         $this->assign("coupon",$coupon);
-        // 名宿信息
+        // 活动信息
         $this->assign("data",$data);
         // 订单信息
         $this->assign("order",$order);
@@ -775,12 +969,11 @@ class OrderController extends CommonController {
         $paytypeconfig=C("paytypeconfig");
 
         $channel=$paytypeconfig[$paytype];
-        // M('order')->where(array('orderid'=>$orderid))->save(array(
-        //     'paytype'=>$paytype,
-        //     'channel'=>$paytypeconfig[$paytype],
-        // ));
+        M('order')->where(array('orderid'=>$orderid))->save(array(
+            'paytype'=>$paytype,
+            'channel'=>$paytypeconfig[$paytype],
+        ));
 
-        ////
         if (!empty($discount) && $discount != 0.00 && $order['couponsid'] != 0) {
             M('vouchers_order')->where(array('id' => $order['couponsid']))->setField('status', 1);
         }
@@ -825,26 +1018,21 @@ class OrderController extends CommonController {
                 break;
             }
 
-        ///
-
         if($order['ordertype']==1){
             $room= M('book_room a')->join("left join zz_room b on a.rid=b.id")->where(array('a.orderid'=>$orderid))->find();
             $title="预定房间";
             $body="预定".$room['title']."支付".$money;
             $value=$room['rid'];
         }else if($order['ordertype']==2){
-            $activity= M('activity_apply a')->join("left join zz_activity b on a.aid=b.id")->where(array('a.orderid'=>$orderid))->find();
+          $activity= M('activity_apply a')
+            ->join("left join zz_activity b on a.aid=b.id")
+            ->where(array('a.orderid'=>$orderid))->find();
             $title="参加活动";
             $body="参加".$activity['title'].",支付".$money;
             $value=$activity['aid'];
         }
-        //$cid=$order['couponsid'];
-        // 更新优惠券状态为已使用
-        //M('coupons_order')->where(array('id'=>$order['couponsid'],'uid'=>$order['uid']))->save(array('status'=>1));
+
         $orderid=$orderid.rand(100000, 999999);
-
-
-
 
         if ($paytype == 1) {
             $this->alipay_wappay($orderid,$title,$body,$money,$order['ordertype'],$value);
@@ -859,16 +1047,17 @@ class OrderController extends CommonController {
 
     public function weixin_wappay($orderid,$title,$body,$money,$ordertype,$value) {
         $Wxhelp=A('Web/Wxhelp');
-        $openid = $Wxhelp->GetOpenid();
+        //$openid = $Wxhelp->GetOpenid();
+        $openid = M('member')->where(array('id' => session('uid')))->getField('openid');
         Vendor('Wxpay.lib.WxPay#Api');
         Vendor('Wxpay.lib.WxPay#JsApiPay');
-        $notify_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/weixinnotify');
+        $notify_url = 'http://' . $_SERVER['HTTP_HOST'] . U('Api/Pay/weixinwapnotify');
         $tools = new \JsApiPay();
         $order = M('order')->where(array('orderid' => $_GET['orderid']))->find();
         $input = new \WxPayUnifiedOrder();
         $input->SetBody($order['title']);
         $input->SetAttach($order['orderid']);
-        $input->SetOut_trade_no($order['orderid']);
+        $input->SetOut_trade_no($order['orderid'] . rand(100000, 999999));
         $input->SetTotal_fee(1);
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 600));
@@ -876,6 +1065,8 @@ class OrderController extends CommonController {
         $input->SetNotify_url($notify_url);
         $input->SetTrade_type("JSAPI");
         $input->SetOpenid($openid);
+        $input->SetAppid("wx670ea712732e93f5");//公众账号ID
+        $input->SetMch_id("1355088902");//商户号
         $jsWxOrder = \WxPayApi::unifiedOrder($input);
         $jsApiParameters = $tools->GetJsApiParameters($jsWxOrder);
         $this->assign('total', 1);
@@ -901,31 +1092,33 @@ class OrderController extends CommonController {
       $show_url = "http://beta.nclouds.net/index.php/Web/Note/show/id/272.html";//$_POST['WIDshow_url'];
      
       //商品描述，可空
-      //$body = $body;//$_POST['WIDbody'];
+      $body = $body;//$_POST['WIDbody'];
       $AliPayConfig=array(
           'partner' => '2088221764898885',
           'seller_id'=>'3221586551@qq.com'
       );
+      $order = M('order')->where(array('orderid' => $orderid))->find();
       $return_url = '';
+      $returnOrderid = substr($orderid,0,strlen($orderid)-6);
       if($ordertype == 2) {
-        $return_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Web/Order/joinsuccess') . "?orderid={$orderid}"; 
+        $return_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Web/Order/joinsuccess') . "?orderid={$returnOrderid}"; 
       } else {
-        $return_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Web/Order/bookpaysuccess') . "?orderid={$orderid}"; 
+        $return_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Web/Order/bookpaysuccess') . "?orderid={$returnOrderid}"; 
       }
       $notify_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/alipaynotify');
       $parameter = array(
           "partner" => trim($AliPayConfig['partner']),
           "seller_id" => $AliPayConfig['seller_id'],
           "out_trade_no" => $orderid,
-          "subject" => "test",
-          "body" => "test",
-          "total_fee" => "0.01",
+          "subject" => 'test',
+          "body" => 'test',
+          "total_fee" => "0.1",
           "notify_url" => $notify_url,
           "return_url" => $return_url,
           "service" => "alipay.wap.create.direct.pay.by.user",
           "payment_type" => "1",
           "exter_invoke_ip"=>get_client_ip(),
-          "_input_charset" => 'utf-8',
+          "input_charset" => 'utf-8',
       );
 
       M('thirdparty_send')->add(array(
@@ -1258,11 +1451,6 @@ class OrderController extends CommonController {
     }
 
     public function hotel_order_detail() {
-      cookie('add', null);
-      cookie('phone', null);
-      cookie('start_time', null);
-      cookie('end_time', null);
-      cookie('days', null);
       $orderid = $_GET['orderid'];
       $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,c.refund_status,a.ordertype,c.donetime,c.review_remark,d.endtime,f.remark as refundreview_remark,e.uid as huid,c.cancel_status,c.review_status');
       $order=M('order a')
@@ -1309,7 +1497,7 @@ class OrderController extends CommonController {
     }
 
     public function hotelPay() {
-        $uid=session("uid");
+      $uid=session("uid");
       $orderid = $_GET['orderid'];
       $orderTime = M('orderTime')->where(array('orderid' => $orderid))->find();
       if($orderTime['pay_status']) {
@@ -1325,7 +1513,7 @@ class OrderController extends CommonController {
         ->where(array('a.orderid' => $orderid))
         ->field($field)
         ->find();
-        $coupons=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$order['couponsid']))->field("b.title,b.price")->find();
+        $coupons=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$order['couponsid']))->field("b.title,a.price")->find();
         $order['coupon_name']=$coupons['title']."(￥".$coupons['price']."元)";
       $productinfo=M('book_room a')
         ->join("left join zz_room c on a.rid=c.id")
@@ -1345,7 +1533,7 @@ class OrderController extends CommonController {
         $where['b.validity_endtime']=array('egt',time());
         $where['_string']="(b.voucherstype='hostel' and (b.voucherscale='all' or (b.voucherscale='area' and city='".$city."') or (b.voucherscale='assign' and a.hid LIKE '%,".$hid.",%'))) or (b.voucherstype='all' and (b.voucherscale='all' or (b.voucherscale='area' and city='".$city."') or (b.voucherscale='assign' and a.hid LIKE '%,".$hid.",%')))";
         $where['b.id']=array('in',$catids);
-        $coupon = M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where($where)->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,b.price,b.hid,b.aid,b.city,b.`range`,b.validity_starttime,b.validity_endtime,a.`status`")->order(array('b.validity_endtime'=>'asc','a.`status`'=>'asc','a.inputtime'=>'desc'))->select();
+        $coupon = M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where($where)->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,a.price,b.hid,b.aid,b.city,b.`range`,b.validity_starttime,b.validity_endtime,a.`status`")->order(array('b.validity_endtime'=>'asc','a.`status`'=>'asc','a.inputtime'=>'desc'))->select();
         //echo M('vouchers_order a')->_sql();
         $this->assign("coupon",$coupon);
       $this->display(); 
@@ -1367,7 +1555,6 @@ class OrderController extends CommonController {
         ->count();
       $order['num'] = $memberCount + 1;
       $this->assign('data', $order);
-
       $this->display(); 
     }
 
@@ -1387,7 +1574,6 @@ class OrderController extends CommonController {
         ->count();
       $order['num'] = $memberCount + 1;
       $this->assign('data', $order);
-
       $this->display(); 
     }
 
@@ -1478,118 +1664,76 @@ class OrderController extends CommonController {
     }
 
     public function editbook() {
-      // 房间id
-      $rid=intval(trim($_POST['rid']));
-      $uid=session("uid");
-      // 真实姓名
-      $realname=trim($_POST['realname']);
-      $idcard=trim($_POST['idcard']);
-      $phone=trim($_POST['phone']);
-      $num=intval(trim($_POST['people']));
-      $rooms = intval(trim($_POST['rooms']));
-      $starttime=intval(strtotime(trim($_POST['starttime'])));
-      $endtime=intval(strtotime(trim($_POST['endtime'])));
-      $days=intval(trim($_POST['days']));
-      $orderid = $_POST['orderid'];
-      // 人数从cookie中获取
-      $ret['memberids']=json_decode(cookie('add'));
-      $money=floatval(trim($_POST['money']));
-      $user=M('Member')
-        ->where(array('id'=>$uid))
-        ->find();
-      $room= M('Room a')
-        ->join("left join zz_hostel b on a.hid=b.id")
-        ->where(array('a.id'=>$rid))
-        ->field("a.*,b.title as hostel,b.uid as houseownerid")
-        ->find();
-      $apply= M('book_room')->where(array('rid'=>$rid,'uid'=>$uid))->find();
-      $booknum=M('book_room')
-        ->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))
-        ->sum('num');
+
       /*
-      if($booknum>=$room['mannum']){
-          $this->error("入住人数超过限制");
-      }elseif($room['mannum']-$booknum<$num){
-          $this->error("入住人数超过限制");
-      }
+       * 修改房间逻辑重构 @2016-11-12 by Meroc.
        */
-      //else{
-          $data = M('book_room')->where(array('orderid' => $orderid))->find();
-          $premoney=$room['money'];
-          $data['num']=$num;
-          $data['roomnum'] = $rooms;
-          $data['days']=$days;
-          $data['realname']=$realname;
-          $data['idcard']=$idcard;
-          $data['phone']=$phone;
-          $data['starttime']=$starttime;
-          $data['endtime']=$endtime;
-          $data['couponsid']=$couponsid;
-          $data['discount']=$discount;
-          $data['money']=$money;
-          $data['total']=$money;
-          $data['memberids']=$memberids;
-          $data['inputtime']=time();
-          $id=D("book_room")->save($data);
-          if($id){
-              if(!empty($memberids)){
-                  M('book_member')->where(array('orderid' => $orderid))->delete();
-                  foreach ($memberids as $value)
-                  {
-                      M('book_member')->add(array(
-                          'uid'=>$uid,
-                          'rid'=>$rid,
-                          'orderid'=>$orderid,
-                          'realname'=>$value->realname,
-                          'idcard'=>$value->idcard,
-                          'phone'=>$value->phone,
-                          'inputtime'=>time()
-                          ));
-                  }
-                  cookie('add',null);
-              }
-              M('book_member')->add(array(
-                'rid'=>$rid,
-                'uid'=>$uid,
-                'orderid'=>$orderid,
-                'realname'=>$realname,
-                'idcard'=>$idcard,
-                'phone'=>$phone,
-                'inputtime'=>time()
-              ));
-              $order=M('order')->where(array('orderid' => $orderid))->find();
-              $order['money'] = $money;
-              $order['total'] = $premoney*$num;
-              $order['discount'] = $discount;
-              $order['couponsid'] = $couponsid;
-              $order = D('order')->save($order);
-              if($order){
-                  $orderTime = M('order_time')->where(array('orderid' => $orderid))->find();
-                  if(empty($premoney)||$premoney=='0.00'){
-                    $orderTime['pay_status'] = 1;
-                    $orderTime['pay_time'] = time();
-                  }else{
-                    $orderTime['status'] = 1;
-                  }
-                  D('order_time')->save($orderTime);
-              }
-              M("message")->add(array(
-                  'r_id'=>$room['houseownerid'],
-                  'title'=>"申请入住",
-                  'content'=>"您有房客修改了订单信息，请尽快处理。",
-                  'varname'=>"applybookhouse",
-                  'value'=>$orderid,
-                  'inputtime'=>time()
-              ));
-              if(empty($premoney)||$premoney=='0.00'){
-                  $this->redirect("Home/Order/bookfinish",array('orderid'=>$orderid));
-              }else{
-                  $this->redirect("Web/Order/editconfirm",array('orderid'=>$orderid));
-              }
-          }else{
-              $this->error("修改失败！");
-          }
-      //}
+
+      //判断用户是否登录.
+      $uid = session('uid');
+      if (!$uid) {
+          $this->error('请先登录！',U('Web/Member/login'));
+      }
+
+      //为表单添加token，避免重复提交。
+      $this->assign('uid', $uid);
+      $_token = md5($uid . time());
+      $this->assign('_token', $_token);
+
+      //查询房间信息
+      $orderid = I('orderid');
+
+      $bookinfo = M('book_room a')
+        ->join('zz_room b on a.rid = b.id')
+        ->join('zz_hostel c on a.hid = c.id')
+        ->where(array('a.orderid' => $orderid))
+        ->field('a.id,a.hid,a.rid,a.realname,a.idcard,a.days,a.phone,a.num,a.roomnum as room_num,a.starttime,a.endtime,a.orderid,a.money,a.total,a.discount,b.title as room_name,b.thumb as room_img,b.nomal_money,b.holiday_money,b.week_money,c.title as hotel_name,c.thumb as hotel_img,c.bookremark')
+        ->find();
+
+      if(!$bookinfo) {
+        $this->error('订单信息错误，无法修改，请联系系统管理员！');
+      }
+
+      //获取入住人信息，但是排除预约人
+      $partners = M('book_member')
+        ->where(array(
+          'orderid' => $orderid,
+          'phone' => array('neq', $bookinfo['phone'])
+        ))
+        ->select();
+
+      //获取常用人
+      $linkmen = M('linkman')
+        ->where(array('uid' => $uid))
+        ->order('id desc')
+        ->select();
+
+      $this->assign('linkmen', $linkmen);
+      $this->assign('pcount', count($partners) + 1);
+      $this->assign('partners',$partners);
+      $this->assign('data',$bookinfo);
+
+      $hid=$data['hid'];
+
+      //获取用户优惠券
+      $catids=M('vouchers')->where(array('status'=>1))->getField("id",true);
+      $city=M('hostel')->where(array('id'=>$hid))->getField("city");
+      $where=array();
+      $where['a.uid']=$uid;
+      $where['a.status']=0;
+      $where['b.validity_endtime']=array('egt',time());
+      $where['_string']="(b.voucherstype='hostel' and (b.voucherscale='all' or (b.voucherscale='area' and city='".$city."') or (b.voucherscale='assign' and a.hid LIKE '%,".$hid.",%'))) or (b.voucherstype='all' and (b.voucherscale='all' or (b.voucherscale='area' and city='".$city."') or (b.voucherscale='assign' and a.hid LIKE '%,".$hid.",%')))";
+      $where['b.id']=array('in',$catids);
+      $coupon = M('vouchers_order a')
+        ->join("left join zz_vouchers b on a.catid=b.id")
+        ->where($where)
+        ->field("a.id,a.catid,b.thumb,b.title,b.voucherstype,b.voucherscale,b.price,b.hid,b.aid,b.city,b.`range`,b.validity_endtime,a.`status`")
+        ->order(array('b.validity_endtime'=>'asc','a.`status`'=>'asc','a.inputtime'=>'desc'))
+        ->select();
+
+      $this->assign("coupon",$coupon);
+      $this->display();
+
     }
 
     /*
@@ -1605,12 +1749,16 @@ class OrderController extends CommonController {
         ->join('zz_order_time b on a.orderid = b.orderid') 
         ->join('zz_activity_apply c on a.orderid = c.orderid')
         ->join('zz_activity d on c.aid = d.id')
-        ->where(array('a.orderid' => $orderid, 'c.uid' => $uid))
-        ->field('a.orderid, a.money, a.total, a.paytype, b.inputtime, b.status, b.pay_status,b.cancel_status, b.refund_status, b.evaluate_status, d.title, d.thumb, d.starttime, d.endtime, d.address, c.idcard, c.phone, c.realname,d.id as aid, d.uid')
+        ->join('zz_refund_apply e on a.orderid = e.orderid')
+        ->where(array('a.orderid' => $orderid))
+        ->field('a.orderid, a.money, a.total, a.paytype, b.inputtime, b.status, b.pay_status,b.cancel_status, b.refund_status, b.evaluate_status, d.title, d.thumb, d.starttime, d.endtime, d.address, c.idcard, c.phone, c.realname,d.id as aid, d.uid, e.remark as review_remark')
         ->find();
       $partners = M('activity_member')
         ->where(array('orderid' => $orderid))
         ->select();
+      if($order['endtime'] < time()) {
+        $order['finished'] = 1;
+      }
       $partnerNumber = count($partners);
       $partnerStr = '';
       if(is_array($partners)) {
@@ -1619,7 +1767,7 @@ class OrderController extends CommonController {
         }
         $partnerStr = substr($partnerStr, 0, strlen($partnerStr) - 3);
       }
-      if($uid = $order['uid']) {
+      if($uid == $order['uid']) {
         $this->assign('is_owner', 1);
       } else {
         $this->assign('is_owner', 0);
@@ -1630,5 +1778,165 @@ class OrderController extends CommonController {
       $this->assign('order', $order);
       $this->display(); 
     }
-    
+
+    public function audit_party() {
+      $orderid = $_GET['orderid'];
+      $order = M('activity_apply a')
+        ->join('zz_activity b on a.aid = b.id')
+        ->join('zz_member c on a.uid = c.id')
+        ->where(array('a.orderid' => $orderid))
+        ->field('a.realname, a.idcard, a.phone, a.orderid, a.uid, a.aid, a.money, b.title, a.inputtime, c.head,b.starttime,b.endtime')
+        ->find();
+      $pnum = M('activity_member')->where(array('orderid' => $orderid))->count();
+      $this->assign('data', $order); 
+      $this->assign('pnum', $pnum);
+      $this->display();  
+    }
+
+    public function editParty() {
+      $uid = session('uid');
+      if(!$uid) {
+        $this->error('请先登录！', U('Member/login'));
+      }
+
+      $orderid = $_GET['orderid'];
+      $uid = session('uid');
+
+      $this->assign('uid', $uid);
+
+      //查询订单
+      $order = M('activity_apply a')
+        ->join('zz_activity b on a.aid = b.id')
+        ->join('zz_order c on a.orderid = c.orderid')
+        ->where(array('a.orderid' => $orderid))
+        ->field('a.aid, a.realname, a.phone, a.idcard, a.uid, b.title, b.thumb, a.orderid, b.money, b.starttime, b.endtime, b.address')
+        ->find();
+
+      //查询不到订单
+      if(!$order) {
+        $this->error('查询订单错误，请联系管理员！');
+      }
+
+      //查询常用人
+      $linkmen = M('linkman')
+        ->where(array('uid' => session('uid')))
+        ->select();
+
+      $this->assign('linkmen', $linkmen);
+
+      //查询参与人
+      $partners = M('activity_member')
+        ->where(array('orderid' => $orderid, 'phone' => array('neq', $order['phone'])))
+        ->select();
+      
+      $lcount = count($partners) + 1;
+      $this->assign('lcount', $lcount);
+
+      $this->assign('data', $order);
+      $this->assign('partners', $partners);
+      $this->display(); 
+    }
+
+    public function editpartyconfirm() {
+      $uid = session('uid');
+      if(!$uid) {
+        $this->error('请先登录！', U('member/login'));
+      }
+
+      $ret = $_POST;
+
+      //获取修改提交信息
+      $orderid = trim($ret['orderid']);
+      $aid = intval(trim($ret['aid']));
+      $uid = session('uid');
+      $realname = trim($ret['realname']);
+      $idcard = trim($ret['idcard']);
+      $phone = trim($ret['phone']);
+      $num = intval(trim($ret['num']));
+      $couponsid = intval(trim($ret['couponsid']));
+      $discount = intval(trim($ret['discount']));
+      $money = floatval(trim($ret['money']));
+
+      $memberids = json_encode($_POST['partners']);
+      $partners = $_POST['partners'];
+
+      $user = M('Member')->where(array('id' => $uid))->find();
+      $order = M('order')->where(array('orderid' => $orderid))->find();
+      $activity = M('activity')->where(array('id' => $aid))->find();
+      $apply = M('activity_apply')->where(array('aid' => $aid, 'uid' => $uid))->find();
+      
+      $premoney = $activity['money'];
+      if (empty($premoney) || $premoney == '0.00' || $activity['isfree'] == 1 || $money == '0.00') {
+          $data['paystatus'] = 1;
+      }
+      $data['aid'] = $aid;
+      $data['uid'] = $uid;
+      $data['orderid'] = $orderid;
+      $data['realname'] = $realname;
+      $data['idcard'] = $idcard;
+      $data['phone'] = $phone;
+      $data['num'] = $num;
+      $data['couponsid'] = $couponsid;
+      $data['discount'] = $discount;
+      $data['money'] = $money;
+      $data['total'] = $premoney * $num;
+      $data['inputtime'] = time();
+      $data['memberids'] = $memberids;
+      $id = M("activity_apply")->where(array('orderid' => $orderid))->save($data);
+      if($id) {
+        M('activity_member')->where(array('orderid' => $orderid))->delete();
+        if ($partners) {
+          foreach ($partners as $partner) {
+            $infos = explode(',', $partner);
+            M('activity_member')->add(array(
+              'uid' => $uid,
+              'aid' => $aid,
+              'orderid' => $orderid,
+              'realname' => $infos[0],
+              'idcard' => $infos[1],
+              'phone' => $infos[2],
+              'inputtime' => time()
+            ));
+          }
+        }
+        M('activity_member')->add(array(
+            'uid' => $uid,
+            'aid' => $aid,
+            'orderid' => $orderid,
+            'realname' => $realname,
+            'idcard' => $idcard,
+            'phone' => $phone,
+            'inputtime' => time()
+        ));
+        $order = M('order')->where(array('orderid' => $orderid))->save(array(
+            'title' => "蜗牛客慢生活-订单编号" . $orderid,
+            'uid' => $uid,
+            'orderid' => $orderid,
+            'nums' => 1,
+            'money' => $money,
+            'total' => $premoney * $num,
+            'discount' => $discount,
+            'couponsid' => $couponsid,
+            'inputtime' => time(),
+            'ordertype' => 2
+        ));
+        if ($order) {
+          if (empty($premoney) || $premoney == '0.00') {
+            M('order_time')->where(array('orderid' => $orderid))->save(array(
+                'orderid' => $orderid,
+                'status' => 4,
+                'pay_status' => 1,
+                'pay_time' => time(),
+                'donetime' => time(),
+                'inputtime' => time()
+            ));
+          }
+        }
+        $data['orderid'] = $orderid;
+        $this->assign('data', $data);
+        $this->display(); 
+      } else {
+        $this->error('修改失败！');
+      }
+    }
 }

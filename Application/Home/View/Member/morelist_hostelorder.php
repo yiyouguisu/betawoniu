@@ -55,8 +55,8 @@
                                                     <i>已退订</i>
                                                 </eq>
                                                 <eq name="vo['refund_status']" value="3">
-                                                    <i>审核失败</i>
-                                                    <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                    <i>待入住</i>
+                                                    <!-- <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                                 </eq>
                                             </eq>
                                             <else />
@@ -71,16 +71,16 @@
                                                 <i>已退订</i>
                                             </eq>
                                             <eq name="vo['refund_status']" value="3">
-                                                <i>审核失败</i>
-                                                <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                <i>待入住</i>
+                                                <!-- <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                             </eq>
                                         </if>   
                                     </div>
                                 </eq>
                                 <eq name="vo['status']" value="5">
                                     <div class="fr order_main3_list2_bottom7 ">
-                                        <i>审核失败</i>
-                                        <a href="javascript:;" class="remark" data-remark="{$vo.review_remark}">失败原因</a>
+                                        <i>待入住</i>
+                                        <!-- <a href="javascript:;" class="remark" data-remark="{$vo.review_remark}">失败原因</a> -->
                                     </div>
                                 </eq>
                                 <else />
@@ -121,8 +121,8 @@
                                                     <i>已退订</i>
                                                 </eq>
                                                 <eq name="vo['refund_status']" value="3">
-                                                    <i>审核失败</i>
-                                                    <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a>
+                                                    <i>待入住</i>
+                                                    <!-- <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a> -->
                                                 </eq>
                                             </eq>
                                             <else />
@@ -137,8 +137,8 @@
                                                 <i>已退订</i>
                                             </eq>
                                             <eq name="vo['refund_status']" value="3">
-                                                <i>审核失败</i>
-                                                <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a>
+                                                <i>待入住</i>
+                                                <!-- <a href="javascript:;" class="remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a> -->
                                             </eq>
                                         </if>
                                             
@@ -146,8 +146,8 @@
                                 </eq>
                                 <eq name="vo['status']" value="5">
                                     <div class="fr order_main3_list2_bottom7 ">
-                                        <i>审核失败</i>
-                                        <a href="javascript:;" class="remark" data-remark="{$vo.review_remark}">失败原因</a>
+                                        <i>待入住</i>
+                                        <!-- <a href="javascript:;" class="remark" data-remark="{$vo.review_remark}">失败原因</a> -->
                                     </div>
                                 </eq>
                             </if>

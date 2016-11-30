@@ -34,9 +34,11 @@ class WxhelpController extends CommonController {
 		//通过code获得openid
 		if (!isset($_GET['code'])){
 			//触发微信返回code码
-			$baseUrl = urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].$_SERVER['QUERY_STRING']);
-			$url = $this->__CreateOauthUrlForCode($baseUrl,'snsapi_userinfo');
-			Header("Location:$url");
+			$baseUrl = urlencode('https://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].$_SERVER['QUERY_STRING']);
+			//$url = $this->__CreateOauthUrlForCode($baseUrl,'snsapi_userinfo');
+			//Header("Location:$url");
+      $url = "http://m.snailinns.com/index.php/public/get_weixin_code?appid=wx670ea712732e93f5&scope=snsapi_userinfo&redirect_uri={$baseUrl}";
+      header("Location:{$url}");
 		} else {
 			//获取code码，以获取openid
 		  $code = $_GET['code'];
@@ -50,6 +52,7 @@ class WxhelpController extends CommonController {
 			return $user_info_obj;
 		}
 	}
+
 	public function GetUserInfoForOpenId($user_obj){
 		$get_user_info_url = $this->__CreateGetUserInfoUrl($user_obj["access_token"],$user_obj["openid"]);
         $res = file_get_contents($get_user_info_url);

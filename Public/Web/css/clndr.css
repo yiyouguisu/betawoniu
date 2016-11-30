@@ -7,7 +7,7 @@
 .calendar .clndr .clndr-controls .clndr-next-button { text-align: right; background-image: url(../images/next.png); background-position: right center; }
 
 .calendar .clndr .clndr-grid { text-align: center; }
-.calendar .clndr .clndr-grid .header-day { float: left; width: 14.28%;line-height:3.2rem;  }
+.calendar .clndr .clndr-grid .header-day { float: left; width: 14.28%;line-height:3.2rem; color:#000  }
 .calendar .clndr .clndr-grid .day { float: left; width: 14.28%;line-height:1.6rem;padding:.2rem 0;font-size:1.6rem;
    color:#000;box-sizing:border-box;height:3.6rem;
  }

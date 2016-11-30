@@ -265,7 +265,7 @@ function check_idcard($idcard) {
  * @author 
  */
 function check_phone($phone) {
-    $where['phone|username']=$phone;
+    $where['phone']=$phone;
     $result = M("Member")->where($where)->select();
     if($result){
         return false;

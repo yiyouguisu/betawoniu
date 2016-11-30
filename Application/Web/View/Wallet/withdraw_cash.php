@@ -58,7 +58,7 @@ $('#withdraw').click(function(evt){
     'money': money
   }, function(data) {
     if(data.code == 200) {
-      alert('提现成功！');
+      alert('您的提现申请提交成功，我们会尽快审核！');
       window.location.reload();
     } else {
       alert(data.msg); 

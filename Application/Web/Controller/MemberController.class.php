@@ -8,48 +8,53 @@ class MemberController extends CommonController {
 
   public function _initialize() {
     $this->assign('MYCTRL', true);
+    $inArray = array('wxlogin', 'login', 'ajax_login', 'reg', 'forget');
+    if(!session('uid')) {
+      if(!in_array(ACTION_NAME, $inArray)) {
+        $this->redirect('Member/login'); 
+      }
+    }
   }
 
 	//首页
 	public function index(){
 		if (!session('uid')) {
-            $returnurl=urlencode($_SERVER['PHP_SELF'].$_SERVER['QUERY_STRING']);
-            $this->error('请先登录！',U('Web/Member/login')."?returnurl=".$returnurl);
+          $returnurl=urlencode($_SERVER['PHP_SELF'].$_SERVER['QUERY_STRING']);
+          $this->error('请先登录！',U('Web/Member/login')."?returnurl=".$returnurl);
+    } else {
+        $uid=$this->getSessionId();
+        $data=$this->userInfo($uid);
+        $this->assign('data',$data['data']);
+        $this->assign('follow',$data['follow']);
+        $this->assign('fans',$data['fans']);
+
+        if ($data['houseowner_status'] == 1) {
+            $ordernum = M('order a')
+                ->join("left join zz_order_time c on a.orderid=c.orderid")
+                ->join("left join zz_book_room d on a.orderid=d.orderid")
+                ->join("left join zz_hostel e on d.hid=e.id")
+                ->where(array('e.uid' => $uid, 'c.status' => 1, 'c.pay_status' => 0, 'a.ordertype' => 1))
+                ->count();
         } else {
-            $uid=$this->getSessionId();
-            $data=$this->userInfo($uid);
-            $this->assign('data',$data['data']);
-            $this->assign('follow',$data['follow']);
-            $this->assign('fans',$data['fans']);
-
-
-            if ($data['houseowner_status'] == 1) {
-                $ordernum = M('order a')
-                    ->join("left join zz_order_time c on a.orderid=c.orderid")
-                    ->join("left join zz_book_room d on a.orderid=d.orderid")
-                    ->join("left join zz_hostel e on d.hid=e.id")
-                    ->where(array('e.uid' => $uid, 'c.status' => 1, 'c.pay_status' => 0, 'a.ordertype' => 1))
-                    ->count();
-            } else {
-                $ordernum = M('Order a')
-                    ->join("left join zz_order_time b on a.orderid=b.orderid")
-                    ->where(array('a.uid' => $uid, 'b.status' => 2, 'b.pay_status' => 0))
-                    ->count();
-            }
-            $ordernum = !empty($ordernum) ? $ordernum : 0;
-            $this->assign("newordernum",$ordernum);
-            $this->display();
+            $ordernum = M('Order a')
+                ->join("left join zz_order_time b on a.orderid=b.orderid")
+                ->where(array('a.uid' => $uid, 'b.status' => 2, 'b.pay_status' => 0))
+                ->count();
+        }
+        $ordernum = !empty($ordernum) ? $ordernum : 0;
+        $this->assign("newordernum",$ordernum);
+        $this->display();
 		}
-		
 	}
-    public function userInfo($uid){
-        $data=M('member')->where(array('id'=>$uid))->find();
-        $this->assign('data',$data);
-        $count=M("attention")->where(array('fuid'=>$uid))->count();
-        $fans= M("attention")->where(array('tuid'=>$uid))->count();
-        $data=array('data'=>$data,'follow'=>$count,'fans'=>$fans);
-        return $data;
-    }
+
+  public function userInfo($uid){
+      $data=M('member')->where(array('id'=>$uid))->find();
+      $this->assign('data',$data);
+      $count=M("attention")->where(array('fuid'=>$uid))->count();
+      $fans= M("attention")->where(array('tuid'=>$uid))->count();
+      $data=array('data'=>$data,'follow'=>$count,'fans'=>$fans);
+      return $data;
+  }
 
 
     /**
@@ -141,6 +146,7 @@ class MemberController extends CommonController {
         } else {
           $this->error('系统错误，请联系管理员！');
         }
+        $referer =  $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?' . $_SERVER["QUERY_STRING"];
       }
     }
     // 注册成功下载页面
@@ -170,6 +176,9 @@ class MemberController extends CommonController {
             $this->assign('unionid', $_GET['unionid']);
           } else {
             $this->assign('unionid', '');
+          }
+          if($_SERVER['HTTP_REFERER']) {
+            $this->assign('referer', $_SERVER['HTTP_REFERER']);
           }
           $this->display();
         }
@@ -215,7 +224,8 @@ class MemberController extends CommonController {
              * 通过openid来判断用户是否注册了
              */
             $user = M('member')->where(array('openid' => $userinfo['openid']))->find();
-            if(!$user || empty($user['phone'])) {//未注册用户或未留手机号用户需要补全信息.
+            if(!$user || empty($user['phone'])) {
+              //未注册用户或未留手机号用户需要补全信息.
               session('userinfo', $userinfo);
               $this->assign('userinfo', $userinfo);
               $this->display('information');
@@ -224,18 +234,17 @@ class MemberController extends CommonController {
             if(empty($userinfo['unionid'])){
                 $this->error('授权失败',U('Member/login'));
             }
-            cookie("user_unionid",$userinfo['unionid'],C('AUTO_TIME_LOGIN'));
-            $user=M('Member')->where(array('username'=>$userinfo['unionid']))->find();
-            if (!$user) {
-                $this->error('登录失败',U('Member/login'));
-            }elseif ($user['status'] == 0) {
+            //cookie("user_unionid",$userinfo['unionid'],C('AUTO_TIME_LOGIN'));
+            if ($user['status'] == 0) {
                 $this->error('帐号被禁用,请联系管理员',U('Member/login'));
             }else{
                 session('username', $user['username']);
                 session('uid', $user['id']);
                 session('groupid',$user['group_id']);
                 if($_COOKIE['web_user_openid']){
-                    M('member')->where(array('id'=>$user['id']))->setField('user_openid',$_COOKIE['web_user_openid']);
+                  M('member')
+                    ->where(array('id'=>$user['id']))
+                    ->setField('user_openid',$_COOKIE['web_user_openid']);
                 }
                 M("member")->where(array("id" => $user['id']))->save(array(
                     "lastlogin_time" => time(),
@@ -268,7 +277,7 @@ class MemberController extends CommonController {
      * @return void
      * @author yiyouguisu<741459065@qq.com> time|20151219
      */
-    public function forgot() {
+    public function forget() {
         if(IS_POST){
             $telverify = trim($_POST['telverify']);
             $password = trim($_POST['password']);
@@ -599,8 +608,6 @@ class MemberController extends CommonController {
                 return 2;
             }
         }
-        
-        
     }
 
     /**
@@ -661,6 +668,10 @@ class MemberController extends CommonController {
         $uid=$this->getSessionId();
         //我预定的名宿
         $this->assign('todayTime', time);
+        $showAct = $_GET['act'];
+        if($showAct) {
+          $this->assign('showAct', 1); 
+        }
         $myOrder =M('order a')
         ->join('join zz_book_room b on a.orderid = b.orderid')
         ->join('join zz_hostel c on b.hid = c.id')
@@ -705,24 +716,53 @@ class MemberController extends CommonController {
 
         $this->assign('ht',array_merge($myOrder, $otherOrder));
         //我参加的活动
-        $actorders=M('order a')
+        $myActOrders = M('order a')
         ->join('left join zz_activity_apply b on a.orderid=b.orderid')
         ->join('left join zz_activity d on d.id=b.aid')
         ->join('left join zz_order_time e on e.orderid = a.orderid')
         ->join('left join zz_member c on c.id=b.uid')
         ->where(array('c.id'=>$uid,'a.ordertype'=>2))
         ->order(array('a.inputtime'=>'desc'))
-        ->field('a.orderid,b.paystatus,d.title,a.money,d.thumb,d.id,d.starttime,d.endtime,e.cancel_status,e.refund_status,e.status')
+        ->field('a.orderid,b.paystatus,d.title,a.money,d.thumb,d.id,d.starttime,d.endtime,e.cancel_status,e.refund_status,e.status, 0 as owner_order')
         ->select();
-        foreach($actorders as $key => $actorder) {
-          if($actorder['status'] == 4) {
-            if($actorder['endtime'] > time()) {
-              $actorders[$key]['checkin'] = 1;
+        foreach($myActOrders as $key => $myActOrder) {
+          if($myActOrder['status'] == 4) {
+            if($myActOrder['endtime'] > time()) {
+              $myActOrders[$key]['checkin'] = 1;
             } else {
-              $actorders[$key]['finished'] = 1;
+              $myActOrders[$key]['finished'] = 1;
             }
           }
         }
+        if(!$myActOrders) {
+          $myActOrders = array(); 
+        }
+
+        //我收到的活动
+        $receiveActs = M('order a')
+          ->join('left join zz_activity_apply b on a.orderid=b.orderid')
+          ->join('left join zz_activity d on d.id=b.aid')
+          ->join('left join zz_order_time e on e.orderid = a.orderid')
+          ->join('left join zz_member c on c.id=b.uid')
+          ->where(array('d.uid'=>$uid,'a.ordertype'=>2))
+          ->order(array('a.inputtime'=>'desc'))
+          ->field('a.orderid,b.paystatus,d.title,a.money,d.thumb,d.id,d.starttime,d.endtime,e.cancel_status,e.refund_status,e.status, 1 as owner_order')
+          ->select();
+        foreach($receiveActs as $key => $receiveAct) {
+          if($receiveAct['status'] == 4) {
+            if($receiveAct['endtime'] > time()) {
+              $receiveActs[$key]['checkin'] = 1;
+            } else {
+              $receiveActs[$key]['finished'] = 1;
+            }
+          }
+        }
+        if(!$receiveActs) {
+          $receiveActs = array(); 
+        }
+
+        $actorders = array_merge($receiveActs, $myActOrders);
+
         $this->assign('act',$actorders);
         $this->assign('now_time', time());
         $this->assign('uid', $uid);
@@ -845,6 +885,30 @@ class MemberController extends CommonController {
             $this->ajaxReturn($data,'json');
         }else{
             $this->ajaxReturn(array('code'=>-200,'msg'=>'请求错误！'),'json');
+        }
+    }
+    public function feedback(){
+        $uid=$this->getSessionId();
+        $title=trim($_POST['title']);
+        $content=trim($_POST['content']);
+        $where['id']=$uid;
+        $user=M('Member')->where($where)->field('id')->find();
+        if($uid==''||$title==''||$content==''){
+            $this->success('提交失败:Request parameter is null!',U('Web/Member/index'));
+        }elseif(empty($user)){
+            $this->success('提交失败:The User is not exist!',U('Web/Member/index'));
+        }else{
+            $id=M('feedback')->add(array(
+                    'uid'=>$uid,
+                    'title'=>$title,
+                    'content'=>$content,
+                    'inputtime'=>time()
+            ));
+            if($id){
+                $this->success('提交成功',U('Web/Member/index'));
+            }else{
+                $this->success('提交失败',U('Web/Member/index'));
+            }
         }
     }
     //发布游记
@@ -1059,7 +1123,7 @@ class MemberController extends CommonController {
             $hobbyAndCharac = substr($hobbyAndCharac,0,strlen($hobbyAndCharac)-1);
         $this->assign("hobbyAndCharac",$hobbyAndCharac);
         // 我的游记
-        $notedata=M('note')->where(array('uid'=>$uid,'isdel'=>0,'status'=>2))->select();
+        $notedata=M('note')->where(array('uid'=>$uid,'isdel'=>0,'status'=>2,'isoff'=>0))->select();
         foreach ($notedata as $key => $value)
         {   
           $reviewnum=M('review')->where(array('isdel'=>0,'varname'=>'note','value'=>$value['nid']))->count();
@@ -1264,6 +1328,9 @@ class MemberController extends CommonController {
         if(!empty($is) && $is['status']==0){
             M('Member')->where(array('id'=>$uid))->save(array('phone'=>$_POST['phone']));
             M('verify')->where($where)->save(array('status'=>1));
+
+            if(!check_phone($_POST['phone']))
+                $this->ajaxReturn(array('code'=>500,'msg'=>'对不起，您输入的手机号码已经是蜗牛客的小伙伴了!'),'json');
             $data=array('code'=>200,'msg'=>'修改成功');
             $this->ajaxReturn($data,'json');
         }
@@ -1291,7 +1358,7 @@ class MemberController extends CommonController {
 
             if($_POST['year']>0 && $_POST['month']>0 && $_POST['day']>0){
                 $birthday=$_POST['year'].'-'.$_POST['month'].'-'.$_POST['day'];
-                M('Member')->where(array('id'=>$uid))->save(array('birthday'=>strtotime($birthday)));
+                M('Member')->where(array('id'=>$uid))->save(array('birthday'=>$birthday));
                 $this->success("修改成功", U("Web/Member/myinfo"));
             }
             else{
@@ -1299,9 +1366,27 @@ class MemberController extends CommonController {
             }
             
         }
-        $birthday=date("Y-m-d",$data['data']['birthday']);
+        $birthday=$data['data']['birthday'];
         $birthday=explode("-",$birthday);
+    
         $this->assign('birthday',$birthday);
+        $this->display();
+    }
+    // 修改昵称
+    public function editnickname(){
+        $uid=$this->getSessionId();
+        $data=$this->userInfo($uid);
+        if(IS_POST){
+            $res = M('Member')->where(array('id'=>$uid))->save(array('nickname'=>$_POST['nickname']));
+            if($res){
+                $this->success("修改成功", U("Web/Member/myinfo"));
+            }
+            else{
+                $this->error("修改失败");
+            }
+            
+        }
+        $this->assign('nickname',$data['data']['nickname']);
         $this->display();
     }
     // 修改个性签名
@@ -1772,5 +1857,11 @@ class MemberController extends CommonController {
         }
       }
       $this->display();
+    }
+
+    public function service_intro() {
+      $data = M("config")->where(array('groupid'=>6,'varname'=>'reg_service'))->getField("value");
+      $this->assign('content', $data);
+      $this->display();  
     }
 }

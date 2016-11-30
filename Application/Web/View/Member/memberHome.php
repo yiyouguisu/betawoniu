@@ -57,7 +57,7 @@
 				<else />
 					<div class="land_b person_title center f16">
 						<a class="my" style="width:50%;">游记（{$cnote}）</a>
-						<a class="my" style="width:50%;">评论（{$cact}）</a>
+						<a class="my" style="width:50%;">评论（{$creview}）</a>
 					</div>
 				</eq>            
 				<div class="land_c f14 comments_box" style='display:none'>
@@ -154,7 +154,7 @@
 								<div class="com_b f13">{$vo.inputtime|date='Y-m-d',###}</div>
 								<div class="com_c com_c1 pa">游记</div>
 							</div>
-							<div class="com_btm f14">
+							<div class="com_btm f14" style=" word-wrap:break-word;">
 								{$vo.id1}评论内容：{$vo.content}
 							</div>
 						</div>
@@ -169,7 +169,7 @@
 								<div class="com_b f13">{$vo.inputtime|date='Y-m-d',###}</div>
 								<div class="com_c com_c2 pa">活动</div>
 							</div>
-							<div class="com_btm f14">
+							<div class="com_btm f14" style=" word-wrap:break-word;">
 								{$vo.content}
 							</div>
 						</div>

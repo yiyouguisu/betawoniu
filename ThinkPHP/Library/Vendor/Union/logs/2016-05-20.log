@@ -1,0 +1,401 @@
+2016-05-20 15:56:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[17]------ ============处理前台请求开始=============== 
+2016-05-20 15:57:31, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[17]------ ============处理前台请求开始=============== 
+2016-05-20 15:57:31, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 15:57:31, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://www.ziyuli.org/index.php/Home/Order/BackReceive.html&bizType=000201&certId=40220995861346480087409489142384722381&channelType=08&currencyCode=156&defaultPayType=0001&encoding=utf-8&frontUrl=http://www.ziyuli.org/index.php/Home/Order/FrontReceive.html&merId=777290058112889&orderId=20160520155731&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=01&txnTime=20160520155731&txnType=01&version=5.0.0 
+2016-05-20 15:57:31, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >0be6a648a130dcea44f44553e6aafcf668d11deb 
+2016-05-20 15:57:32, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >XcPsSjDXSY1xnSlStJ65d4QDsNmNWDTjDI4ZjzawSBmkk50ksMWTTjDcrmffPIShKkpaZqIy6driSnx8pNpCZ5IAHljdybilfaINxVNbL4njzySnd9shvXfCAVUq2Nxmzd4LuZ6hdfio06DylaZGqM9/3ia+utgB68RjkRhzbSc= 
+2016-05-20 15:57:32, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 15:57:32, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[48]------ 前台请求地址为>https://gateway.95516.com/gateway/api/frontTransReq.do 
+2016-05-20 15:57:32, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[52]------ -------前台交易自动提交表单>--begin---- 
+2016-05-20 15:57:32, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[53]------ <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body  onload="javascript:document.pay_form.submit();">
+    <form id="pay_form" name="pay_form" action="https://gateway.95516.com/gateway/api/frontTransReq.do" method="post">
+	    <input type="hidden" name="version" id="version" value="5.0.0" />
+    <input type="hidden" name="encoding" id="encoding" value="utf-8" />
+    <input type="hidden" name="certId" id="certId" value="40220995861346480087409489142384722381" />
+    <input type="hidden" name="txnType" id="txnType" value="01" />
+    <input type="hidden" name="txnSubType" id="txnSubType" value="01" />
+    <input type="hidden" name="bizType" id="bizType" value="000201" />
+    <input type="hidden" name="frontUrl" id="frontUrl" value="http://www.ziyuli.org/index.php/Home/Order/FrontReceive.html" />
+    <input type="hidden" name="backUrl" id="backUrl" value="http://www.ziyuli.org/index.php/Home/Order/BackReceive.html" />
+    <input type="hidden" name="signMethod" id="signMethod" value="01" />
+    <input type="hidden" name="channelType" id="channelType" value="08" />
+    <input type="hidden" name="accessType" id="accessType" value="0" />
+    <input type="hidden" name="merId" id="merId" value="777290058112889" />
+    <input type="hidden" name="orderId" id="orderId" value="20160520155731" />
+    <input type="hidden" name="txnTime" id="txnTime" value="20160520155731" />
+    <input type="hidden" name="txnAmt" id="txnAmt" value="100" />
+    <input type="hidden" name="currencyCode" id="currencyCode" value="156" />
+    <input type="hidden" name="defaultPayType" id="defaultPayType" value="0001" />
+    <input type="hidden" name="reqReserved" id="reqReserved" value=" 透传信息" />
+    <input type="hidden" name="signature" id="signature" value="XcPsSjDXSY1xnSlStJ65d4QDsNmNWDTjDI4ZjzawSBmkk50ksMWTTjDcrmffPIShKkpaZqIy6driSnx8pNpCZ5IAHljdybilfaINxVNbL4njzySnd9shvXfCAVUq2Nxmzd4LuZ6hdfio06DylaZGqM9/3ia+utgB68RjkRhzbSc=" />
+    <input type="submit" type="hidden">
+    </form>
+</body>
+</html> 
+2016-05-20 15:57:32, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[54]------ -------前台交易自动提交表单>--end------- 
+2016-05-20 15:57:32, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[55]------ ============处理前台请求 结束=========== 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[17]------ ============处理前台请求开始=============== 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://www.ziyuli.org/index.php/Home/Order/BackReceive.html&bizType=000201&certId=40220995861346480087409489142384722381&channelType=08&currencyCode=156&defaultPayType=0001&encoding=utf-8&frontUrl=http://www.ziyuli.org/index.php/Home/Order/FrontReceive.html&merId=777290058130442&orderId=20160520155903&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=01&txnTime=20160520155903&txnType=01&version=5.0.0 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >15cbbc1d925c63aadc8e11c619839dc560fad9c3 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >ZUw4F4d+LqkLJo/K86IYmDxbtMdLXjMkvRpqerVhmvKEeGFc7tyZnVhEigRnnf5AxnJXG/ElqLzzTYdylYMplsPAu0jWzt22/ttseK8BnS5TdS0RnuxznfJ/zOQ8WU/ClY/n9yMoq/NYgox5UgPDzLWz3v9v/S9GjGlP396yflI= 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[48]------ 前台请求地址为>https://gateway.95516.com/gateway/api/frontTransReq.do 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[52]------ -------前台交易自动提交表单>--begin---- 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[53]------ <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body  onload="javascript:document.pay_form.submit();">
+    <form id="pay_form" name="pay_form" action="https://gateway.95516.com/gateway/api/frontTransReq.do" method="post">
+	    <input type="hidden" name="version" id="version" value="5.0.0" />
+    <input type="hidden" name="encoding" id="encoding" value="utf-8" />
+    <input type="hidden" name="certId" id="certId" value="40220995861346480087409489142384722381" />
+    <input type="hidden" name="txnType" id="txnType" value="01" />
+    <input type="hidden" name="txnSubType" id="txnSubType" value="01" />
+    <input type="hidden" name="bizType" id="bizType" value="000201" />
+    <input type="hidden" name="frontUrl" id="frontUrl" value="http://www.ziyuli.org/index.php/Home/Order/FrontReceive.html" />
+    <input type="hidden" name="backUrl" id="backUrl" value="http://www.ziyuli.org/index.php/Home/Order/BackReceive.html" />
+    <input type="hidden" name="signMethod" id="signMethod" value="01" />
+    <input type="hidden" name="channelType" id="channelType" value="08" />
+    <input type="hidden" name="accessType" id="accessType" value="0" />
+    <input type="hidden" name="merId" id="merId" value="777290058130442" />
+    <input type="hidden" name="orderId" id="orderId" value="20160520155903" />
+    <input type="hidden" name="txnTime" id="txnTime" value="20160520155903" />
+    <input type="hidden" name="txnAmt" id="txnAmt" value="100" />
+    <input type="hidden" name="currencyCode" id="currencyCode" value="156" />
+    <input type="hidden" name="defaultPayType" id="defaultPayType" value="0001" />
+    <input type="hidden" name="reqReserved" id="reqReserved" value=" 透传信息" />
+    <input type="hidden" name="signature" id="signature" value="ZUw4F4d+LqkLJo/K86IYmDxbtMdLXjMkvRpqerVhmvKEeGFc7tyZnVhEigRnnf5AxnJXG/ElqLzzTYdylYMplsPAu0jWzt22/ttseK8BnS5TdS0RnuxznfJ/zOQ8WU/ClY/n9yMoq/NYgox5UgPDzLWz3v9v/S9GjGlP396yflI=" />
+    <input type="submit" type="hidden">
+    </form>
+</body>
+</html> 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[54]------ -------前台交易自动提交表单>--end------- 
+2016-05-20 15:59:03, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[55]------ ============处理前台请求 结束=========== 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[17]------ ============处理前台请求开始=============== 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://woniu.ccjjj.net/Union/demo/utf-8/BackReceive.html&bizType=000201&certId=40220995861346480087409489142384722381&channelType=08&currencyCode=156&defaultPayType=0001&encoding=utf-8&frontUrl=http://woniu.ccjjj.net/Union/demo/utf-8/FrontReceive.html&merId=700000000000001&orderId=20160520160450&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=01&txnTime=20160520160450&txnType=01&version=5.0.0 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >ac8d8024c47ceb2690f01d5da7473482404beaef 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >IGuZA82irUgKN/UXDMGri3F/hUX6McrYcTwgLMa0mbnZ3h66kRvGCRedpjRrRGB54d6fPzRip//D3bQoI3rUQnng+wbH8Sr/0h+/pHkfvqmkJ6cGWq0hJs2JJpGQhwZ4iIKPuPJVMlfPuTWiqVuIfzC+cOqBNvlFA1Zl4e98jLk= 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[48]------ 前台请求地址为>https://101.231.204.80:5000/gateway/api/frontTransReq.do 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[52]------ -------前台交易自动提交表单>--begin---- 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[53]------ <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body  onload="javascript:document.pay_form.submit();">
+    <form id="pay_form" name="pay_form" action="https://101.231.204.80:5000/gateway/api/frontTransReq.do" method="post">
+	    <input type="hidden" name="version" id="version" value="5.0.0" />
+    <input type="hidden" name="encoding" id="encoding" value="utf-8" />
+    <input type="hidden" name="certId" id="certId" value="40220995861346480087409489142384722381" />
+    <input type="hidden" name="txnType" id="txnType" value="01" />
+    <input type="hidden" name="txnSubType" id="txnSubType" value="01" />
+    <input type="hidden" name="bizType" id="bizType" value="000201" />
+    <input type="hidden" name="frontUrl" id="frontUrl" value="http://woniu.ccjjj.net/Union/demo/utf-8/FrontReceive.html" />
+    <input type="hidden" name="backUrl" id="backUrl" value="http://woniu.ccjjj.net/Union/demo/utf-8/BackReceive.html" />
+    <input type="hidden" name="signMethod" id="signMethod" value="01" />
+    <input type="hidden" name="channelType" id="channelType" value="08" />
+    <input type="hidden" name="accessType" id="accessType" value="0" />
+    <input type="hidden" name="merId" id="merId" value="700000000000001" />
+    <input type="hidden" name="orderId" id="orderId" value="20160520160450" />
+    <input type="hidden" name="txnTime" id="txnTime" value="20160520160450" />
+    <input type="hidden" name="txnAmt" id="txnAmt" value="100" />
+    <input type="hidden" name="currencyCode" id="currencyCode" value="156" />
+    <input type="hidden" name="defaultPayType" id="defaultPayType" value="0001" />
+    <input type="hidden" name="reqReserved" id="reqReserved" value=" 透传信息" />
+    <input type="hidden" name="signature" id="signature" value="IGuZA82irUgKN/UXDMGri3F/hUX6McrYcTwgLMa0mbnZ3h66kRvGCRedpjRrRGB54d6fPzRip//D3bQoI3rUQnng+wbH8Sr/0h+/pHkfvqmkJ6cGWq0hJs2JJpGQhwZ4iIKPuPJVMlfPuTWiqVuIfzC+cOqBNvlFA1Zl4e98jLk=" />
+    <input type="submit" type="hidden">
+    </form>
+</body>
+</html> 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[54]------ -------前台交易自动提交表单>--end------- 
+2016-05-20 16:04:50, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[55]------ ============处理前台请求 结束=========== 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[17]------ ============处理前台请求开始=============== 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://woniu.ccjjj.net/Union/demo/utf-8/BackReceive.html&bizType=000201&certId=40220995861346480087409489142384722381&channelType=08&currencyCode=156&defaultPayType=0001&encoding=utf-8&frontUrl=http://woniu.ccjjj.net/Union/demo/utf-8/FrontReceive.html&merId=700000000000001&orderId=20160520160648&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=01&txnTime=20160520160648&txnType=01&version=5.0.0 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >f704a179d2754a40949da2e26df43342144d58f6 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >j2z3vDSNBhHTWCLrC7ALj3o9i+anhKn1aPxZkoB5r0XFdRZed2eH6KCOd9LSS3PHjPaZ8qWYT6zAbwYbxJJWVz81Co3f8RQvzktwVyWbqBwnxWkVSbJ+cbFQx33EkQQpuCKnX+ONh+cDfrcgqwfkxcgcWVdyZ+/29rV2BM+cbqI= 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[48]------ 前台请求地址为>https://101.231.204.80:5000/gateway/api/frontTransReq.do 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[52]------ -------前台交易自动提交表单>--begin---- 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[53]------ <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body  onload="javascript:document.pay_form.submit();">
+    <form id="pay_form" name="pay_form" action="https://101.231.204.80:5000/gateway/api/frontTransReq.do" method="post">
+	    <input type="hidden" name="version" id="version" value="5.0.0" />
+    <input type="hidden" name="encoding" id="encoding" value="utf-8" />
+    <input type="hidden" name="certId" id="certId" value="40220995861346480087409489142384722381" />
+    <input type="hidden" name="txnType" id="txnType" value="01" />
+    <input type="hidden" name="txnSubType" id="txnSubType" value="01" />
+    <input type="hidden" name="bizType" id="bizType" value="000201" />
+    <input type="hidden" name="frontUrl" id="frontUrl" value="http://woniu.ccjjj.net/Union/demo/utf-8/FrontReceive.html" />
+    <input type="hidden" name="backUrl" id="backUrl" value="http://woniu.ccjjj.net/Union/demo/utf-8/BackReceive.html" />
+    <input type="hidden" name="signMethod" id="signMethod" value="01" />
+    <input type="hidden" name="channelType" id="channelType" value="08" />
+    <input type="hidden" name="accessType" id="accessType" value="0" />
+    <input type="hidden" name="merId" id="merId" value="700000000000001" />
+    <input type="hidden" name="orderId" id="orderId" value="20160520160648" />
+    <input type="hidden" name="txnTime" id="txnTime" value="20160520160648" />
+    <input type="hidden" name="txnAmt" id="txnAmt" value="100" />
+    <input type="hidden" name="currencyCode" id="currencyCode" value="156" />
+    <input type="hidden" name="defaultPayType" id="defaultPayType" value="0001" />
+    <input type="hidden" name="reqReserved" id="reqReserved" value=" 透传信息" />
+    <input type="hidden" name="signature" id="signature" value="j2z3vDSNBhHTWCLrC7ALj3o9i+anhKn1aPxZkoB5r0XFdRZed2eH6KCOd9LSS3PHjPaZ8qWYT6zAbwYbxJJWVz81Co3f8RQvzktwVyWbqBwnxWkVSbJ+cbFQx33EkQQpuCKnX+ONh+cDfrcgqwfkxcgcWVdyZ+/29rV2BM+cbqI=" />
+    <input type="submit" type="hidden">
+    </form>
+</body>
+</html> 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[54]------ -------前台交易自动提交表单>--end------- 
+2016-05-20 16:06:48, INFO, 127.0.0.1, File[ E:\PHPWeb\woniu\woniu\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[55]------ ============处理前台请求 结束=========== 
+2016-05-20 16:51:13, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[17]------ ============处理前台请求开始=============== 
+2016-05-20 16:51:13, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 16:51:13, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://woniu.ccjjj.com/Union/demo/utf-8/BackReceive.html&bizType=000201&certId=40220995861346480087409489142384722381&channelType=08&currencyCode=156&defaultPayType=0001&encoding=utf-8&frontUrl=http://woniu.ccjjj.com/Union/demo/utf-8/FrontReceive.html&merId=700000000000001&orderId=20160520165113&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=01&txnTime=20160520165113&txnType=01&version=5.0.0 
+2016-05-20 16:51:13, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >55b32f1d4b9cde0633940aaa22d685f330830f7a 
+2016-05-20 16:51:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >Us9Bb1wcJHozojon2IWNNS0fseNkmnp2lJiDCOT2j9xaq8TLW52z4jHgi8Xn3NF/vgPcpCEr+AQXCwk5ZTIPuIp/+5mfEBXisbFjr70NMDBWP6ttUahUaYXhg82UtVuoHkEZmdxO8VVTXjgZmqMDSo+yJjzRVmeLgNC5UOhRu/s= 
+2016-05-20 16:51:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 16:51:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[48]------ 前台请求地址为>https://101.231.204.80:5000/gateway/api/frontTransReq.do 
+2016-05-20 16:51:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[52]------ -------前台交易自动提交表单>--begin---- 
+2016-05-20 16:51:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[53]------ <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body  onload="javascript:document.pay_form.submit();">
+    <form id="pay_form" name="pay_form" action="https://101.231.204.80:5000/gateway/api/frontTransReq.do" method="post">
+	    <input type="hidden" name="version" id="version" value="5.0.0" />
+    <input type="hidden" name="encoding" id="encoding" value="utf-8" />
+    <input type="hidden" name="certId" id="certId" value="40220995861346480087409489142384722381" />
+    <input type="hidden" name="txnType" id="txnType" value="01" />
+    <input type="hidden" name="txnSubType" id="txnSubType" value="01" />
+    <input type="hidden" name="bizType" id="bizType" value="000201" />
+    <input type="hidden" name="frontUrl" id="frontUrl" value="http://woniu.ccjjj.com/Union/demo/utf-8/FrontReceive.html" />
+    <input type="hidden" name="backUrl" id="backUrl" value="http://woniu.ccjjj.com/Union/demo/utf-8/BackReceive.html" />
+    <input type="hidden" name="signMethod" id="signMethod" value="01" />
+    <input type="hidden" name="channelType" id="channelType" value="08" />
+    <input type="hidden" name="accessType" id="accessType" value="0" />
+    <input type="hidden" name="merId" id="merId" value="700000000000001" />
+    <input type="hidden" name="orderId" id="orderId" value="20160520165113" />
+    <input type="hidden" name="txnTime" id="txnTime" value="20160520165113" />
+    <input type="hidden" name="txnAmt" id="txnAmt" value="100" />
+    <input type="hidden" name="currencyCode" id="currencyCode" value="156" />
+    <input type="hidden" name="defaultPayType" id="defaultPayType" value="0001" />
+    <input type="hidden" name="reqReserved" id="reqReserved" value=" 透传信息" />
+    <input type="hidden" name="signature" id="signature" value="Us9Bb1wcJHozojon2IWNNS0fseNkmnp2lJiDCOT2j9xaq8TLW52z4jHgi8Xn3NF/vgPcpCEr+AQXCwk5ZTIPuIp/+5mfEBXisbFjr70NMDBWP6ttUahUaYXhg82UtVuoHkEZmdxO8VVTXjgZmqMDSo+yJjzRVmeLgNC5UOhRu/s=" />
+    <input type="submit" type="hidden">
+    </form>
+</body>
+</html> 
+2016-05-20 16:51:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[54]------ -------前台交易自动提交表单>--end------- 
+2016-05-20 16:51:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[55]------ ============处理前台请求 结束=========== 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[17]------ ============处理前台请求开始=============== 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://woniu.ccjjj.com/Union/demo/utf-8/BackReceive.html&bizType=000201&certId=40220995861346480087409489142384722381&channelType=08&currencyCode=156&defaultPayType=0001&encoding=utf-8&frontUrl=http://woniu.ccjjj.com/Union/demo/utf-8/FrontReceive.html&merId=700000000000001&orderId=20160520165144&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=01&txnTime=20160520165144&txnType=01&version=5.0.0 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >35ed1b6e2fa2cfb001a345542f3c9c43b3d2032f 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >Jnt9E4Rz3OnyIlVr16zv92vCB36xlDptVctnLxohkNLgesEEn7fnaKT/uvxnzMZiJEbCodht5YnO8KxJ+T9YBufbIsn0xplBCdbRZPf0cc+nQT/aZoxOGAbjU8Hi+gPOwrwldmK/bb6Nsg7/TvmJD/AsJ166heOC0OXSejqe3sU= 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[48]------ 前台请求地址为>https://101.231.204.80:5000/gateway/api/frontTransReq.do 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[52]------ -------前台交易自动提交表单>--begin---- 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[53]------ <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body  onload="javascript:document.pay_form.submit();">
+    <form id="pay_form" name="pay_form" action="https://101.231.204.80:5000/gateway/api/frontTransReq.do" method="post">
+	    <input type="hidden" name="version" id="version" value="5.0.0" />
+    <input type="hidden" name="encoding" id="encoding" value="utf-8" />
+    <input type="hidden" name="certId" id="certId" value="40220995861346480087409489142384722381" />
+    <input type="hidden" name="txnType" id="txnType" value="01" />
+    <input type="hidden" name="txnSubType" id="txnSubType" value="01" />
+    <input type="hidden" name="bizType" id="bizType" value="000201" />
+    <input type="hidden" name="frontUrl" id="frontUrl" value="http://woniu.ccjjj.com/Union/demo/utf-8/FrontReceive.html" />
+    <input type="hidden" name="backUrl" id="backUrl" value="http://woniu.ccjjj.com/Union/demo/utf-8/BackReceive.html" />
+    <input type="hidden" name="signMethod" id="signMethod" value="01" />
+    <input type="hidden" name="channelType" id="channelType" value="08" />
+    <input type="hidden" name="accessType" id="accessType" value="0" />
+    <input type="hidden" name="merId" id="merId" value="700000000000001" />
+    <input type="hidden" name="orderId" id="orderId" value="20160520165144" />
+    <input type="hidden" name="txnTime" id="txnTime" value="20160520165144" />
+    <input type="hidden" name="txnAmt" id="txnAmt" value="100" />
+    <input type="hidden" name="currencyCode" id="currencyCode" value="156" />
+    <input type="hidden" name="defaultPayType" id="defaultPayType" value="0001" />
+    <input type="hidden" name="reqReserved" id="reqReserved" value=" 透传信息" />
+    <input type="hidden" name="signature" id="signature" value="Jnt9E4Rz3OnyIlVr16zv92vCB36xlDptVctnLxohkNLgesEEn7fnaKT/uvxnzMZiJEbCodht5YnO8KxJ+T9YBufbIsn0xplBCdbRZPf0cc+nQT/aZoxOGAbjU8Hi+gPOwrwldmK/bb6Nsg7/TvmJD/AsJ166heOC0OXSejqe3sU=" />
+    <input type="submit" type="hidden">
+    </form>
+</body>
+</html> 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[54]------ -------前台交易自动提交表单>--end------- 
+2016-05-20 16:51:44, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[55]------ ============处理前台请求 结束=========== 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[17]------ ============处理前台请求开始=============== 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://woniu.ccjjj.com/Union/demo/utf8/BackReceive.html&bizType=000201&certId=40220995861346480087409489142384722381&channelType=08&currencyCode=156&defaultPayType=0001&encoding=utf-8&frontUrl=http://woniu.ccjjj.com/Union/demo/utf8/FrontReceive.html&merId=700000000000001&orderId=20160520165352&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=01&txnTime=20160520165352&txnType=01&version=5.0.0 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >5597e5fe6e9f4153fa0415fa5ec3521571810363 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >RUCb7jQ4bCofnKhHCOXHatt4SYlap6u8wGnTi/ZIkDD+g6YRqY8nGWky+/WjFMdLYaZUdQjpuSBgKjkc7VMDYL7IGZEJUs1EfNgoAA3bBf2IjqN4mM89K6x5hhRbbg9iHCnvBCgy/2L5jQROvz+6tjWlhtaTy3ETYLWxFlEEyw4= 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[48]------ 前台请求地址为>https://101.231.204.80:5000/gateway/api/frontTransReq.do 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[52]------ -------前台交易自动提交表单>--begin---- 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[53]------ <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body  onload="javascript:document.pay_form.submit();">
+    <form id="pay_form" name="pay_form" action="https://101.231.204.80:5000/gateway/api/frontTransReq.do" method="post">
+	    <input type="hidden" name="version" id="version" value="5.0.0" />
+    <input type="hidden" name="encoding" id="encoding" value="utf-8" />
+    <input type="hidden" name="certId" id="certId" value="40220995861346480087409489142384722381" />
+    <input type="hidden" name="txnType" id="txnType" value="01" />
+    <input type="hidden" name="txnSubType" id="txnSubType" value="01" />
+    <input type="hidden" name="bizType" id="bizType" value="000201" />
+    <input type="hidden" name="frontUrl" id="frontUrl" value="http://woniu.ccjjj.com/Union/demo/utf8/FrontReceive.html" />
+    <input type="hidden" name="backUrl" id="backUrl" value="http://woniu.ccjjj.com/Union/demo/utf8/BackReceive.html" />
+    <input type="hidden" name="signMethod" id="signMethod" value="01" />
+    <input type="hidden" name="channelType" id="channelType" value="08" />
+    <input type="hidden" name="accessType" id="accessType" value="0" />
+    <input type="hidden" name="merId" id="merId" value="700000000000001" />
+    <input type="hidden" name="orderId" id="orderId" value="20160520165352" />
+    <input type="hidden" name="txnTime" id="txnTime" value="20160520165352" />
+    <input type="hidden" name="txnAmt" id="txnAmt" value="100" />
+    <input type="hidden" name="currencyCode" id="currencyCode" value="156" />
+    <input type="hidden" name="defaultPayType" id="defaultPayType" value="0001" />
+    <input type="hidden" name="reqReserved" id="reqReserved" value=" 透传信息" />
+    <input type="hidden" name="signature" id="signature" value="RUCb7jQ4bCofnKhHCOXHatt4SYlap6u8wGnTi/ZIkDD+g6YRqY8nGWky+/WjFMdLYaZUdQjpuSBgKjkc7VMDYL7IGZEJUs1EfNgoAA3bBf2IjqN4mM89K6x5hhRbbg9iHCnvBCgy/2L5jQROvz+6tjWlhtaTy3ETYLWxFlEEyw4=" />
+    <input type="submit" type="hidden">
+    </form>
+</body>
+</html> 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[54]------ -------前台交易自动提交表单>--end------- 
+2016-05-20 16:53:52, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[55]------ ============处理前台请求 结束=========== 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[17]------ ============处理前台请求开始=============== 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://woniu.ccjjj.com/Union/demo/utf8/BackReceive.php&bizType=000201&certId=40220995861346480087409489142384722381&channelType=08&currencyCode=156&defaultPayType=0001&encoding=utf-8&frontUrl=http://woniu.ccjjj.com/Union/demo/utf8/FrontReceive.php&merId=700000000000001&orderId=20160520165519&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=01&txnTime=20160520165519&txnType=01&version=5.0.0 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >c8a92b49dc7358524ad389dd422072a52ad2e633 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >VtDEjpi+TGyc7Ohmm82BxFnC8nNsmrrWCc/fX1jSUw4+WcRzEaSyfODiI4nnjR89C2dwRmFcaB2Js8bS9ZKvsz/7xG6IyarWz07zL3nO4VboAGeVH0RP8VNyb2QK+3r73DMXDQ+TJaH85xU3qvnPJvPBDR6C4EH+BTGKdxl4y5s= 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[48]------ 前台请求地址为>https://101.231.204.80:5000/gateway/api/frontTransReq.do 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[52]------ -------前台交易自动提交表单>--begin---- 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[53]------ <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body  onload="javascript:document.pay_form.submit();">
+    <form id="pay_form" name="pay_form" action="https://101.231.204.80:5000/gateway/api/frontTransReq.do" method="post">
+	    <input type="hidden" name="version" id="version" value="5.0.0" />
+    <input type="hidden" name="encoding" id="encoding" value="utf-8" />
+    <input type="hidden" name="certId" id="certId" value="40220995861346480087409489142384722381" />
+    <input type="hidden" name="txnType" id="txnType" value="01" />
+    <input type="hidden" name="txnSubType" id="txnSubType" value="01" />
+    <input type="hidden" name="bizType" id="bizType" value="000201" />
+    <input type="hidden" name="frontUrl" id="frontUrl" value="http://woniu.ccjjj.com/Union/demo/utf8/FrontReceive.php" />
+    <input type="hidden" name="backUrl" id="backUrl" value="http://woniu.ccjjj.com/Union/demo/utf8/BackReceive.php" />
+    <input type="hidden" name="signMethod" id="signMethod" value="01" />
+    <input type="hidden" name="channelType" id="channelType" value="08" />
+    <input type="hidden" name="accessType" id="accessType" value="0" />
+    <input type="hidden" name="merId" id="merId" value="700000000000001" />
+    <input type="hidden" name="orderId" id="orderId" value="20160520165519" />
+    <input type="hidden" name="txnTime" id="txnTime" value="20160520165519" />
+    <input type="hidden" name="txnAmt" id="txnAmt" value="100" />
+    <input type="hidden" name="currencyCode" id="currencyCode" value="156" />
+    <input type="hidden" name="defaultPayType" id="defaultPayType" value="0001" />
+    <input type="hidden" name="reqReserved" id="reqReserved" value=" 透传信息" />
+    <input type="hidden" name="signature" id="signature" value="VtDEjpi+TGyc7Ohmm82BxFnC8nNsmrrWCc/fX1jSUw4+WcRzEaSyfODiI4nnjR89C2dwRmFcaB2Js8bS9ZKvsz/7xG6IyarWz07zL3nO4VboAGeVH0RP8VNyb2QK+3r73DMXDQ+TJaH85xU3qvnPJvPBDR6C4EH+BTGKdxl4y5s=" />
+    <input type="submit" type="hidden">
+    </form>
+</body>
+</html> 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[54]------ -------前台交易自动提交表单>--end------- 
+2016-05-20 16:55:19, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_2_FrontConsume.php ], Line[55]------ ============处理前台请求 结束=========== 
+2016-05-20 16:55:36, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[77]------ 报文返回的证书ID>68759585097 
+2016-05-20 16:55:36, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[80]------ 验证签名证书目录 :>D:/wwwroot/woniu/wwwroot/Union/ 
+2016-05-20 16:55:36, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[90]------ 加载验签证书成功 
+2016-05-20 16:55:36, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[58]------ 报文去[signature] key=val&串>accNo=6216***********0018&accessType=0&bizType=000201&certId=68759585097&currencyCode=156&encoding=utf-8&merId=700000000000001&orderId=20160520165519&queryId=201605201655190261448&reqReserved=透传信息&respCode=00&respMsg=Success!&settleAmt=100&settleCurrencyCode=156&settleDate=0520&signMethod=01&traceNo=026144&traceTime=0520165519&txnAmt=100&txnSubType=01&txnTime=20160520165519&txnType=01&version=5.0.0 
+2016-05-20 16:55:36, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[62]------ 摘要shax16>9358997c5c12926944ee79406d358b38c1c0c7c7 
+2016-05-20 16:55:36, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[64]------ 验签成功 
+2016-05-20 16:55:50, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[77]------ 报文返回的证书ID>68759585097 
+2016-05-20 16:55:50, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[80]------ 验证签名证书目录 :>D:/wwwroot/woniu/wwwroot/Union/ 
+2016-05-20 16:55:50, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[90]------ 加载验签证书成功 
+2016-05-20 16:55:50, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[58]------ 报文去[signature] key=val&串>accNo=6216***********0018&accessType=0&bizType=000201&certId=68759585097&currencyCode=156&encoding=utf-8&merId=700000000000001&orderId=20160520165519&queryId=201605201655190261448&reqReserved=透传信息&respCode=00&respMsg=success&settleAmt=100&settleCurrencyCode=156&settleDate=0520&signMethod=01&traceNo=026144&traceTime=0520165519&txnAmt=100&txnSubType=01&txnTime=20160520165519&txnType=01&version=5.0.0 
+2016-05-20 16:55:50, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[62]------ 摘要shax16>f3e07e771adb105c76743bb1398c05be133274a7 
+2016-05-20 16:55:50, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[64]------ 验签成功 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_5_Query.php ], Line[20]------ ===========处理后台请求开始============ 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&bizType=000000&certId=40220995861346480087409489142384722381&channelType=07&encoding=utf-8&merId=777290058112889&orderId=20150430181418&signMethod=01&txnSubType=00&txnTime=20150430181418&txnType=00&version=5.0.0 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >f560e3c91cd30468ad7f3768fa20fc18b5f519c3 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >MNQoy+8nXUtciw9Ecpcfy4QihUN1+WDXk0OwR2IrAKZe4grPwTVAaMcAMGfRRB8BbjoDMBPJiM6+1OnJSmsIBtqKE0/Fj0HaaDxtoxZZP1tlXrTJUAQzK6NfGqfajZh2AxzXIk45F3nNn5jHUFEmu8ZCYQObjocsFw89iVSIChY= 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_5_Query.php ], Line[41]------ 后台请求地址为>https://101.231.204.80:5000/gateway/api/queryTrans.do 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_5_Query.php ], Line[44]------ 后台返回结果为>txnType=00&respCode=10&channelType=07&merId=777290058112889&txnSubType=00&version=5.0.0&signMethod=01&certId=68759585097&encoding=utf-8&respMsg=[9100003]Invalid field[txnTime]&bizType=000000&signature=RFkCpiG8DZFbJuuBsP3jq9AtHBkcxLqVkKBDj5sI08e9/HWwhV0PE2n16Ef9fHusBdNQCojSFyAMIlHtj2tkDCSq+9WKyOBso/Y04YnZ9hAWiOKEQ8jr5DxsK38iSnupD4vmNCYsF1gTP9gHM/ABtVPow/AugFWzWOOdjJqibJSbOVbRkhV0n3TpH2gFIjBuH/C3jSfo1uEtwQk8KpS7wu69LsQsY+3whn/05dRV+SOVUHlmqe95dTUp0i70Bdbc1i3GF6Hxud0KENy1IyiNgCHps1ccKFmJCh7Z0N1RoKiFDqq4mV0uSIZf8K9NRgsFj6GSHlSUSfyIErbFOiiQBQ==&orderId=20150430181418&txnTime=20150430181418&accessType=0 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[77]------ 报文返回的证书ID>68759585097 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[80]------ 验证签名证书目录 :>D:/wwwroot/woniu/wwwroot/Union/ 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[90]------ 加载验签证书成功 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[58]------ 报文去[signature] key=val&串>accessType=0&bizType=000000&certId=68759585097&channelType=07&encoding=utf-8&merId=777290058112889&orderId=20150430181418&respCode=10&respMsg=[9100003]Invalid field[txnTime]&signMethod=01&txnSubType=00&txnTime=20150430181418&txnType=00&version=5.0.0 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[62]------ 摘要shax16>d36d3e1b7771137d3fe6a0c3070c39b7bac23f30 
+2016-05-20 17:00:58, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[64]------ 验签成功 
+2016-05-20 17:02:05, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_3_ConsumeUndo.php ], Line[20]------ ===========处理后台请求开始============ 
+2016-05-20 17:02:05, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 17:02:05, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://woniu.ccjjj.com/Union/demo/utf8/BackReceive.php&bizType=000201&certId=40220995861346480087409489142384722381&channelType=07&encoding=utf-8&merId=777290058112889&orderId=20160520170205&origQryId=201504301733181575528&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=00&txnTime=20160520170205&txnType=31&version=5.0.0 
+2016-05-20 17:02:05, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >d54247c8aa827c12153b62ce2cc5b80d95a39641 
+2016-05-20 17:02:05, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >BbkXDBM5MbRUyTv4Z0W1hGfoBIXdnsOVMm/8FBg6xkpsCPiyLzS8WvmxHw0B7L3C3kXyJ5vXaF6ay2LuxBLGFcpLfouUgPqSvb+qZxb5nqp9du97OIu4O9Y5Of83A+uyecN+PcbyblPJzecT/qCcD0v5blxJyfwQy55aDSkbGbo= 
+2016-05-20 17:02:05, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 17:02:05, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_3_ConsumeUndo.php ], Line[46]------ 后台请求地址为>https://101.231.204.80:5000/gateway/api/backTransReq.do 
+2016-05-20 17:02:06, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_3_ConsumeUndo.php ], Line[49]------ 后台返回结果为>accessType=0&bizType=000201&certId=68759585097&encoding=utf-8&merId=777290058112889&orderId=20160520170205&origQryId=201504301733181575528&reqReserved= 透传信息&respCode=35&respMsg=原交易不存在或状态不正确[2040006]&signMethod=01&txnAmt=100&txnSubType=00&txnTime=20160520170205&txnType=31&version=5.0.0&signature=IebFMuFjdjYLivXt1toCaRs99hqcoGmwyuORDQ1EBcvlxRWp2NOEljUT0X15YZt4d1vucu/6aGsXwgd9wxzCMWoRM2rS5VRQ4FD7uDuQXRmlFRKNk0KdnyBQCpds/j2POo8+6DuzRoCWzoQDW4CDmjGh30D4YzTZ1mjMi0tMRvY+oL+iVm4QIfCJDdKJ9LXHlF4xYFep+pdrIpejNDv3ZuL6wgtOuRwg6U/rEyDRxlYnGiGEehj4tlxM/kfNdp5LNEDS3s0KhQNILtJiukhsxljoCDnU3HbvbbdenvCVsP+/S0D/4OBJoIlS4QcKYE3wX6CMqhtErRn1/6L244/3UQ== 
+2016-05-20 17:02:06, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[77]------ 报文返回的证书ID>68759585097 
+2016-05-20 17:02:06, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[80]------ 验证签名证书目录 :>D:/wwwroot/woniu/wwwroot/Union/ 
+2016-05-20 17:02:06, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[90]------ 加载验签证书成功 
+2016-05-20 17:02:06, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[58]------ 报文去[signature] key=val&串>accessType=0&bizType=000201&certId=68759585097&encoding=utf-8&merId=777290058112889&orderId=20160520170205&origQryId=201504301733181575528&reqReserved= 透传信息&respCode=35&respMsg=原交易不存在或状态不正确[2040006]&signMethod=01&txnAmt=100&txnSubType=00&txnTime=20160520170205&txnType=31&version=5.0.0 
+2016-05-20 17:02:06, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[62]------ 摘要shax16>1de53fbbd7883c4956472f27c87954fb68cff1b0 
+2016-05-20 17:02:06, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[64]------ 验签成功 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_5_Query.php ], Line[20]------ ===========处理后台请求开始============ 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&bizType=000000&certId=40220995861346480087409489142384722381&channelType=07&encoding=utf-8&merId=700000000000001&orderId=20160520165519&signMethod=01&txnSubType=00&txnTime=20160520165519&txnType=00&version=5.0.0 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >3fa7d1268003905705760196ec6c6562c7dc5bed 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >EUCJ3U12dCeRSFCzpHK0zGkZiQVQJEEt+U1+S+i84IJwML++aUYboIxR47/HUzAo2RTNbX9guiEnuyTYBB/3S5+ozmchw6gP4nyj4d+WY7yGm3hUs1X7yRJm4uc1f5p/6sHsz+4UfMLxa2338mqiHUDRbGc9J6OVPJR7pka8U50= 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_5_Query.php ], Line[41]------ 后台请求地址为>https://101.231.204.80:5000/gateway/api/queryTrans.do 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_5_Query.php ], Line[44]------ 后台返回结果为>accNo=6216***********0018&accessType=0&bizType=000000&currencyCode=156&encoding=utf-8&issuerIdentifyMode=0&merId=700000000000001&orderId=20160520165519&origRespCode=00&origRespMsg=成功[0000000]&queryId=201605201655190261448&reqReserved=透传信息&respCode=00&respMsg=成功[0000000]&settleAmt=100&settleCurrencyCode=156&settleDate=0520&signMethod=01&traceNo=026144&traceTime=0520165519&txnAmt=100&txnSubType=01&txnTime=20160520165519&txnType=01&version=5.0.0&certId=68759585097&signature=bg39mYCkfAof3lfZ8LYlPrXvFxYHM9jUxmpeyFcr92UVHxKAnzx8kAvhOKH0c+rMgMWMrzJ1Ize7FUnPHzKzPdiiKdMuVGG+J6uo/YKVNm1Iyx9kj0ow8X08jIkN6xQVaF+DBG/g2oZyAR11oPgXVZbCbiW8hLVemrrajK46D57nn3NIEcCdPDtIq+jL2p/xT++Vz+VGHTloyHaUjg1JrNygWvAuS0ZwlPasNmSjWFWwj3ThpPe0Sui3crM+32lHxLIV8RIM+kPR1D9mQ8Ms8/SI7Ac91E4iEyZbGVHvul4RlpKi4a5ejcIvX8NHNSHryGiscAX8ZjIsF9jZ4I6dTA== 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[77]------ 报文返回的证书ID>68759585097 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[80]------ 验证签名证书目录 :>D:/wwwroot/woniu/wwwroot/Union/ 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[90]------ 加载验签证书成功 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[58]------ 报文去[signature] key=val&串>accNo=6216***********0018&accessType=0&bizType=000000&certId=68759585097&currencyCode=156&encoding=utf-8&issuerIdentifyMode=0&merId=700000000000001&orderId=20160520165519&origRespCode=00&origRespMsg=成功[0000000]&queryId=201605201655190261448&reqReserved=透传信息&respCode=00&respMsg=成功[0000000]&settleAmt=100&settleCurrencyCode=156&settleDate=0520&signMethod=01&traceNo=026144&traceTime=0520165519&txnAmt=100&txnSubType=01&txnTime=20160520165519&txnType=01&version=5.0.0 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[62]------ 摘要shax16>312d78759460edd054a4cf96f00a39907abd24bd 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[64]------ 验签成功 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_5_Query.php ], Line[20]------ ===========处理后台请求开始============ 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&bizType=000000&certId=40220995861346480087409489142384722381&channelType=07&encoding=utf-8&merId=700000000000001&orderId=20160520165519&signMethod=01&txnSubType=00&txnTime=20160520165519&txnType=00&version=5.0.0 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >3fa7d1268003905705760196ec6c6562c7dc5bed 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >EUCJ3U12dCeRSFCzpHK0zGkZiQVQJEEt+U1+S+i84IJwML++aUYboIxR47/HUzAo2RTNbX9guiEnuyTYBB/3S5+ozmchw6gP4nyj4d+WY7yGm3hUs1X7yRJm4uc1f5p/6sHsz+4UfMLxa2338mqiHUDRbGc9J6OVPJR7pka8U50= 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 17:04:07, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_5_Query.php ], Line[41]------ 后台请求地址为>https://101.231.204.80:5000/gateway/api/queryTrans.do 
+2016-05-20 17:04:08, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_5_Query.php ], Line[44]------ 后台返回结果为>accNo=6216***********0018&accessType=0&bizType=000000&currencyCode=156&encoding=utf-8&issuerIdentifyMode=0&merId=700000000000001&orderId=20160520165519&origRespCode=00&origRespMsg=成功[0000000]&queryId=201605201655190261448&reqReserved=透传信息&respCode=00&respMsg=成功[0000000]&settleAmt=100&settleCurrencyCode=156&settleDate=0520&signMethod=01&traceNo=026144&traceTime=0520165519&txnAmt=100&txnSubType=01&txnTime=20160520165519&txnType=01&version=5.0.0&certId=68759585097&signature=bg39mYCkfAof3lfZ8LYlPrXvFxYHM9jUxmpeyFcr92UVHxKAnzx8kAvhOKH0c+rMgMWMrzJ1Ize7FUnPHzKzPdiiKdMuVGG+J6uo/YKVNm1Iyx9kj0ow8X08jIkN6xQVaF+DBG/g2oZyAR11oPgXVZbCbiW8hLVemrrajK46D57nn3NIEcCdPDtIq+jL2p/xT++Vz+VGHTloyHaUjg1JrNygWvAuS0ZwlPasNmSjWFWwj3ThpPe0Sui3crM+32lHxLIV8RIM+kPR1D9mQ8Ms8/SI7Ac91E4iEyZbGVHvul4RlpKi4a5ejcIvX8NHNSHryGiscAX8ZjIsF9jZ4I6dTA== 
+2016-05-20 17:04:08, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[77]------ 报文返回的证书ID>68759585097 
+2016-05-20 17:04:08, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[80]------ 验证签名证书目录 :>D:/wwwroot/woniu/wwwroot/Union/ 
+2016-05-20 17:04:08, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[90]------ 加载验签证书成功 
+2016-05-20 17:04:08, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[58]------ 报文去[signature] key=val&串>accNo=6216***********0018&accessType=0&bizType=000000&certId=68759585097&currencyCode=156&encoding=utf-8&issuerIdentifyMode=0&merId=700000000000001&orderId=20160520165519&origRespCode=00&origRespMsg=成功[0000000]&queryId=201605201655190261448&reqReserved=透传信息&respCode=00&respMsg=成功[0000000]&settleAmt=100&settleCurrencyCode=156&settleDate=0520&signMethod=01&traceNo=026144&traceTime=0520165519&txnAmt=100&txnSubType=01&txnTime=20160520165519&txnType=01&version=5.0.0 
+2016-05-20 17:04:08, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[62]------ 摘要shax16>312d78759460edd054a4cf96f00a39907abd24bd 
+2016-05-20 17:04:08, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[64]------ 验签成功 
+2016-05-20 17:04:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_3_ConsumeUndo.php ], Line[20]------ ===========处理后台请求开始============ 
+2016-05-20 17:04:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[17]------ =====签名报文开始====== 
+2016-05-20 17:04:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[23]------ 签名key=val&...串 >accessType=0&backUrl=http://woniu.ccjjj.com/Union/demo/utf8/BackReceive.php&bizType=000201&certId=40220995861346480087409489142384722381&channelType=07&encoding=utf-8&merId=700000000000001&orderId=20160520170414&origQryId=201605201655190261448&reqReserved= 透传信息&signMethod=01&txnAmt=100&txnSubType=00&txnTime=20160520170414&txnType=31&version=5.0.0 
+2016-05-20 17:04:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[26]------ 摘要sha1x16 >d65dd8a3c24dd1c89566544480bcba36dfd2b933 
+2016-05-20 17:04:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[34]------ 签名串为 >JggiLYbRJ5HOvzzYlf25tgi5Q1bmkLodLZp7SjB9woOcRmRuyk5nqNw/hpYsa+DD/LbC1M3L4czZ6vP6Jf5IOuzA/vq7roZvOBZhiMY+nz0orQYNPQKjJHkKr0+0oSbGCxQpz2oafcNOfDriEiwbjNTPFIsgTaL2NKURDqdtqvg= 
+2016-05-20 17:04:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[39]------ =====签名报文结束====== 
+2016-05-20 17:04:14, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_3_ConsumeUndo.php ], Line[46]------ 后台请求地址为>https://101.231.204.80:5000/gateway/api/backTransReq.do 
+2016-05-20 17:04:15, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\demo\utf8\Form_6_3_ConsumeUndo.php ], Line[49]------ 后台返回结果为>accessType=0&bizType=000201&certId=68759585097&encoding=utf-8&merId=700000000000001&orderId=20160520170414&origQryId=201605201655190261448&queryId=201605201704141507858&reqReserved= 透传信息&respCode=00&respMsg=成功[0000000]&signMethod=01&txnAmt=100&txnSubType=00&txnTime=20160520170414&txnType=31&version=5.0.0&signature=dmAT9Y75IT8vQY5OORo9GWDzm4SjamkSlH7GEnvGlYna5/pY08wKlWzERytKhCg8otXrJu38MaseW3xUIm4qQP8vx7OntlZo7Gc2SeCnvH8UjgnmTQ5xmPvkbNJLleFAA+DuF4GYdNtPOVwEAOOEPcmmGQlqZz1azun5J3t8XsRn2X8MB6IepsWtJhRQvWIC/VBQAd85N70W8aIn2m0I0EDZ3y7j4VnKBvoq9cRpRKZZ4HLYf4MjALeB4AMt9cvEFF8NWk0H+pbAlEBIBisoifetSxxdpDFV2SFlk0OV5qnW9i33ZyAHD7bZjPgbRPoSKmmtFeArwQF+9Ma2Hwug4w== 
+2016-05-20 17:04:15, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[77]------ 报文返回的证书ID>68759585097 
+2016-05-20 17:04:15, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[80]------ 验证签名证书目录 :>D:/wwwroot/woniu/wwwroot/Union/ 
+2016-05-20 17:04:15, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[90]------ 加载验签证书成功 
+2016-05-20 17:04:15, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[58]------ 报文去[signature] key=val&串>accessType=0&bizType=000201&certId=68759585097&encoding=utf-8&merId=700000000000001&orderId=20160520170414&origQryId=201605201655190261448&queryId=201605201704141507858&reqReserved= 透传信息&respCode=00&respMsg=成功[0000000]&signMethod=01&txnAmt=100&txnSubType=00&txnTime=20160520170414&txnType=31&version=5.0.0 
+2016-05-20 17:04:15, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[62]------ 摘要shax16>c6cc91703e477eb5f2c471630f8bc066318bb15f 
+2016-05-20 17:04:15, INFO, 222.140.161.219, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[64]------ 验签成功 
+2016-05-20 17:04:15, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[77]------ 报文返回的证书ID>68759585097 
+2016-05-20 17:04:15, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[80]------ 验证签名证书目录 :>D:/wwwroot/woniu/wwwroot/Union/ 
+2016-05-20 17:04:15, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[90]------ 加载验签证书成功 
+2016-05-20 17:04:15, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[58]------ 报文去[signature] key=val&串>accNo=6216***********0018&accessType=0&bizType=000201&certId=68759585097&currencyCode=156&encoding=utf-8&merId=700000000000001&orderId=20160520170414&origQryId=201605201655190261448&queryId=201605201704141507858&reqReserved=透传信息&respCode=00&respMsg=Success!&settleAmt=100&settleCurrencyCode=156&settleDate=0520&signMethod=01&traceNo=150785&traceTime=0520170414&txnAmt=100&txnSubType=00&txnTime=20160520170414&txnType=31&version=5.0.0 
+2016-05-20 17:04:15, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[62]------ 摘要shax16>6415b8ea93fc96e6e08b2bc1ebff28fd754d8b81 
+2016-05-20 17:04:15, INFO, 116.246.38.72, File[ D:\wwwroot\woniu\wwwroot\Union\utf8\func\secureUtil.php ], Line[64]------ 验签成功 

@@ -19,6 +19,24 @@ class MemberController extends CommonController {
     public function _initialize(){
       parent::_initialize();
       $uid=session("uid");
+      $hostelorder=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$uid))->field("b.catid,b.style")->select();
+      if($hostelorder){
+        foreach ($hostelorder as $value) {
+          # code...
+          $hostelcate[]=$value['catid'];
+          $hostelstyle[]=$value['style'];
+        }
+        
+        $map['style']=array('in',$hostelstyle);
+        $map['catid']=array('in',$hostelcate);
+        $map['_logic']='or';
+        $where['_complex']=$map;
+        $interestedhostel=M('Hostel')->where(array('status'=>2,'isdel'=>0))->where($where)->cache(true)->limit(10)->select();
+      }else{
+        $interestedhostel=M('Hostel')->where(array('status'=>2,'isdel'=>0))->cache(true)->limit(10)->select();
+      }
+
+      $this->assign("interestedhostel",$interestedhostel);
     }
     /**
      * 会员中心页
@@ -30,10 +48,247 @@ class MemberController extends CommonController {
             $url=__SELF__;cookie("returnurl",urlencode($url));$this->redirect('Home/Member/login');
         } else {
             $uid=session("uid");
+            $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'hostel'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
+            $myhostel=M("Hostel a")
+                ->join("left join zz_member b on a.uid=b.id")
+                ->join("left join {$sqlI} c on a.id=c.value")
+                ->where(array('a.isdel'=>0,'a.status'=>2,'a.uid'=>$uid))
+                ->order(array('a.id'=>'desc'))
+                ->field('a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.hit,a.support,a.score as evaluation,a.scorepercent as evaluationpercent,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime,c.reviewnum')
+                ->select();
+            $this->assign('myhostel',$myhostel);
+
+            $myparty=M("activity a")
+                ->join("left join zz_member b on a.uid=b.id")
+                ->where(array('a.isdel'=>0,'a.status'=>2,'a.uid'=>$uid))->order(array('id'=>"desc"))
+                ->field('a.id,a.title,a.thumb,a.money,a.address,a.status,a.uid,a.starttime,a.endtime,a.inputtime')->limit(2)->select();
+            foreach ($myparty as $key => $value) {
+              # code...
+                if($value['endtime']>=time()){
+                  $myparty[$key]['donestatus']=0;
+                }else{
+                  $myparty[$key]['donestatus']=1;
+                }
+            }
+            $this->assign('myparty',$myparty);
+
+            $myreview=M("review a")
+                ->join("left join zz_member b on a.uid=b.id")
+                ->where(array('a.uid'=>$uid,'a.isdel'=>0))
+                ->order(array('a.id'=>'desc'))
+                ->field('a.id as rid,a.value,a.varname,a.content,a.inputtime,a.uid,b.nickname,b.head,b.rongyun_token')
+                ->limit(4)
+                ->select();
+            foreach ($myreview as $key => $value)
+            {
+                if($value['varname']=='note'){
+                    $myreview[$key]['title']=M('note')->where(array('id'=>$value['value']))->getField("title");
+                }else if($value['varname']=='party'){
+                    $myreview[$key]['title']=M('activity')->where(array('id'=>$value['value']))->getField("title");
+                }else if($value['varname']=='hostel'){
+                    $myreview[$key]['title']=M('hostel')->where(array('id'=>$value['value']))->getField("title");
+                }else if($value['varname']=='room'){
+                    $myreview[$key]['title']=M('room')->where(array('id'=>$value['value']))->getField("title");
+                }else if($value['varname']=='trip'){
+                    $myreview[$key]['title']=M('trip')->where(array('id'=>$value['value']))->getField("title");
+                }
+            }
+            $this->assign('myreview',$myreview);
+
+            $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
+            $mynote=M("Note a")
+                ->join("left join zz_member b on a.uid=b.id")
+                ->join("left join {$sqlI} c on a.id=c.value")
+                ->where(array('a.uid'=>$uid,'a.status'=>2,'a.isdel'=>0))
+                ->order(array('a.id'=>'desc'))
+                ->field('a.id,a.title,a.thumb,a.description,a.content,a.area,a.address,a.lat,a.lng,a.hit,a.begintime,a.status,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,c.reviewnum')
+                ->limit(2)
+                ->select();
+            foreach ($mynote as $key => $value)
+            { 
+                if(empty($value['reviewnum'])) $mynote[$key]['reviewnum']=0;
+                $mynote[$key]['description'] = $this->str_cut(trim(strip_tags($value['content'])), 250);
+            }
+            $this->assign('mynote',$mynote);
+
+
+            $where=array('a.uid|e.uid'=>$uid,'a.ordertype'=>1);
+            $order=array('a.inputtime'=>'desc');
+            $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,c.refund_status,a.ordertype,c.donetime,c.review_remark,d.endtime,f.remark as refundreview_remark');
+            $hostelorder=M('order a')->join("left join zz_order_time c on a.orderid=c.orderid")
+                ->join("left join zz_book_room d on a.orderid=d.orderid")
+                ->join("left join zz_hostel e on d.hid=e.id")
+                ->join("left join zz_refund_apply f on a.orderid=f.orderid")
+                ->where($where)
+                ->order($order)
+                ->field($field)
+                ->limit(4)
+                ->select();
+            foreach ($hostelorder as $key => $value) {
+                # code...
+                $productinfo=M('book_room a')
+                    ->join("left join zz_room c on a.rid=c.id")
+                    ->join("left join zz_hostel b on c.hid=b.id")
+                    ->where(array('a.orderid'=>$value['orderid']))
+                    ->field("a.rid,b.id as hid,b.thumb,b.title,b.money,a.starttime,a.endtime")
+                    ->find();
+                $hostelorder[$key]['productinfo']=$productinfo;
+            }
+            $this->assign('hostelorder',$hostelorder);
+
+            $where=array('a.uid|e.uid'=>$uid,'a.ordertype'=>2);
+            $order=array('a.inputtime'=>'desc');
+            $field=array('a.uid,a.orderid,a.discount,a.money,a.total,a.inputtime,a.paytype,c.status,c.pay_status,c.evaluate_status,c.refund_status,a.ordertype,c.donetime,e.endtime,f.remark as refundreview_remark');
+            $partyorder=M('order a')
+                ->join("left join zz_order_time c on a.orderid=c.orderid")
+                ->join("left join zz_activity_apply d on a.orderid=d.orderid")
+                ->join("left join zz_activity e on d.aid=e.id")
+                ->join("left join zz_refund_apply f on a.orderid=f.orderid")
+                ->where($where)
+                ->order($order)
+                ->field($field)
+                ->limit(4)
+                ->select();
+            foreach ($partyorder as $key => $value) {
+                # code...
+                $productinfo=M('activity_apply a')
+                    ->join("left join zz_activity b on a.aid=b.id")
+                    ->where(array('a.orderid'=>$value['orderid']))
+                    ->field("a.aid,b.thumb,b.title,b.money,b.isfree,b.starttime,b.endtime,b.area,b.address")
+                    ->find();
+                $partyorder[$key]['productinfo']=$productinfo;
+            }
+            $this->assign('partyorder',$partyorder);
             $this->display();
         }
     }
+    /**
+     * 会员详情
+     * @author yiyouguisu<741459065@qq.com> time|20151219
+     * @retrun void
+     */
+    public function detail() {
+      $uid=I('uid');
+      $fuid=session("uid");
+      if(!empty($uid)&&!empty($fuid)){
+          $num=M('view')->where('fuid=' . session("uid") . " and tuid=" . $uid)->count();
+          $todaynum=M('view')->where('day(inputtime) = day(NOW()) and month(inputtime) = month(NOW()) and year(inputtime)=year(now()) and fuid=' . session("uid") . " and tuid=" . $uid)->count();
+          if($num==0){
+              M('Member')->where('id=' . $uid)->setInc("viewnum");
+              if($todaynum==0){
+                M('Member')->where('id=' . $uid)->setInc("todayviewnum");
+              }
+              M('view')->add(array(
+                  'fuid'=>session("uid"),
+                  'tuid'=>$uid,
+                  'inputtime'=>time()
+              ));
+          }
+      }
+      $data=M('Member')->where('id=' . $uid)->find();
+      $data['attentionnum'] = D("attention")->where('fuid=' . $data['id'])->count();
+      $data['fansnum'] = D("attention")->where('tuid=' . $data['id'])->count();
+      $data['viewlist']=D("view a")->join("left join zz_member b on a.fuid=b.id")->where('a.tuid=' . $data['id'])->group('fuid')->field("a.fuid as uid,b.nickname,b.head")->limit(6)->select();
+      $data['characteristic']=M('linkage')->where(array('catid'=>1,'value'=>array('in',$data['characteristic'])))->select();
+      $data['hobby']=M('linkage')->where(array('catid'=>2,'value'=>array('in',$data['hobby'])))->select();
 
+      $fuid=session("uid");
+      $attention=M('attention')->where(array('fuid'=>$fuid,'tuid'=>$uid))->find();
+      $data['isattention'] = !empty($attention)?1:0;
+      $this->assign('data',$data);
+
+      $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'hostel'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
+      $hostel=M("Hostel a")
+          ->join("left join zz_member b on a.uid=b.id")
+          ->join("left join {$sqlI} c on a.id=c.value")
+          ->where(array('a.isdel'=>0,'a.status'=>2,'a.uid'=>$uid))
+          ->order(array('a.id'=>'desc'))
+          ->field('a.id,a.title,a.thumb,a.money,a.area,a.address,a.lat,a.lng,a.hit,a.description,a.support,a.score as evaluation,a.scorepercent as evaluationpercent,a.uid,b.nickname,b.head,b.rongyun_token,a.type,a.inputtime,c.reviewnum')
+          ->limit(3)
+          ->select();
+      foreach ($hostel as $key => $value) {
+        # code...
+        $hostel[$key]['roomnum']=M('room')->where(array('hid'=>$value['id']))->count();
+        $hostel[$key]['description'] = $this->str_cut(trim(strip_tags($value['description'])), 100);
+      }
+      $this->assign('hostel',$hostel);
+
+      $party=M("activity a")
+          ->join("left join zz_member b on a.uid=b.id")
+          ->where(array('a.isdel'=>0,'a.status'=>2,'a.uid'=>$uid))->order(array('id'=>"desc"))
+          ->field('a.id,a.title,a.thumb,a.money,a.address,a.status,a.uid,a.starttime,a.endtime,a.inputtime')->limit(2)->select();
+      foreach ($party as $key => $value) {
+        # code...
+          if($value['starttime']<=time()&&$value['endtime']>=time()){
+            $party[$key]['donestatus']=0;
+          }else{
+            $party[$key]['donestatus']=1;
+          }
+      }
+      $this->assign('party',$party);
+
+      $trip=M("trip a")
+          ->join("left join zz_member b on a.uid=b.id")
+          ->where(array('a.ispublic'=>1,'a.uid'=>$uid))->order(array('id'=>"desc"))
+          ->field('a.id,a.title,a.status,a.uid,a.starttime,a.endtime,a.inputtime')->limit(2)->select();
+      foreach ($trip as $key => $value) {
+        # code...
+          if($value['starttime']<=time()&&$value['endtime']>=time()){
+            $trip[$key]['donestatus']=0;
+          }else{
+            $trip[$key]['donestatus']=1;
+          }
+      }
+      $this->assign('trip',$trip);
+
+      $review=M("review a")
+          ->join("left join zz_member b on a.uid=b.id")
+          ->where(array('a.uid'=>$uid,'a.isdel'=>0))
+          ->order(array('a.id'=>'desc'))
+          ->field('a.id as rid,a.value,a.varname,a.content,a.inputtime,a.uid,b.nickname,b.head,b.rongyun_token')
+          ->limit(4)
+          ->select();
+      foreach ($review as $key => $value)
+      {
+          if($value['varname']=='note'){
+              $review[$key]['title']=M('note')->where(array('id'=>$value['value']))->getField("title");
+          }else if($value['varname']=='party'){
+              $review[$key]['title']=M('activity')->where(array('id'=>$value['value']))->getField("title");
+          }else if($value['varname']=='hostel'){
+              $review[$key]['title']=M('hostel')->where(array('id'=>$value['value']))->getField("title");
+          }else if($value['varname']=='room'){
+              $review[$key]['title']=M('room')->where(array('id'=>$value['value']))->getField("title");
+          }
+      }
+      $this->assign('review',$review);
+
+      $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
+      $note=M("Note a")
+          ->join("left join zz_member b on a.uid=b.id")
+          ->join("left join {$sqlI} c on a.id=c.value")
+          ->where(array('a.uid'=>$uid,'a.status'=>2,'a.isdel'=>0))
+          ->order(array('a.id'=>'desc'))
+          ->field('a.id,a.title,a.thumb,a.description,a.content,a.area,a.address,a.lat,a.lng,a.hit,a.begintime,a.status,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,c.reviewnum')
+          ->limit(2)
+          ->select();
+      foreach ($note as $key => $value)
+      { 
+          if(empty($value['reviewnum'])) $note[$key]['reviewnum']=0;
+          $note[$key]['description'] = $this->str_cut(trim(strip_tags($value['content'])), 250);
+      }
+      $this->assign('note',$note);
+
+      $myhostel=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$uid,'a.paystatus'=>1))->field("a.starttime,b.*")->limit(4)->select();
+      $this->assign('myhostel',$myhostel);
+      $myhostelnum=M('book_room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.uid'=>$uid,'a.paystatus'=>1))->count();
+      $this->assign('myhostelnum',$myhostelnum);
+
+      $myparty=M('activity_apply a')->join("left join zz_activity b on a.aid=b.id")->where(array('a.uid'=>$uid,'a.paystatus'=>1))->field("b.*")->limit(4)->select();
+      $this->assign('myparty',$myparty);
+      $mypartynum=M('activity_apply a')->join("left join zz_activity b on a.aid=b.id")->where(array('a.uid'=>$uid,'a.paystatus'=>1))->count();
+      $this->assign('mypartynum',$mypartynum);
+      $this->display();
+    }
 
     /**
      * 会员注册
@@ -43,6 +298,12 @@ class MemberController extends CommonController {
     public function reg() {
         if(IS_POST){
             $phone=$_POST['phone'];
+            // $verify = new \Think\Verify();
+            // $code = $_POST['verify'];
+            // $verifyok = $verify->check($code, $id = '');
+            // if (!$verifyok) {
+            //     $this->error('图片验证码错误，请重新输入');
+            // }
             $verifyset=M('verify')->where('phone=' . $phone)->find();
             $time=time()-$verifyset['expiretime'];
             if($time>0){
@@ -1024,7 +1285,7 @@ class MemberController extends CommonController {
           $uid=session("uid");
             $type=I('varname');
             if(empty($type)){
-              $type="done";
+              $type="all";
             }
             
             switch ($type) {

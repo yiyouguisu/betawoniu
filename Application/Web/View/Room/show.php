@@ -7,7 +7,7 @@
                   <img src="{$data.thumb}">
               </div>
               <div class="history pa">
-                  <a href="javascript:history.go(-1);" style="display:block;">
+                  <a href="{:U('Hostel/show')}?id={$data.hid}" style="display:block;">
                       <img src="__IMG__/go.png">
                   </a><span>&nbsp;</span>
               </div>
@@ -125,7 +125,7 @@
             </div>
             <br>
             <div class="act_href center" style="margin:0;">
-                <a href="{:U('Web/Order/bookroom',array('id'=>$data['rid'],'hid'=>$hid))}">我要预定</a>
+                <a href="javascript:;" data-href="{:U('Web/Order/bookroom',array('id'=>$data['rid'],'hid'=>$hid))}" id="go_book">我要预订</a>
             </div>
           </div>
         </div>
@@ -222,6 +222,21 @@
                         });
                 })
             }
+        </script>
+        <script>
+          $('#go_book').click(function(evt) {
+            evt.preventDefault();
+            var is_owner = '{$data.is_owner}';
+            if(is_owner) {
+              alert('房东不能预定自己的房间！');
+            } else {
+              var href = $(this).data('href');
+              if(is_weixin()) {
+                href += '?weixin=1';
+              }
+              window.location.href = href;
+            }
+          });
         </script>
 </body>
 <script>

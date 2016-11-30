@@ -1,7 +1,7 @@
-<?php
-header ( 'Content-type:text/html;charset=UTF-8' );
-include_once 'log.class.php';
-include_once 'SDKConfig.php';
+﻿<?php
+header ( 'Content-type:text/html;charset=utf-8' );
+include_once $_SERVER ['DOCUMENT_ROOT'] . '/Union/utf8/func/log.class.php';
+include_once $_SERVER ['DOCUMENT_ROOT'] . '/Union/utf8/func/SDKConfig.php';
 // 初始化日志
 //$log = new PhpLog ( SDK_LOG_FILE_PATH, "PRC", SDK_LOG_LEVEL );
 /**

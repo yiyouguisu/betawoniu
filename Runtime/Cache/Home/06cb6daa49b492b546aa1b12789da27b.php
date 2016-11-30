@@ -90,7 +90,12 @@
         initvals();
         $(".jgbox").delegate("select","change",function(){
             $(this).nextAll().remove();
-            getchildren($(this).val(),true);
+            if($(this).val()!=null&&$(this).val()!=''){
+                getchildren($(this).val(),true);
+            }else{
+                getval();
+            }
+            
         });
     })
     function getval()
@@ -108,6 +113,8 @@
         {
             vals=vals.substr(1);        
             $("#arrparentid").val(vals);
+        }else{
+            $("#arrparentid").val('');
         }
     }
     function getchildren(a,b) {
@@ -158,7 +165,7 @@
                 <div class="main_top2 pr">
                     <div class="main3_05 hidden">
                         <input type="hidden" name="arrparentid" id="arrparentid" value="<?php echo ($arrparentid); ?>">
-                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"上海"); ?></span>
+                        <span class="main3_03span position"><?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):"请选择"); ?></span>
                     </div>
                     <div class="pa main3_03span_float hide">
                         <div class="main3_03span_float_top1">
@@ -195,7 +202,7 @@
                     <a href="<?php echo U('Home/Woniu/index');?>">蜗牛</a>
                 </li>
                 <li class="fl">|</li>
-                <li <?php if(($controller_url) == "Home/About"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
+                <li <?php if(($current_url) == "Home/About/app"): ?>class="fl main_top3_chang2" <?php else: ?>class="fl"<?php endif; ?>>
                     <a href="<?php echo U('Home/About/app');?>">APP下载</a>
                 </li>
             </ul>
@@ -386,131 +393,133 @@
         </script>
 
 <div class="wrap">
-        <div class="Legend_main3">
-            <div class="Legend_main3_top">
-                <a href="/">首页</a>
-                <i>></i>
-                <a href="<?php echo U('Home/Hostel/index');?>">美宿</a>
-            </div>
-            <div class="Legend_main3_top2 hidden">
-                <form action="<?php echo U('Home/Hostel/index');?>" method="get">
-                    <div class="Legend_main3_top2_map fl">
-                        <img src="/Public/Home/images/Icon/img5.png" />
-                        <input type="text" placeholder="<?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):'上海'); ?>" />
-                    </div>
-                    <div class="Legend_main3_top2_datatime fl">
-                        <img src="/Public/Home/images/Icon/img6.png" />
-                        <input type="text" class="J_date starttime" placeholder="入住时间" value="<?php echo ($_GET['starttime']); ?>" />
-                    </div>
-                    <div class="Legend_main3_top2_datatime fl">
-                        <img src="/Public/Home/images/Icon/img6.png" />
-                        <input type="text" class="J_date endtime" placeholder="离店时间" value="<?php echo ($_GET['endtime']); ?>" />
-                    </div>
-                    <div class="Legend_main3_top2_search fl">
-                        <img src="/Public/Home/images/Icon/img7.png" />
-                        <input type="text" name="keyword" value="<?php echo ($_GET['keyword']); ?>"  placeholder="请输入美宿名称等关键词搜索..." />
-                    </div>
-                    <div class="Legend_main3_top2_search2 fl">
-                        <input type="submit" value="搜索" />
-                    </div>
-                </form>
-                <div class="Legend_main3_top2_search_map fl">
-                    <img src="/Public/Home/images/Icon/img85.png" />
-                    <input type="text" onclick="window.location.href='<?php echo U('Home/Hostel/map');?>'" style="cursor:pointer;" value="地图模式" />
+    <div class="Legend_main3">
+        <div class="Legend_main3_top">
+            <a href="/">首页</a>
+            <i>></i>
+            <a href="<?php echo U('Home/Hostel/index');?>">美宿</a>
+        </div>
+        <div class="Legend_main3_top2 hidden">
+            <form action="<?php echo U('Home/Hostel/index');?>" method="get">
+                <div class="Legend_main3_top2_map fl">
+                    <img src="/Public/Home/images/Icon/img5.png" />
+                    <input type="text" placeholder="<?php echo ((isset($cityname) && ($cityname !== ""))?($cityname):'上海'); ?>" />
                 </div>
+                <div class="Legend_main3_top2_datatime fl">
+                    <img src="/Public/Home/images/Icon/img6.png" />
+                    <input type="text" class="J_date starttime" placeholder="入住时间" value="<?php echo ($_GET['starttime']); ?>" />
+                </div>
+                <div class="Legend_main3_top2_datatime fl">
+                    <img src="/Public/Home/images/Icon/img6.png" />
+                    <input type="text" class="J_date endtime" placeholder="离店时间" value="<?php echo ($_GET['endtime']); ?>" />
+                </div>
+                <div class="Legend_main3_top2_search fl">
+                    <img src="/Public/Home/images/Icon/img7.png" />
+                    <input type="text" name="keyword" value="<?php echo ($_GET['keyword']); ?>"  placeholder="请输入美宿名称等关键词搜索..." />
+                </div>
+                <div class="Legend_main3_top2_search2 fl">
+                    <input type="submit" value="搜索" />
+                </div>
+            </form>
+            <div class="Legend_main3_top2_search_map fl">
+                <img src="/Public/Home/images/Icon/img85.png" />
+                <input type="text" onclick="window.location.href='<?php echo U('Home/Hostel/map');?>'" style="cursor:pointer;" value="地图模式" />
             </div>
-            <script type="text/javascript">
-                var areaurl = "<?php echo U('Home/Party/getchildren');?>";
-                $(function(){
-                    var province="<?php echo ($_GET['province']); ?>";
-                    var city="<?php echo ($_GET['city']); ?>";
-                    if(province!=''){
-                      load(province,'city',1);
-                    }
-                    if(city!=''){
-                      load(city,'town',1);
-                    }
-                })
-                function load(parentid, type ,isinit) {
-                    $.ajax({
-                        type: "GET",
-                        url: areaurl,
-                        data: { 'parentid': parentid },
-                        dataType: "json",
-                        success: function (data) {
-                            if (type == 'city') {
-                                $('#city').html('<option value="">选择市</option>');
-                                $('#town').html('<option value="">选择区</option>');
-                                if(data!=null){
-                                    $.each(data, function (no, items) {
-                                        if (items.id == "<?php echo ($_GET['city']); ?>") {
-                                            $('#city').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
-                                        } else {
-                                            $('#city').append('<option value="' + items.id + '">' + items.name + '</option>');
-                                        }
-                                    });
-                                }
-                                $('#city').trigger("chosen:updated");
-                                $('#town').trigger("chosen:updated");
-                            } else if (type == 'town') {
-                                $('#town').html('<option value="">选择区</option>');
-                                if(data!=null){
-                                    $.each(data, function (no, items) {
-                                        if (items.id == "<?php echo ($_GET['town']); ?>") {
-                                            $('#town').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
-                                        } else {
-                                            $('#town').append('<option value="' + items.id + '">' + items.name + '</option>');
-                                        }
-                                    });
-                                }
-                                
-                                $('#town').trigger("chosen:updated");
-                            }
-                            var province=$("#province option:selected").val();
-                            var city=$("#city option:selected").val();
-                            var town=$("#town option:selected").val();
-                            console.log(city)
-                            if(isinit==0){
-                                var url = "<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage']));?>?province=" + province + "&city=" + city + "&town=" + town;
-                                window.location.href = url;
-                            }
-                            
-                            
-                        }
-                    });
+        </div>
+        <script type="text/javascript">
+            var areaurl = "<?php echo U('Home/Party/getchildren');?>";
+            $(function(){
+                var province="<?php echo ($_GET['province']); ?>";
+                var city="<?php echo ($_GET['city']); ?>";
+                if(province!=''){
+                    load(province,'city',1);
                 }
-            </script>
-            <div class="Legend_main3_center">
-                <div class="Legend_main3_center_01">
-                    <span>按位置 :</span>
-                    <div class="activity_top3_02">
-                        <select class=" chosen-select-no-single" name="province" id="province"   onchange="load(this.value,'city',0)">
-                            <option value="">选择省</option>
-                            <?php if(is_array($province)): $i = 0; $__LIST__ = $province;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><option value="<?php echo ($vo["id"]); ?>" <?php if($vo['id'] == $_GET['province']): ?>selected<?php endif; ?>><?php echo ($vo["name"]); ?></option><?php endforeach; endif; else: echo "" ;endif; ?>
-                        </select>
-                    </div>
-                    <div class="activity_top3_02">
-                        <select class=" chosen-select-no-single" name="city" id="city"  onchange="load(this.value,'town',0)">
-                            <option value="">选择市</option>
-                        </select>
-                    </div>
-                    <div class="activity_top3_02">
-                        <select class=" chosen-select-no-single" name="town" id="town"  onchange="load(this.value,'distinct',0)">
-                            <option value="">选择区</option>
-                        </select>
-                    </div>
+                if(city!=''){
+                    load(city,'town',1);
+                }
+            })
+            function load(parentid, type ,isinit) {
+                $.ajax({
+                    type: "GET",
+                    url: areaurl,
+                    data: { 'parentid': parentid },
+                    dataType: "json",
+                    success: function (data) {
+                        if (type == 'city') {
+                            $('#city').html('<option value="">选择市</option>');
+                            $('#town').html('<option value="">选择区</option>');
+                            if(data!=null){
+                                $.each(data, function (no, items) {
+                                    if (items.id == "<?php echo ($_GET['city']); ?>") {
+                                        $('#city').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
+                                    } else {
+                                        $('#city').append('<option value="' + items.id + '">' + items.name + '</option>');
+                                    }
+                                });
+                            }
+                            $('#city').trigger("chosen:updated");
+                            $('#town').trigger("chosen:updated");
+                        } else if (type == 'town') {
+                            $('#town').html('<option value="">选择区</option>');
+                            if(data!=null){
+                                $.each(data, function (no, items) {
+                                    if (items.id == "<?php echo ($_GET['town']); ?>") {
+                                        $('#town').append('<option value="' + items.id + '"selected>' + items.name + '</option>');
+                                    } else {
+                                        $('#town').append('<option value="' + items.id + '">' + items.name + '</option>');
+                                    }
+                                });
+                            }
+
+                            $('#town').trigger("chosen:updated");
+                        }
+                        var province=$("#province option:selected").val();
+                        var city=$("#city option:selected").val();
+                        var town=$("#town option:selected").val();
+                        console.log(city)
+                        if(isinit==0){
+                            var url = "<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage']));?>?province=" + province + "&city=" + city + "&town=" + town;
+                            window.location.href = url;
+                        }
+
+
+                    }
+                });
+            }
+        </script>
+        <div class="Legend_main3_center">
+            <div class="Legend_main3_center_01">
+                <span>按位置 :</span>
+                <div class="activity_top3_02">
+                    <select class=" chosen-select-no-single" name="province" id="province"   onchange="load(this.value,'city',0)">
+                        <option value="">选择省</option>
+                        <?php if(is_array($province)): $i = 0; $__LIST__ = $province;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><option value="<?php echo ($vo["id"]); ?>" <?php if($vo['id'] == $_GET['province']): ?>selected<?php endif; ?>><?php echo ($vo["name"]); ?></option><?php endforeach; endif; else: echo "" ;endif; ?>
+                    </select>
                 </div>
-                <div class="activity_top3_04">
-                    <span>按价格 :</span>
-                    <div id="slider-range" class="middle"></div>
-                    <input type="text" id="amount" class="middle f12" style="border:0; color:#000; font-weight:bold;">
+                <div class="activity_top3_02">
+                    <select class=" chosen-select-no-single" name="city" id="city"  onchange="load(this.value,'town',0)">
+                        <option value="">选择市</option>
+                    </select>
                 </div>
+                <div class="activity_top3_02">
+                    <select class=" chosen-select-no-single" name="town" id="town"  onchange="load(this.value,'distinct',0)">
+                        <option value="">选择区</option>
+                    </select>
+                </div>
+            </div>
+            <div class="activity_top3_04">
+                <span>按价格 :</span>
+                <div id="slider-range" class="middle"></div>
+                <input type="text" id="amount" class="middle f12" style="border:0; color:#000; font-weight:bold;">
+            </div>
+            <form action="<?php echo U('Home/Hostel/index');?>" method="get">
+
                 <div class="Legend_main3_center_list hidden"><!--travels_main4_1-->
                     <span class=" fl f14 c333">按特色 :</span>
                     <div class="fl hidden Legend_main3_2"><!--travels_main4_2-->
                         <ul class="fl" id="menu_city">
                             <li <?php if(empty($_GET['catid'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
-                            <?php if(is_array($hostelcate)): $i = 0; $__LIST__ = array_slice($hostelcate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li <?php if($_GET['catid'] == $vo['id']): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$vo['id'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage']));?>'"><?php echo ($vo["catname"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
+                            <?php if(is_array($hostelcate)): $i = 0; $__LIST__ = array_slice($hostelcate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li><input type="checkbox" name="catid[]" value="<?php echo ($vo["id"]); ?>"   <?php if(in_array($vo['id'],$catid)): ?>checked="checked"<?php else: ?>''<?php endif; ?>/  onclick="submit()"><?php echo ($vo["catname"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
                         </ul>
                         <?php if(count($hostelcate) > 15): ?><label class="fr f12 c333 Legend_main3_center_label ishidden">更多</label>
                             <ul class="Legend_main3_ul2 hide"><!--travels_main4_2_ul2-->
@@ -523,7 +532,7 @@
                     <div class="fl hidden Legend_main3_2"><!--travels_main4_2-->
                         <ul class="fl" id="menu_city">
                             <li <?php if(empty($_GET['style'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
-                            <?php if(is_array($hosteltype)): $i = 0; $__LIST__ = array_slice($hosteltype,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li <?php if($_GET['style'] == $vo['id']): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('catid'=>$_GET['catid'],'style'=>$vo['id'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage']));?>'"><?php echo ($vo["catname"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
+                            <?php if(is_array($hosteltype)): $i = 0; $__LIST__ = array_slice($hosteltype,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li><input type="checkbox" name="style[]" value="<?php echo ($vo["id"]); ?>"   <?php if(in_array($vo['id'],$style)): ?>checked="checked"<?php else: ?>''<?php endif; ?>/  onclick="submit()"><?php echo ($vo["catname"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
                         </ul>
                         <?php if(count($hostelcate) > 15): ?><label class="fr f12 c333 Legend_main3_center_label ishidden">更多</label>
                             <ul class="Legend_main3_ul2 hide"><!--travels_main4_2_ul2-->
@@ -531,184 +540,185 @@
                             </ul><?php endif; ?>
                     </div>
                 </div>
-                <div class="Legend_main3_center_list hidden">
-                    <span class="f14 c333 middle fl">服务设施 :</span>
-                    <ul class="hidden">
-                        <li <?php if(empty($_GET['support'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
-                        <?php if(is_array($roomcate)): $i = 0; $__LIST__ = array_slice($roomcate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li <?php if($_GET['support'] == $vo['id']): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$vo['id'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage']));?>'"><?php echo ($vo["catname"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
-                    </ul>
-                </div>
-                <div class="Legend_main3_center_list hidden">
-                    <span class="f14 c333 middle fl">床型 :</span>
-                    <ul class="hidden">
-                        <li <?php if(empty($_GET['bedtype'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
-                        <?php if(is_array($bedcate)): $i = 0; $__LIST__ = array_slice($bedcate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li <?php if($_GET['bedtype'] == $vo['id']): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'keyword'=>$_GET['keyword'],'bedtype'=>$vo['id'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage']));?>'"><?php echo ($vo["catname"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
-                    </ul>
-                </div>
-                <div class="Legend_main3_center_list hidden">
-                    <span class="f14 c333 middle fl">面积 :</span>
-                    <ul class="hidden">
-                        <li <?php if(empty($_GET['acreage'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$_GET['score'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
-                        <?php if(is_array($acreagecate)): $i = 0; $__LIST__ = array_slice($acreagecate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li <?php if($_GET['acreage'] == $vo['value']): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$vo['value']));?>'"><?php echo ($vo["name"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
-                    </ul>
-                </div>
-                <div class="Legend_main3_center_list hidden">
-                    <span class="f14 c333 middle fl">评分 :</span>
-                    <ul class="hidden">
-                        <li <?php if(empty($_GET['score'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'acreage'=>$_GET['acreage'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
-                        <?php if(is_array($scorecate)): $i = 0; $__LIST__ = array_slice($scorecate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li <?php if($_GET['score'] == $vo['value']): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$vo['value'],'acreage'=>$_GET['acreage']));?>'"><?php echo ($vo["name"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
-                    </ul>
-                </div>
-            </div>
-            <div class="Legend_main3_center2">
-                <span>找到 <em><?php echo ((isset($hostelnum) && ($hostelnum !== ""))?($hostelnum):"0"); ?></em> 家美宿  共 <em><?php echo ((isset($roomnum) && ($roomnum !== ""))?($roomnum):"0"); ?></em> 间房   </span>
-            </div>
-            <div class="main4_bottom">
-                <ul class="main4_bottom_ul">
-                    <?php if(is_array($data)): $i = 0; $__LIST__ = $data;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
-                            <div class="main4_bottom_list pr">
-                                <a href="javascript:;">
-                                    <img class="pic" data-original="<?php echo ($vo["thumb"]); ?>" src="/Public/Home/images/default.jpg" style="width:399px;height:250px"  onclick="window.location.href='<?php echo U('Home/Hostel/show',array('id'=>$vo['id']));?>'"/>
-                                    <div class="pa main4_bottom_list1"></div>
-                                </a>
-                                <?php if(($vo['type']) == "1"): ?><div class="pa main4_bottom_list_x">
-                                        <img src="/Public/Home/images/Icon/jing.png" style="width: 53px;height: 53px;"/>
-                                    </div><?php endif; ?>
-                                <div data-id="<?php echo ($vo["id"]); ?>" <?php if(($vo['iscollect']) == "1"): ?>class="Event_details8_list_01 shoucang_hostel collect"<?php else: ?> class="Event_details8_list_01 shoucang_hostel"<?php endif; ?>></div>
-                                <div class="main4_bottom_list3 pa">
-                                    <i>￥</i><span><?php echo ((isset($vo["money"]) && ($vo["money"] !== ""))?($vo["money"]):"0.00"); ?></span><label>起</label>
-                                </div>
-                                <div class="main4_bottom_list4 pa">
-                                    <span><?php echo ((isset($vo["evaluation"]) && ($vo["evaluation"] !== ""))?($vo["evaluation"]):"0.0"); ?></span><i>分</i>
-                                </div>
-                                <div class="main4_bottom_list5 pa">
-                                    <a href="<?php echo U('Home/Member/detail',array('uid'=>$vo['uid']));?>">
-                                        <img src="<?php echo ($vo["head"]); ?>" style="width:67px;height:67px"  />
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="main_bottom_text">
-                                <div class="main_bottom_textl">
-                                    <span><?php echo str_cut($vo['title'],15);?></span>
-                                    <div class="fr main_bottom_textl1">
-                                        <?php if(($vo['ishit']) == "1"): ?><img src="/Public/Home/images/dianzan.png" class="zanbg1" data-id="<?php echo ($vo["id"]); ?>"/>
-                                            <?php else: ?>
-                                            <img src="/Public/Home/images/Icon/img9.png" class="zanbg1" data-id="<?php echo ($vo["id"]); ?>"/><?php endif; ?>
-                                        <i class="zannum"><?php echo ((isset($vo["hit"]) && ($vo["hit"] !== ""))?($vo["hit"]):"0"); ?></i>
-                                    </div>
-                                </div>
-                                <div class="main_bottom_text2">
-                                    <img src="/Public/Home/images/Icon/img10.png" />
-                                    <i><?php echo ((isset($vo["reviewnum"]) && ($vo["reviewnum"] !== ""))?($vo["reviewnum"]):"0"); ?></i>
-                                    <span>条点评</span>
-                                </div>
-                            </div>
-                        </li><?php endforeach; endif; else: echo "" ;endif; ?>
+            <div class="Legend_main3_center_list hidden">
+                <span class="f14 c333 middle fl">服务设施 :</span>
+                <ul class="hidden">
+                    <li <?php if(empty($_GET['support'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
+                            <?php if(is_array($roomcate)): $i = 0; $__LIST__ = array_slice($roomcate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li><input type="checkbox" name="support[]" value="<?php echo ($vo["id"]); ?>"   <?php if(in_array($vo['id'],$support)): ?>checked="checked"<?php else: ?>''<?php endif; ?>/  onclick="submit()"><?php echo ($vo["catname"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
                 </ul>
             </div>
-            <div style="border-bottom:1px solid #e0e0e0; margin-bottom:14px;"></div>
-            <div class="hidden Legend_main3_4">
-                <div class="activity_chang4 fl">
-                    <?php echo ($Page); ?>
-                </div>
-                <i class="fr">共<em><?php echo ((isset($pagenum) && ($pagenum !== ""))?($pagenum):"0"); ?></em>页<em><?php echo ((isset($hostelnum) && ($hostelnum !== ""))?($hostelnum):"0"); ?></em>条</i>
+            <div class="Legend_main3_center_list hidden">
+                <span class="f14 c333 middle fl">床型 :</span>
+                <ul class="hidden">
+                    <li <?php if(empty($_GET['bedtype'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'support'=>$_GET['support'],'score'=>$_GET['score'],'acreage'=>$_GET['acreage'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
+                     <?php if(is_array($bedcate)): $i = 0; $__LIST__ = array_slice($bedcate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li><input type="checkbox" name="bedtype[]" value="<?php echo ($vo["id"]); ?>"   <?php if(in_array($vo['id'],$bedtype)): ?>checked="checked"<?php else: ?>''<?php endif; ?>/  onclick="submit()"><?php echo ($vo["catname"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
+                </ul>
             </div>
-            <div style="margin-bottom:90px;"></div>
+            <div class="Legend_main3_center_list hidden">
+                <span class="f14 c333 middle fl">面积 :</span>
+                <ul class="hidden">
+                    <li <?php if(empty($_GET['acreage'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$_GET['score'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
+                    <?php if(is_array($acreagecate)): $i = 0; $__LIST__ = array_slice($acreagecate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li><input type="checkbox" name="acreage[]" value="<?php echo ($vo["value"]); ?>"   <?php if(in_array($vo['value'],$acreage)): ?>checked="checked"<?php else: ?>''<?php endif; ?>/  onclick="submit()"><?php echo ($vo["name"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
+                </ul>
+            </div>
+            <div class="Legend_main3_center_list hidden">
+                <span class="f14 c333 middle fl">评分 :</span>
+                <ul class="hidden">
+                    <li <?php if(empty($_GET['score'])): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'acreage'=>$_GET['acreage'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town']));?>'">不限</li>
+                    <?php if(is_array($scorecate)): $i = 0; $__LIST__ = array_slice($scorecate,0,14,true);if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li <?php if($_GET['score'] == $vo['value']): ?>class="Legend_chang"<?php endif; ?> onclick="window.location.href='<?php echo U('Home/Hostel/index',array('style'=>$_GET['style'],'catid'=>$_GET['catid'],'minmoney'=>$_GET['minmoney'],'maxmoney'=>$_GET['maxmoney'],'province'=>$_GET['province'],'city'=>$_GET['city'],'town'=>$_GET['town'],'keyword'=>$_GET['keyword'],'bedtype'=>$_GET['bedtype'],'support'=>$_GET['support'],'score'=>$vo['value'],'acreage'=>$_GET['acreage']));?>'"><?php echo ($vo["name"]); ?></li><?php endforeach; endif; else: echo "" ;endif; ?>
+                </ul>
+            </div>
         </div>
+</form>
+        <div class="Legend_main3_center2">
+            <span>找到 <em><?php echo ((isset($hostelnum) && ($hostelnum !== ""))?($hostelnum):"0"); ?></em> 家美宿  共 <em><?php echo ((isset($roomnum) && ($roomnum !== ""))?($roomnum):"0"); ?></em> 间房   </span>
+        </div>
+        <div class="main4_bottom">
+            <ul class="main4_bottom_ul">
+                <?php if(is_array($data)): $i = 0; $__LIST__ = $data;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li>
+                        <div class="main4_bottom_list pr">
+                            <a href="<?php echo U('Home/Hostel/show',array('id'=>$vo['id']));?>">
+                                <img class="pic" data-original="<?php echo ($vo["thumb"]); ?>" src="/Public/Home/images/default.jpg" style="width:399px;height:250px"  onclick="window.location.href='<?php echo U('Home/Hostel/show',array('id'=>$vo['id']));?>'"/>
+                                <div class="pa main4_bottom_list1"></div>
+                            </a>
+                            <?php if(($vo['type']) == "1"): ?><div class="pa main4_bottom_list_x">
+                                    <img src="/Public/Home/images/Icon/jing.png" style="width: 53px;height: 53px;"/>
+                                </div><?php endif; ?>
+                            <div data-id="<?php echo ($vo["id"]); ?>" <?php if(($vo['iscollect']) == "1"): ?>class="Event_details8_list_01 shoucang_hostel collect"<?php else: ?> class="Event_details8_list_01 shoucang_hostel"<?php endif; ?>></div>
+                        <div class="main4_bottom_list3 pa">
+                            <i>￥</i><span><?php echo ((isset($vo["money"]) && ($vo["money"] !== ""))?($vo["money"]):"0.00"); ?></span><label>起</label>
+                        </div>
+                        <div class="main4_bottom_list4 pa">
+                            <span><?php echo ((isset($vo["evaluation"]) && ($vo["evaluation"] !== ""))?($vo["evaluation"]):"0.0"); ?></span><i>分</i>
+                        </div>
+                        <div class="main4_bottom_list5 pa">
+                            <a href="<?php echo U('Home/Member/detail',array('uid'=>$vo['uid']));?>">
+                                <img src="<?php echo ($vo["head"]); ?>" style="width:67px;height:67px"  />
+                            </a>
+                        </div>
+        </div>
+        <div class="main_bottom_text">
+            <div class="main_bottom_textl">
+                <span style="cursor: pointer;" onclick="window.location.href='<?php echo U('Home/Hostel/show',array('id'=>$vo['id']));?>'"><?php echo str_cut($vo['title'],15);?></span>
+                <div class="fr main_bottom_textl1">
+                    <?php if(($vo['ishit']) == "1"): ?><img src="/Public/Home/images/dianzan.png" class="zanbg1" data-id="<?php echo ($vo["id"]); ?>"/>
+                        <?php else: ?>
+                        <img src="/Public/Home/images/Icon/img9.png" class="zanbg1" data-id="<?php echo ($vo["id"]); ?>"/><?php endif; ?>
+                    <i class="zannum"><?php echo ((isset($vo["hit"]) && ($vo["hit"] !== ""))?($vo["hit"]):"0"); ?></i>
+                </div>
+            </div>
+            <div class="main_bottom_text2">
+                <img src="/Public/Home/images/Icon/img10.png" />
+                <i><?php echo ((isset($vo["reviewnum"]) && ($vo["reviewnum"] !== ""))?($vo["reviewnum"]):"0"); ?></i>
+                <span>条点评</span>
+            </div>
+        </div>
+        </li><?php endforeach; endif; else: echo "" ;endif; ?>
+        </ul>
     </div>
-    <script type="text/javascript">
-        $(function () {
-            $(".Legend_main3_center_list li").click(function () {
-                $(this).addClass("Legend_chang").siblings().removeClass("Legend_chang");
-                $(this).parents("ul").siblings().find("li").removeClass("Legend_chang");
-            })
-            $(".Legend_main3_center_label").click(function () {
-                var $labale = $(this).html();
-                if ($labale == "更多") {
-                    $(this).html("收起");
-                    $(".Legend_main3_ul2").show();
-                } else {
-                    $(this).html("更多");
-                    $(".Legend_main3_ul2").hide();
-                }
-            })
-            $(".chosen-select-no-single").chosen();
-            $(".Legend_main3_center_list").last().css({
-                "border-bottom":"0px"
-            })
-            $(".zanbg1").live("click",function(){
-                var obj=$(this);
-                var uid='<?php echo ($user["id"]); ?>';
-                if(!uid){
-                  alert("请先登录！");
-                    var p={};
-                    p['url']="/index.php/Home/Hostel/index.html";
-                    $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
-                        if(data.code=200){
-                            window.location.href="<?php echo U('Home/Member/login');?>";
-                        }
-                    })
-                  return false;
-                }
-                var hitnum=$(this).siblings(".zannum");
-                var hid=$(this).data("id");
-                $.ajax({
-                     type: "POST",
-                     url: "<?php echo U('Home/Hostel/ajax_hit');?>",
-                     data: {'hid':hid},
-                     dataType: "json",
-                     success: function(data){
-                                if(data.status==1){
-                                  if(data.type==1){
-                                    var num=Number(hitnum.text()) + 1;
-                                    hitnum.text(num);
-                                    obj.attr("src","/Public/Home/images/dianzan.png");
-                                  }else if(data.type==2){
-                                    var num=Number(hitnum.text()) - 1;
-                                    hitnum.text(num);
-                                    obj.attr("src","/Public/Home/images/Icon/img9.png");
-                                  }
-                                }else if(data.status==0){
-                                  alert("点赞失败！");
-                                }
-                              }
-                  });
-              });
-            $(".shoucang_hostel").live("click",function(){
-                var obj=$(this);
-                var uid='<?php echo ($user["id"]); ?>';
-                if(!uid){
-                  alert("请先登录！");
-                    var p={};
-                    p['url']="/index.php/Home/Hostel/index.html";
-                    $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
-                        if(data.code=200){
-                            window.location.href="<?php echo U('Home/Member/login');?>";
-                        }
-                    })
-                  return false;
-                }
-                var hid=$(this).data("id");
-                $.ajax({
-                     type: "POST",
-                     url: "<?php echo U('Home/Hostel/ajax_collect');?>",
-                     data: {'hid':hid},
-                     dataType: "json",
-                     success: function(data){
-                                if(data.status==1){
-                                  if(data.type==1){
-                                    obj.addClass("collect");
-                                  }else if(data.type==2){
-                                    obj.removeClass("collect");
-                                  }
-                                }else if(data.status==0){
-                                  alert("收藏失败！");
-                                }
-                              }
-                  });
-              });
+    <div style="border-bottom:1px solid #e0e0e0; margin-bottom:14px;"></div>
+    <div class="hidden Legend_main3_4">
+        <div class="activity_chang4 fl">
+            <?php echo ($Page); ?>
+        </div>
+        <i class="fr">共<em><?php echo ((isset($pagenum) && ($pagenum !== ""))?($pagenum):"0"); ?></em>页<em><?php echo ((isset($hostelnum) && ($hostelnum !== ""))?($hostelnum):"0"); ?></em>条</i>
+    </div>
+    <div style="margin-bottom:90px;"></div>
+</div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $(".Legend_main3_center_list li").click(function () {
+            $(this).addClass("Legend_chang").siblings().removeClass("Legend_chang");
+            $(this).parents("ul").siblings().find("li").removeClass("Legend_chang");
         })
-    </script>
+        $(".Legend_main3_center_label").click(function () {
+            var $labale = $(this).html();
+            if ($labale == "更多") {
+                $(this).html("收起");
+                $(".Legend_main3_ul2").show();
+            } else {
+                $(this).html("更多");
+                $(".Legend_main3_ul2").hide();
+            }
+        })
+        $(".chosen-select-no-single").chosen();
+        $(".Legend_main3_center_list").last().css({
+            "border-bottom":"0px"
+        })
+        $(".zanbg1").live("click",function(){
+            var obj=$(this);
+            var uid='<?php echo ($user["id"]); ?>';
+            if(!uid){
+                alert("请先登录！");
+                var p={};
+                p['url']="/index.php/Home/Hostel/index.html";
+                $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
+                    if(data.code=200){
+                        window.location.href="<?php echo U('Home/Member/login');?>";
+                    }
+                })
+                return false;
+            }
+            var hitnum=$(this).siblings(".zannum");
+            var hid=$(this).data("id");
+            $.ajax({
+                type: "POST",
+                url: "<?php echo U('Home/Hostel/ajax_hit');?>",
+                data: {'hid':hid},
+                dataType: "json",
+                success: function(data){
+                    if(data.status==1){
+                        if(data.type==1){
+                            var num=Number(hitnum.text()) + 1;
+                            hitnum.text(num);
+                            obj.attr("src","/Public/Home/images/dianzan.png");
+                        }else if(data.type==2){
+                            var num=Number(hitnum.text()) - 1;
+                            hitnum.text(num);
+                            obj.attr("src","/Public/Home/images/Icon/img9.png");
+                        }
+                    }else if(data.status==0){
+                        alert("点赞失败！");
+                    }
+                }
+            });
+        });
+        $(".shoucang_hostel").live("click",function(){
+            var obj=$(this);
+            var uid='<?php echo ($user["id"]); ?>';
+            if(!uid){
+                alert("请先登录！");
+                var p={};
+                p['url']="/index.php/Home/Hostel/index.html";
+                $.post("<?php echo U('Home/Public/ajax_cacheurl');?>",p,function(data){
+                    if(data.code=200){
+                        window.location.href="<?php echo U('Home/Member/login');?>";
+                    }
+                })
+                return false;
+            }
+            var hid=$(this).data("id");
+            $.ajax({
+                type: "POST",
+                url: "<?php echo U('Home/Hostel/ajax_collect');?>",
+                data: {'hid':hid},
+                dataType: "json",
+                success: function(data){
+                    if(data.status==1){
+                        if(data.type==1){
+                            obj.addClass("collect");
+                        }else if(data.type==2){
+                            obj.removeClass("collect");
+                        }
+                    }else if(data.status==0){
+                        alert("收藏失败！");
+                    }
+                }
+            });
+        });
+    })
+</script>
 <div class="foot">
     <div class="wrap">
         <div class="foot1 hidden">
@@ -768,11 +778,11 @@
                     <div class="foot1_li3_01">
                         <img src="/Public/Home/images/logo2.png"  />
                         <i>snailinns</i>
-                        <a href="" class="foot_a">
+                        <a href="<?php echo U('Home/About/app');?>" class="foot_a">
                             <img src="/Public/Home/images/Icon/img12.png" />
                             IOS
                         </a>
-                        <a href="">
+                        <a href="<?php echo U('Home/About/app');?>">
                             <img src="/Public/Home/images/Icon/img13.png" />
                             安卓
                         </a>
@@ -793,8 +803,9 @@
         </div>
     </div>
 </div>
-<script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
-
+<script src="https://cdn.ronghub.com/RongIMLib-2.2.4.min.js"></script>
+<!-- <script src="http://cdn.ronghub.com/RongIMLib-2.1.3.min.js"></script>
+ -->
     <script>
     RongIMClient.init("cpj2xarljz3ln");
     var token = "<?php echo ($user["rongyun_token"]); ?>";

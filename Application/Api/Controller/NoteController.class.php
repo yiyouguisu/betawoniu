@@ -163,8 +163,9 @@ class NoteController extends CommonController {
      *我的游记列表
      */
     public function get_mynote(){
-        $ret=$GLOBALS['HTTP_RAW_POST_DATA'];
-        $ret=json_decode($ret,true);
+        //$ret=$GLOBALS['HTTP_RAW_POST_DATA'];
+        $ret = file_get_contents('php://input');
+        $ret=json_decode($ret, true);
         $uid=intval(trim($ret['uid']));
         $p=intval(trim($ret['p']));
         $num=intval(trim($ret['num']));
@@ -178,7 +179,11 @@ class NoteController extends CommonController {
             $where['a.status']=2;
             $where['a.isdel']=0;
             $where['a.isoff']=0;
-            $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'note'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
+            $sqlI=M('review')
+              ->where(array('isdel'=>0,'varname'=>'note'))
+              ->group("value")
+              ->field("value,count(value) as reviewnum")
+              ->buildSql();
             $count=M("Note a")
                 ->join("left join zz_member b on a.uid=b.id")
                 ->join("left join {$sqlI} c on a.id=c.value")
@@ -189,7 +194,8 @@ class NoteController extends CommonController {
                 ->where($where)
                 ->order($order)
                 ->field('a.id,a.title,a.description,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.begintime,a.status,a.uid,b.nickname,b.head,b.rongyun_token,a.inputtime,c.reviewnum')
-                ->page($p,$num)->select();
+                ->page($p,$num)
+                ->select();
             foreach ($list as $key => $value)
             {
             	if(empty($value['reviewnum'])) $list[$key]['reviewnum']=0;

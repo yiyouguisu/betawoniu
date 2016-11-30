@@ -2,7 +2,7 @@
 <body class="back-f1f1f1">
 <div class="header center pr f18">
       常见问题
-      <div class="head_go pa" onclick="history.go(-1)"><img src="images/go.jpg"></div>
+      <div class="head_go pa" onclick="history.go(-1)"><img src="__IMG__/go.jpg"></div>
 </div>
 
 <div class="container">

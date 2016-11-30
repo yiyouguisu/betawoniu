@@ -128,6 +128,13 @@ var GV = {
                                 <?php if(($vo['status']) == "1"): if(authcheck('Admin/Note/review')): ?><a href="javascript:;" onClick="omnipotent('selectid','<?php echo U('Admin/Note/review',array('id'=>$vo['id']));?>','审核',1,700,300)">审核</a>
                                       <?php else: ?>
                                       <font color="#cccccc">审核</font><?php endif; endif; ?>
+                                <?php if(($vo['isoff']) == "0"): if(authcheck('Admin/Note/setoff')): ?><a href="<?php echo U('Admin/Note/setoff',array('id'=>$vo['id'],'isoff'=>1));?>" >下架 </a>
+                                        <?php else: ?>
+                                        <font color="#cccccc">下架</font><?php endif; ?>  
+                                <?php else: ?>
+                                    <?php if(authcheck('Admin/Note/setoff')): ?><a href="<?php echo U('Admin/Note/setoff',array('id'=>$vo['id'],'isoff'=>0));?>" >启用 </a>
+                                        <?php else: ?>
+                                        <font color="#cccccc">启用</font><?php endif; endif; ?>
                                 <?php if(authcheck('Admin/Note/edit')): ?><a href="<?php echo U('Admin/Note/edit',array('id'=>$vo['id']));?>" >修改</a> 
                                     <?php else: ?>
                                     <font color="#cccccc">修改</font><?php endif; ?> 

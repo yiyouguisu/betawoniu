@@ -195,7 +195,7 @@ class OrderController extends CommonController {
             $room= M('Room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.id'=>$rid))->field("a.*,b.title as hostel,b.uid as houseownerid")->find();
             $apply= M('book_room a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.rid'=>$rid,'a.uid'=>$uid,'_string'=>$endtime." <= a.endtime and ".$starttime." >= a.starttime",'b.status'=>4))->find();
 
-            $booknum=M('book_room')->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime"))->sum('num');
+            $booknum=M('book_room')->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime",'rid'=>$rid))->sum('roomnum');
             if($uid==''||$rid==''||$num==''||$roomnum==''||$days==''||$starttime==''||$endtime==''||$realname==''||$idcard==''||$phone==''){
                 $this->error("请求参数错误");
             }elseif(empty($user)){
@@ -206,7 +206,7 @@ class OrderController extends CommonController {
                 $this->error("不能预定自己的房间");
             }elseif($roomnum>$room['mannum']){
                 $this->error("房间数超过限制");
-            }elseif($room['mannum']-$booknum<$num){
+            }elseif($room['mannum']-intval($booknum)<$num){
                 $this->error("入住人数超过限制");
             }elseif(!empty($apply)&&$apply['paystatus']==1){
                 $this->error("已经预定");
@@ -1156,6 +1156,7 @@ class OrderController extends CommonController {
             ->field("a.rid,a.uid,c.title,c.score as evaluation,c.scorepercent as evaluationpercent,b.id as hid,b.thumb,b.title as hostel,b.area,b.address,b.content,c.nomal_money,c.week_money,c.holiday_money,a.money,a.realname,a.idcard,a.phone,a.num,a.roomnum,a.days,a.discount,a.couponsid,a.starttime,a.endtime,a.paystatus,d.nickname,d.head,d.realname_status,d.houseowner_status,e.reviewnum,b.uid as houseownerid")
             ->find();
         $data['refundmoney']=M('refund_apply')->where(array('orderid'=>$data['orderid']))->getField("money");
+        $data['refundreview_remark']=M('refund_apply')->where(array('orderid'=>$data['orderid']))->getField("remark");
         $book_member=M('book_member')->where(array('orderid'=>$data['orderid']))->order(array('id'=>'desc'))->select();
         $productinfo['book_member']=!empty($book_member)?$book_member:null;
         $data['couponstitle']=M('vouchers_order a')->join("left join zz_vouchers b on a.catid=b.id")->where(array('a.id'=>$data['couponsid']))->getField("b.title");
@@ -1192,7 +1193,7 @@ class OrderController extends CommonController {
         $this->assign("nomalnum",$nomalnum);
         $this->assign("weeknum",$weeknum);
         $this->assign("holidaynum",$holidaynum);
-        $data['totalmoney']=$totalmoney;
+        $data['totalmoney']=$totalmoney*$productinfo['roomnum'];
         $this->assign("data",$data);
 
         $houseowner=M('member')->where(array('id'=>$productinfo['houseownerid']))->field("id,head,nickname")->find();
@@ -1213,6 +1214,7 @@ class OrderController extends CommonController {
             ->field("a.aid,a.uid,b.thumb,b.title,b.catid,b.money,b.isfree,b.area,b.address,b.starttime,b.endtime,b.start_numlimit,b.end_numlimit,b.cancelrule,a.realname,a.phone,a.idcard,a.num,a.paystatus,b.uid as houseownerid,c.nickname,c.head,c.realname_status,c.houseowner_status")
             ->find();
         $data['refundmoney']=M('refund_apply')->where(array('orderid'=>$data['orderid']))->getField("money");
+        $data['refundreview_remark']=M('refund_apply')->where(array('orderid'=>$data['orderid']))->getField("remark");
         $productinfo['catname']=M('partycate')->where(array('id'=>$productinfo['catid']))->getField("catname");  
         $joinnum=M('activity_apply')->where(array('aid'=>$productinfo['aid'],'paystatus'=>1))->sum("num");
         $productinfo['joinnum']=!empty($joinnum)?$joinnum:0;
@@ -1279,8 +1281,8 @@ class OrderController extends CommonController {
         );
         $notify_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/alipaynotify'); 
         $return_url = 'http://' . $_SERVER['HTTP_HOST'] .U('Home/Order/returnurl'); 
-        $total_fee = 0.1; 
-        //$total_fee = $money; 
+        //$total_fee = 0.1; 
+        $total_fee = $money; 
         $parameter = array(
             "service" => "create_direct_pay_by_user",
             "partner" => $AliPayConfig['partner'],
@@ -1344,7 +1346,7 @@ class OrderController extends CommonController {
             if ($_GET['trade_status'] == 'TRADE_FINISHED' || $_GET['trade_status'] == 'TRADE_SUCCESS') {
                 $status = self::checkorderstatus($orderid);
                 if (!$status) {
-                    self::orderhandle($parameter);
+                    //self::orderhandle($parameter);
                 }
                 $type=substr($orderid,0,2);
                 switch ($type)
@@ -1377,8 +1379,8 @@ class OrderController extends CommonController {
              'BACK_NOTIFY_URL'=>'http://' . $_SERVER['HTTP_HOST'] .U('Api/Pay/unionnotify'),
              'SDK_FRONT_TRANS_URL'=>'https://gateway.95516.com/gateway/api/frontTransReq.do'
              );
-        $total_fee = 1; 
-        //$total_fee = $money*100; 
+        //$total_fee = 1; 
+        $total_fee = $money*100; 
         $params = array(
             'version' => '5.0.0',               //版本号
             'encoding' => 'utf-8',              //编码方式
@@ -1432,7 +1434,7 @@ class OrderController extends CommonController {
                         "trade_status" => $respCode, //交易状态
                         "notify_time" => date("Y-m-d H:i:s", time()), //通知的发送时间。
                     );
-                    self::orderhandle($parameter);
+                    //self::orderhandle($parameter);
                 }
                 $type=substr($orderid,0,2);
                 switch ($type)
@@ -1464,8 +1466,8 @@ class OrderController extends CommonController {
 
         $notify = new \NativePay();
         // $url = $notify->GetPrePayUrl($orderid);
-        $total_fee = 10; 
-        //$total_fee = $money*100; 
+        //$total_fee = 10; 
+        $total_fee = $money*100; 
         $input = new \WxPayUnifiedOrder();
         $input->SetBody($body);
         $input->SetAttach($body);
@@ -1648,7 +1650,7 @@ class OrderController extends CommonController {
         }
     }
     static public function checkorderstatus($orderid) {
-        $ordstatus = M('order_time')->where('orderid=' . $orderid)->getField('pay_status');
+        $ordstatus = M('order_time')->where(array('orderid'=>$orderid))->getField('pay_status');
         if ($ordstatus == 1) {
             return true;
         } else {
@@ -1682,8 +1684,12 @@ class OrderController extends CommonController {
             exit(json_encode(array('code'=>-200,'msg'=>"The User is not exist!")));
         }elseif(empty($order)){
             exit(json_encode(array('code'=>-200,'msg'=>"The Order is not exist!")));
-        }elseif($order['status']==2){
-           exit(json_encode(array('code'=>-200,'msg'=>"该订单不能关闭")));
+        }elseif($order['status']==2||$order['status']==5){
+           exit(json_encode(array('code'=>-200,'msg'=>"该订单已经审核")));
+        }elseif($order['status']==4){
+           exit(json_encode(array('code'=>-200,'msg'=>"该订单已经完成")));
+        }elseif($order['status']==3){
+           exit(json_encode(array('code'=>-200,'msg'=>"该订单已经取消")));
         }
         else{
             $select['orderid']=$orderid;
@@ -1735,6 +1741,8 @@ class OrderController extends CommonController {
             exit(json_encode(array('code'=>-200,'msg'=>"该订单不能重复审核")));
         }elseif($status==2&&empty($money)){
             exit(json_encode(array('code'=>-200,'msg'=>"请填写退款金额")));
+        }elseif($money>$order['total']){
+            exit(json_encode(array('code'=>-200,'msg'=>"退款金额大于订单实际支付金额")));
         }else{
             $id=M('refund_apply')->where(array('orderid'=>$orderid))->save(array(
                     'money'=>$money,
@@ -1903,5 +1911,35 @@ class OrderController extends CommonController {
                 exit(json_encode(array('code'=>-202,'msg'=>"退订申请失败")));
             }
         }
+    }
+    public function test(){
+            $rid=863;
+            $uid=7629;
+            $num=1;
+            $roomnum=1;
+            $starttime=intval(strtotime("2016-11-19"));
+            $endtime=intval(strtotime("2016-11-20"));
+            
+            $user=M('Member')->where(array('id'=>$uid))->find();
+            $room= M('Room a')->join("left join zz_hostel b on a.hid=b.id")->where(array('a.id'=>$rid))->field("a.*,b.title as hostel,b.uid as houseownerid")->find();
+            $apply= M('book_room a')->join("left join zz_order_time b on a.orderid=b.orderid")->where(array('a.rid'=>$rid,'a.uid'=>$uid,'_string'=>$endtime." <= a.endtime and ".$starttime." >= a.starttime",'b.status'=>4))->find();
+
+            $booknum=M('book_room')->where(array('_string'=>$endtime." <= endtime and ".$starttime." >= starttime",'rid'=>$rid))->sum('roomnum');
+            dump($booknum);
+            if(empty($user)){
+                echo "用户不存在";
+            }elseif(empty($room)||$room['isdel']==1){
+                echo "房间不存在";
+            }elseif($room['houseownerid']==$uid){
+                echo "不能预定自己的房间";
+            }elseif($roomnum>$room['mannum']){
+                echo "房间数超过限制";
+            }elseif($room['mannum']-intval($booknum)<$num){
+                echo "入住人数超过限制";
+            }elseif(!empty($apply)&&$apply['paystatus']==1){
+                echo "已经预定";
+            }else{
+                echo "1111";
+            }
     }
 }

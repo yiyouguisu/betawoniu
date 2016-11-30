@@ -20,7 +20,7 @@
                  <div class="fans_a vertical"><img src="{$vo.head}" style="width:50px;height:50px;border-radius:50%"></div>
                  <div class="fans_b vertical">
                        <div class="fans_b1 snail_w100 pr f18">{$vo.nickname}
-                           <div class="fans_c f14 pa">5分钟之内</div>
+                           <div class="fans_c f14 pa">{$vo.last_time}</div>
                        </div> 
                        <div class="fans_b2 f14">{$vo.info}</div> 
                  </div>

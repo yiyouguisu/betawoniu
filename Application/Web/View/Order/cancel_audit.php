@@ -47,7 +47,7 @@
   </div>
   <div id="agree" style="position:fixed;top:0;left:0;bottom:0;right:0;z-index:1000;display:none">
     <div style="position:absolute;left:0;right:0;top:0;bottom:0;background:#000;opacity:0.6"></div>
-    <div style="position:absolute;top:20%;width:80%;left:10%;height:160px;background:#fff;border:0;border-radius:3px;text-align:center">
+    <div style="position:absolute;top:20%;width:80%;left:10%;height:100px;background:#fff;border:0;border-radius:3px;text-align:center">
       <input id="money" name="money" style="text-align:center;background:#999;color:#fff;width:90%;font-size:14px;border-radius:3px;border:1px solid #ccc;padding:5px;border:0;margin:5%;" class="ft16" placeholder="填写退还金额(元)" type="number">
       <button class="ft14" style="padding:5px;border:0;width:100px;background:#efefef;color:#000;border-radius:3px;margin:0 1%" id="close_agree">关闭</button>
       <button class="ft14" style="padding:5px;border:0;width:100px;background:#56c3cf;color:#fff;border-radius:3px;margin:0 5%" id="submit_agree" data-orderid="{$order.orderid}">提交</button>
@@ -119,7 +119,7 @@ $('#submit_refuse').click(function(evt) {
     'processData': false,
     'success': function(data) {
       if(data.code) {
-        window.location.back();
+        window.location.href="{:U('Order/hotel_order_detail')}?orderid={$data.orderid}";
       } else {
         alert(data.msg); 
       }

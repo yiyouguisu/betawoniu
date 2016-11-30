@@ -8,6 +8,7 @@ class HostelController extends CommonController {
       $where=array();
       $where['a.status']=2;
       $where['a.isdel']=0;
+      $where['a.isoff']=0;
       $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'hostel'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
       $data=M("Hostel a")
       ->join("left join zz_member b on a.uid=b.id")
@@ -21,29 +22,29 @@ class HostelController extends CommonController {
       $this->assign('llat', $llat);
       $this->assign('llng', $llng);
       foreach ($data as $key => $value) {
-          # code...
-          if(empty($value['reviewnum'])) $data[$key]['reviewnum']=0;
-          $hitstatus=M('hit')->where(array('uid'=>$uid,'varname'=>"hostel",'value'=>$value['id']))->find();
-          if(!empty($hitstatus)){
-              $data[$key]['ishit']=1;
-          }else{
-              $data[$key]['ishit']=0;
-          }
-         
-          // 经度
-          $lat=cookie('longitude');
-          // 纬度
-          $lng=cookie('latitude');
-          $distance = 0.00; //$Map->get_distance_baidu("driving",$lat.",".$lng,$value['lat'].",".$value['lng']);
-          $data[$key]['distance']=!empty($distance)?$distance:0.00;
-           $collectstatus=M('collect')->where(array('uid'=>$uid,'varname'=>"hostel",'value'=>$value['id']))->find();
-          if(!empty($collectstatus)){
-              $data[$key]['iscollect']=1;
-          }else{
-              $data[$key]['iscollect']=0;
-          }
-          // $distance=$Map->get_distance_baidu("driving",$lat.",".$lng,$value['lat'].",".$value['lng']);
-          // $data[$key]['distance']=!empty($distance)?$distance:0.00;
+        # code...
+        if(empty($value['reviewnum'])) $data[$key]['reviewnum']=0;
+        $hitstatus=M('hit')->where(array('uid'=>$uid,'varname'=>"hostel",'value'=>$value['id']))->find();
+        if(!empty($hitstatus)){
+            $data[$key]['ishit']=1;
+        }else{
+            $data[$key]['ishit']=0;
+        }
+        
+        // 经度
+        $lat=cookie('longitude');
+        // 纬度
+        $lng=cookie('latitude');
+        $distance = 0.00; //$Map->get_distance_baidu("driving",$lat.",".$lng,$value['lat'].",".$value['lng']);
+        $data[$key]['distance']=!empty($distance)?$distance:0.00;
+         $collectstatus=M('collect')->where(array('uid'=>$uid,'varname'=>"hostel",'value'=>$value['id']))->find();
+        if(!empty($collectstatus)){
+            $data[$key]['iscollect']=1;
+        }else{
+            $data[$key]['iscollect']=0;
+        }
+        // $distance=$Map->get_distance_baidu("driving",$lat.",".$lng,$value['lat'].",".$value['lng']);
+        // $data[$key]['distance']=!empty($distance)?$distance:0.00;
       }
       $hostelcate = M("hostelcate")->field('id,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
       $this->assign("hostelcate", $hostelcate);
@@ -268,9 +269,12 @@ class HostelController extends CommonController {
       $data=M("Hostel a")
       ->join("left join zz_member b on a.uid=b.id")
       ->join("left join {$sqlI} c on a.id=c.value")
-      ->where(array('a.id'=>$id))
+      ->where(array('a.id'=>$id, 'isoff' => 0))
       ->field('a.id,a.title,a.thumb,a.area,a.address,a.lat,a.lng,a.hit,a.money,a.description,a.imglist,a.content,a.support,a.score as evaluation,a.scorepercent as evaluationpercent,a.uid,b.nickname,b.id as oid,b.head,b.realname_status,b.realname_status,b.houseowner_status,b.rongyun_token,a.inputtime,c.reviewnum')
       ->find();
+      if(!$data) {
+        $this->error('该美宿已下架或被删除！');
+      }
       $imglist=json_decode($data['imglist'],true);
       $this->assign("imglist", $imglist);
 
@@ -313,7 +317,7 @@ class HostelController extends CommonController {
         ->join("left join {$sqlI} c on a.id=c.value")
         ->join("left join zz_bedcate b on a.roomtype=b.id")
         ->where(array('a.hid'=>$data['id'],'a.isdel'=>0,))
-        ->order(array('a.id'=>'desc'))
+        ->order(array('a.listorder' => 'asc', 'a.id'=>'desc'))
         ->field("x.uid, a.id as rid,a.title,a.thumb,a.area,a.money,a.roomtype,a.support,a.mannum,c.reviewnum,b.catname as bedtype")->select();
       $tese=array();
       foreach ($room as $key => $value) {

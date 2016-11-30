@@ -2,7 +2,7 @@
 <div class="header center z-index112 pr f18 fix-head">
     美宿预订
     <div class="head_go pa">
-        <a href="javascript:history.back();">
+        <a href="{:U('member/orderlist')}">
             <img src="__IMG__/go.jpg">
         </a><span>&nbsp;</span>
     </div>
@@ -17,7 +17,7 @@
           已完成
         <else />
           <eq name="order.refund_status" value="1">
-            申请退款
+            申请退订
           <else />
             待入住
           </eq>
@@ -59,9 +59,24 @@
             </if>
           </eq>
         </eq>
+        <notempty name="order.refundreview_remark">
+          <a class="" href="javascript:;">
+              <span class="fr cancel_order">拒绝退订</span>
+          </a>
+        </notempty>
       </if>
       <div class="ft10">订单号：{$order.orderid}</div>
     </div>
+    <notempty name="order.refundreview_remark"> 
+      <div style="margin: 8px 0;padding:5px">
+        <p>失败原因：{$order.refundreview_remark}</p>
+      </div>
+    </notempty>
+    <notempty name="order.review_remark"> 
+      <div style="margin: 8px 0;padding:5px">
+        <p>失败原因：{$order.review_remark}</p>
+      </div>
+    </notempty>
     <!-- 支付模块 -->
     <if condition="$order.status eq 2">
       <empty name="is_owner">
@@ -82,7 +97,7 @@
           </div>
         </a>
         <div class="submit-head submit-heads qiandao-clear">
-          <a class="fl on" href="{:U('Order/editOrder')}?orderid={$order.orderid}">修改订单</a>
+          <a class="fl on" href="{:U('Order/editbook')}?orderid={$order.orderid}">修改订单</a>
           <a class="fr cancel_order">取消订单</a>
         </div>
       <elseif condition="$order.status eq 5" />
@@ -141,7 +156,7 @@
       </div>
     </volist>
     <if condition="$ccount gt 1">
-      <div class="stayin-more">显示全部 {$ccount - 1} 个入住人
+      <div class="stayin-more">显示全部入住人
           <img src="__IMG__/drop_f.jpg">
       </div>
     </if>

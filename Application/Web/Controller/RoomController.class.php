@@ -15,8 +15,13 @@ class RoomController extends CommonController {
         ->join("left join zz_hostel b on a.hid=b.id")
         ->join("left join zz_bedcate d on a.roomtype=d.id")
         ->where(array('a.id'=>$id))
-        ->field('a.id as rid,a.hid,a.title,a.thumb,a.hit,a.area,a.nomal_money,a.week_money,a.holiday_money,a.money,a.imglist,a.mannum,a.support,a.conveniences,a.bathroom,a.media,a.food,a.mannum,a.content,a.inputtime,c.reviewnum,b.title as hostel,b.area as hostelarea,b.address as hosteladdress,b.lat,b.lng,d.catname as bedtype')
+        ->field('a.id as rid,a.hid,a.title,a.thumb,a.hit,a.area,a.nomal_money,a.week_money,a.holiday_money,a.money,a.imglist,a.mannum,a.support,a.conveniences,a.bathroom,a.media,a.food,a.mannum,a.content,a.inputtime,c.reviewnum,b.title as hostel,b.area as hostelarea,b.address as hosteladdress,b.lat,b.lng,d.catname as bedtype, b.uid as oid')
         ->find();
+
+        if($data['oid'] == session('uid')) {
+          $data['is_owner'] = 1;
+        }
+
         if(empty($data['reviewnum'])) $data['reviewnum']=0;
         $imglist=explode("|", $data['imglist']);
         $this->assign("imglist", $imglist);

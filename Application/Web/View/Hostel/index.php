@@ -1,6 +1,6 @@
 <include file="public:head" />
 <body>
-<div class="header center z-index112 pr f18">
+<div class="header center z-index112 pr f18 fix-head">
       <div class="stay_top">
            <div class="stay_box">
                    <div class="stay_a fl" id="stay">
@@ -13,12 +13,12 @@
                    </div>
            </div>
       </div>
-      <div class="head_go pa"><a href="javascript:history.go(-1)"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
+      <div class="head_go pa"><a href="{:U('Index')}"><img src="__IMG__/go.jpg"></a><span>&nbsp;</span></div>
       <div class="tra_pr map_small f14 pa"><a href="{:U('Web/Hostel/all_map')}"><img src="__IMG__/map_small.jpg">地图</a></div>      
 </div>
-<div class="container">
-   <div class="land">
-          <div class="tra_list pr z-index112 center f14">
+<div class="container" style="margin-top:6rem;">
+   <div class="land land_pad">
+          <div class="tra_list pr z-index112 center f14 tra_listFix">
                 <div class="tra_li tra_li_on">按特色</div>
                 <div class="tra_drop tra_click">
                     <div class="act_pad">
@@ -63,25 +63,77 @@
                      </div>
                 </div>
                 <div class="tra_li tra_li_on">按价格</div>
-                <div class="tra_drop">
-                        <div class="scr_top">
-                              <div class="scr_e1" style="margin-bottom:2rem;">活动费用</div> 
-                              <div class="scr_b" style="margin-bottom:2rem;">
-                                   <div id="slider-range"></div>
-                                   <div class="number">
-                                       <div class="number_a fl">￥0</div>
-                                       <div class="number_b fr">￥5000</div>
-                                   </div>
-                              </div>
-                              <div class="mng_content">
-                                   <div class="mng_left fl">￥<span id='minmoney'>100</span> — ￥<span id='maxmoney'>1000</span></div>
-                                   <input type="button" class="mng_btn fr pricesub" value="确定">
-                              </div>
-                        </div> 
+                <div class="tra_drop ">
+                  <div class="scr_top">
+                    <div class="scr_e1" style="margin-bottom:2rem;">美宿价格</div> 
+                    <div class="scr_b" style="margin-bottom:1rem;">
+                      <div class="range_scroll" style="padding:0 8px;">
+                        <input class="range-slider" type="hidden" value="0,2500"/>
+                      </div>
+                      <div class="number">
+                        <div class="number_a fl">￥0</div>
+                        <div class="number_b fr">￥5000</div>
+                      </div>
+                    </div>
+                    <div class="mng_content">
+                      <div class="mng_left fl">￥<span id='minmoney'>100</span> — ￥<span id='maxmoney'>5000</span></div>
+                      <input type="button" class="mng_btn fr pricesub" id="go_price" value="确定">
+                    </div>
+                  </div> 
                 </div>
-                
+
+                <div class="tra_li tra_li_on">筛选</div>
+                  <div class="tra_drop stay_btmScroll pr">
+                     <div class="tra_scroll clearfix">
+                       <div class="stay_left stay_ml fl">
+                         <ul>
+                             <li class="stay_leftCut">设施服务</li>
+                             <li>特色</li>
+                             <li>床型</li>
+                             <li>面积</li>
+                             <li>评分</li>
+                         </ul>
+                     </div>
+                       <div class="stay_right stay_mr fl">
+                           <ul>
+                              <li class='support' data-id='0'><img src="__IMG__/stay_b1.png"> 不限</li>
+                              <volist name='roomcate' id='vo'>
+                                <li class='support' data-id='{$vo.id}'><img src="{$vo.gray_thumb}">{$vo.catname}</li>
+                              </volist>
+                           </ul>
+                           
+                           <ul>
+                              <volist name='hosteltype' id='vo'>
+                                <li class='hosteltype' data-id='{$vo.id}'>{$vo.catname}</li>
+                              </volist>
+                           </ul>
+                           
+                           <ul>
+                              <volist name='bedcate' id='vo'>
+                                <li class='bedcate' data-id='{$vo.id}'>{$vo.catname}</li>
+                              </volist>
+                           </ul>
+                           
+                           <ul>
+                                 <volist name='acreagecate' id='vo'>
+                                <li class='acreage' data-id='{$vo.value}'>{$vo.name}</li>
+                              </volist>
+                           </ul>
+                           
+                           <ul>
+                              <volist name='scorecate' id='vo'>
+                                <li class='score' data-id='{$vo.value}'>{$vo.name}</li>
+                              </volist>
+                           </ul>
+                         
+                        </div>
+                     </div>
+                     <div class="tra_scrollBox"><input type="button" class="btn_fix" value="确定" id="cates"></div>
+                </div>
+                <!--
                 <div class="tra_li tra_li_on">筛选</div>
                 <div class="tra_drop">
+                  <div class="tra_scroll clearfix">
                      <div class="stay_left fl">
                          <ul>
                              <li>设施服务</li>
@@ -122,9 +174,10 @@
                                 <li class='score' data-id='{$vo.value}'>{$vo.name}</li>
                               </volist>
                            </ul>
-                         
                      </div>
+                  </div>
                 </div>
+              -->
           </div>
           <div class="land_btm">  
             <div class="f14" id="DataList">
@@ -192,13 +245,10 @@ var data={};
           console.log(maxmoney);
           data['minmoney']=minmoney;
           data['maxmoney']=maxmoney;
-          console.log(data);
           $('#minmoney').text(minmoney);
           $('#maxmoney').text(maxmoney);
       }
     });
-    // $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
-    //   " - $" + $( "#slider-range" ).slider( "values", 1 ) );
   });
 </script>
 
@@ -207,15 +257,22 @@ var data={};
    $(function(){
         collect();
         hit();
-        $(".moch_click li").click(function(){
-           $(this).addClass("hm_cut").siblings().removeClass("hm_cut")
-        })
+        $(function(){
+          $(".moch_click li").click(function(){
+            $(this).addClass("hm_cut").siblings().removeClass("hm_cut")
+          })  
+        });
         // 加个选择后ajax
         $('.pricesub').click(function(){
+          var values = $('input.range-slider').val();
+          var arr = values.split(',');
+          data.minmoney = arr[0];
+          data.maxmoney = arr[1];
           $.post("{:U('Web/Hostel/select')}",data,function(res){
             addHtml(res);
             collect();
             hit();
+            $('.mask, .tra_drop').fadeOut('show');
           })
         })
         // 选择城市
@@ -279,11 +336,11 @@ var data={};
         });
         // 支持
         var a=[];
+        /*
         $('.support').click(function(){
             if(a.length==0){
               a.push($(this).data('id'));
-            }
-            else{
+            } else {
               if(a.indexOf($(this).data('id'))!=-1){
                 console.log('del');
                 a.remove(a.indexOf($(this).data('id')));
@@ -293,18 +350,48 @@ var data={};
                 a.push($(this).data('id'));
               }
             }
-            console.log(a);
             supportArray = a.join(",");
             data['support']=supportArray;
             ajax_send(data);
         });
+        */
+        $('#cates').click(function(evt) {
+          evt.preventDefault();
+          $('.support').each(function(i, t) {
+            var _this = $(t);
+            if(!_this.hasClass('stay_rightCut')) 
+              return;
+            if(a.length==0){
+              a.push(_this.data('id'));
+            } else {
+              if(a.indexOf(_this.data('id'))!=-1){
+                console.log('del');
+                a.remove(a.indexOf(_this.data('id')));
+              }
+              else{
+                console.log('add');
+                a.push(_this.data('id'));
+              }
+            }
+            supportArray = a.join(",");
+            data['support']=supportArray;
+          });
+          $('.hosteltype').each(function(i, t) {
+            var _this = $(t); 
+            if(!_this.hasClass('stay_rightCut')) return;
+            data.type = _this.data('id');
+          });
+          ajax_send(data); 
+        });
         // 类型
+        /*
         $('.hosteltype').click(function(){
           console.log(data);
           data['type']=$(this).data('id');
           console.log(data)
           ajax_send(data);
         })
+         */
         // 床型
         $('.bedcate').click(function(){
           data['bedtype']=$(this).data('id');
@@ -326,11 +413,12 @@ var data={};
    })
     function ajax_send(data) {
       $.post("{:U('Web/Hostel/select')}",data,function(res){
+        $('.tra_drop').hide();
+        $('.mask').hide();
         addHtml(res);
         collect();
         hit();
       })
-      // body...
     }
     function collect(){
         // 收藏
@@ -458,9 +546,6 @@ var data={};
     var maxScrollY = 0;
     var hasMoreData = false;
 
-    document.addEventListener('touchmove', function (e) {
-        e.preventDefault();
-    }, false);
     $(function () {
         loaded();
         $(".mask").click(function () {
@@ -782,7 +867,7 @@ var data={};
 <script>
 $('#go_search').click(function(evt) {
   evt.preventDefault();
-  window.location.href='{:U('Web/Public/search_project')}';
+  window.location.href="{:U('Web/Public/search_project')}";
 });
 $('#submit_area').click(function(evt) {
   evt.preventDefault();
@@ -792,6 +877,8 @@ $('#submit_area').click(function(evt) {
   $('.sarea').fadeOut('fast');
 });
 function getHotelDistance(lat, lng) {
+  console.log(lat);
+  console.log(lng);
   $('.distances').each(function(i, obj) {
     var _this = $(obj);
     var dlat = _this.data('lat');
@@ -809,6 +896,27 @@ function getHotelDistance(lat, lng) {
     });
   });
 }
+</script>
+<script src="__JS__/jquery.range.js"></script>
+<script>
+$(function(){
+  $('.range-slider').jRange({
+    from: 0,
+    to: 5000,
+    step: 1,
+    format: '%s',
+    width: 300,
+    showLabels: true,
+    isRange : true,
+    onstatechange: function (data) {
+      var values = data.split(',');
+      $('#minmoney').html(values[0]);
+      $('#maxmoney').html(values[1]);
+      data.minmoney = values[0];
+      data.maxmoney = values[1];
+    }
+  });
+});
 </script>
 </body>
 </html>

@@ -1,10 +1,7 @@
 <include file="public:head" />
-
-<script type="text/javascript" src="http://api.map.baidu.com/api?key=&v=1.1&services=true"></script>
-<!-- <div class="Legend_map_main2"> -->
-    <div style="height:346px;border:#ccc solid 1px;" id="dituContent"></div>
-<!-- </div> -->
-
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=GxLrHBjtGLbOk23xtDXL1nh5PVsEq77n&s=1"></script>
+<script type="text/javascript" src="https://api.map.baidu.com/getscript?v=2.0&ak=GxLrHBjtGLbOk23xtDXL1nh5PVsEq77n&services=&t=20161124185815"></script>
+<div style="height:346px;border:#ccc solid 1px;" id="dituContent"></div>
 <script type="text/javascript">
     //创建和初始化地图函数：
     function initMap() {

@@ -293,8 +293,8 @@
                                                                         <span class="my_home9_bottom_list3_span2">退订成功</span>
                                                                     </eq>
                                                                     <eq name="vo['refund_status']" value="3">
-                                                                        <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                                        <a href="javascript:;" class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                                        <span class="my_home9_bottom_list3_span2">待入住</span>
+                                                                        <!-- <a href="javascript:;" class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                                                     </eq>
                                                                 </eq>
                                                                 <else />
@@ -309,16 +309,16 @@
                                                                     <span class="my_home9_bottom_list3_span2">退订成功</span>
                                                                 </eq>
                                                                 <eq name="vo['refund_status']" value="3">
-                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                                    <span class="my_home9_bottom_list3_span2">待入住</span>
+                                                                    <!-- <a href="javascript:;" class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                                                 </eq>
                                                             </if>   
                                                         </div>
                                                     </eq>
                                                     <eq name="vo['status']" value="5">
                                                         <div class="my_home9_bottom_list3_bottom3 middle">
-                                                            <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                            <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="{$vo.review_remark}">失败原因</a>
+                                                            <span class="my_home9_bottom_list3_span2">待入住</span>
+                                                            <!-- <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="{$vo.review_remark}">失败原因</a> -->
                                                         </div>
                                                     </eq>
                                                     <else />
@@ -359,8 +359,8 @@
                                                                         <span class="my_home9_bottom_list3_span2">退订成功</span>
                                                                     </eq>
                                                                     <eq name="vo['refund_status']" value="3">
-                                                                        <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                                        <a href="javascript:;"  class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a>
+                                                                        <span class="my_home9_bottom_list3_span2">待入住</span>
+                                                                        <!-- <a href="javascript:;"  class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a> -->
                                                                     </eq>
                                                                 </eq>
                                                                 <else />
@@ -375,8 +375,8 @@
                                                                     <span class="my_home9_bottom_list3_span2">退订成功</span>
                                                                 </eq>
                                                                 <eq name="vo['refund_status']" value="3">
-                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                                    <a href="javascript:;"  class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a>
+                                                                    <span class="my_home9_bottom_list3_span2">待入住</span>
+                                                                    <!-- <a href="javascript:;"  class="my_home9_bottom_list3_a2 remark" data-remark="{$vo.refundreview_remark}" style="background: #8c8e85;">失败原因</a> -->
                                                                 </eq>
                                                             </if>
                                                                 
@@ -384,8 +384,8 @@
                                                     </eq>
                                                     <eq name="vo['status']" value="5">
                                                         <div class="my_home9_bottom_list3_bottom3 middle">
-                                                            <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                            <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="{$vo.review_remark}">失败原因</a>
+                                                            <span class="my_home9_bottom_list3_span2">待入住</span>
+                                                            <!-- <a class="my_home9_bottom_list3_a2 remark" href="javascript:;" data-remark="{$vo.review_remark}">失败原因</a> -->
                                                         </div>
                                                     </eq>
                                                 </if>
@@ -456,8 +456,8 @@
                                                                     <span class="my_home9_bottom_list3_span2">退订成功</span>
                                                                 </eq>
                                                                 <eq name="vo['refund_status']" value="3">
-                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                                    <span class="my_home9_bottom_list3_span2">待参加</span>
+                                                                    <!-- <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                                                 </eq>
                                                                 <else />
                                                                 <eq name="vo['refund_status']" value="0">
@@ -471,8 +471,8 @@
                                                                     <span class="my_home9_bottom_list3_span2">退订成功</span>
                                                                 </eq>
                                                                 <eq name="vo['refund_status']" value="3">
-                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                                    <span class="my_home9_bottom_list3_span2">待参加</span>
+                                                                    <!-- <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                                                 </eq>
                                                             </if>
                                                         </div>
@@ -506,8 +506,8 @@
                                                                     <span class="my_home9_bottom_list3_span2">退订成功</span>
                                                                 </eq>
                                                                 <eq name="vo['refund_status']" value="3">
-                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                                    <span class="my_home9_bottom_list3_span2">待参加</span>
+                                                                    <!-- <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                                                 </eq>
                                                                 <else />
                                                                 <eq name="vo['refund_status']" value="0">
@@ -521,8 +521,8 @@
                                                                     <span class="my_home9_bottom_list3_span2">退订成功</span>
                                                                 </eq>
                                                                 <eq name="vo['refund_status']" value="3">
-                                                                    <span class="my_home9_bottom_list3_span2">审核失败</span>
-                                                                    <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a>
+                                                                    <span class="my_home9_bottom_list3_span2">待参加</span>
+                                                                    <!-- <a href="javascript:;" class="my_home9_bottom_list3_a1 remark" data-remark="{$vo.refundreview_remark}"  style="background: #8c8e85;">失败原因</a> -->
                                                                 </eq>
                                                             </if>
                                                         </div>

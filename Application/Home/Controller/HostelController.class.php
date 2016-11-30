@@ -729,7 +729,7 @@ class HostelController extends CommonController {
         //$reviewlist=M('review a')->join("left join zz_member b on a.uid=b.id")->where(array('a.value'=>$data['id'],'a.isdel'=>0,'a.varname'=>'hostel'))->field("a.id as rid,a.content,a.inputtime,b.id as uid,b.nickname,b.head,b.rongyun_token")->limit(10)->select();
         //$data['reviewlist']=!empty($reviewlist)?$reviewlist:null;
         $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'room'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
-        $room=M('room a')->join("left join {$sqlI} c on a.id=c.value")->join("left join zz_bedcate b on a.roomtype=b.id")->where(array('a.hid'=>$data['id'],'a.isdel'=>0,))->order(array('a.id'=>'desc'))->field("a.id as rid,a.title,a.thumb,a.area,a.money,a.roomtype,a.support,a.mannum,c.reviewnum,b.catname as bedtype,a.score as evaluation,a.scorepercent as evaluationpercent")->limit(2)->select();
+        $room=M('room a')->join("left join {$sqlI} c on a.id=c.value")->join("left join zz_bedcate b on a.roomtype=b.id")->where(array('a.hid'=>$data['id'],'a.isdel'=>0,))->order(array('a.listorder'=>'asc','a.id'=>'desc'))->field("a.id as rid,a.title,a.thumb,a.area,a.money,a.roomtype,a.support,a.mannum,c.reviewnum,b.catname as bedtype,a.score as evaluation,a.scorepercent as evaluationpercent")->limit(2)->select();
         foreach ($room as $key => $value) {
             # code...
             $room[$key]['support']=M("roomcate")->where(array('id'=>array('in',$value['hotsupport'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();
@@ -867,7 +867,7 @@ class HostelController extends CommonController {
             exit(json_encode(array('code'=>-200,'msg'=>"请求参数错误")));
         }else{
             $sqlI=M('review')->where(array('isdel'=>0,'varname'=>'room'))->group("value")->field("value,count(value) as reviewnum")->buildSql();
-            $list=M('room a')->join("left join {$sqlI} c on a.id=c.value")->join("left join zz_bedcate b on a.roomtype=b.id")->where(array('a.hid'=>$hid,'a.isdel'=>0))->order(array('a.id'=>'desc'))->field("a.id as rid,a.title,a.thumb,a.area,a.money,a.roomtype,a.support,a.mannum,c.reviewnum,b.catname as bedtype")->page($p,$num)->select();
+            $list=M('room a')->join("left join {$sqlI} c on a.id=c.value")->join("left join zz_bedcate b on a.roomtype=b.id")->where(array('a.hid'=>$hid,'a.isdel'=>0))->order(array('a.listorder'=>'asc','a.id'=>'desc'))->field("a.id as rid,a.title,a.thumb,a.area,a.money,a.roomtype,a.support,a.mannum,a.score as evaluation,a.scorepercent as evaluationpercent,c.reviewnum,b.catname as bedtype")->page($p,$num)->select();
             foreach ($list as $key => $value) {
                 # code...
                 $list[$key]['support']=M("roomcate")->where(array('id'=>array('in',$value['hotsupport'])))->field('id,gray_thumb,blue_thumb,red_thumb,catname')->order(array('listorder'=>'desc','id'=>'asc'))->select();

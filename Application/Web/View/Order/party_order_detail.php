@@ -2,7 +2,7 @@
 <div class="header center z-index112 pr f18 fix-head">
     活动预定
     <div class="head_go pa">
-        <a href="javascript:history.back();">
+        <a href="{:U('Member/orderlist')}?act=1">
             <img src="__IMG__/go.jpg">
         </a><span>&nbsp;</span>
     </div>
@@ -10,57 +10,68 @@
 <div class="container" style="margin-top:6rem;padding-bottom:0">
     <div class="stayin-head qiandao-clear">
         <if condition="$order.status eq 1">待审核
-            <elseif condition="$order.status eq 2" />待支付
-            <elseif condition="$order.status eq 3" />已取消
-            <elseif condition="$order.status eq 4" />
+        <elseif condition="$order.status eq 2" />待支付
+        <elseif condition="$order.status eq 3" />已取消
+        <elseif condition="$order.status eq 4" />
             <if condition="$order.finished eq 1">
                 已完成
-                <else />
-                <eq name="order.refund_status" value="1">
-                    申请退款
-                    <else />待参加
-                </eq>
+            <else />
+              <eq name="order.refund_status" value="1">
+                申请退款
+              <else />
+                待参加
+              </eq>
             </if>
-            <elseif condition="$order.status eq 5" />审核失败
-            <elseif condition="$order.status eq 6" />已关闭
+        <elseif condition="$order.status eq 5" />审核失败
+        <elseif condition="$order.status eq 6" />已关闭
         </if>
         <if condition="$order.status eq 1">
             <if condition="$is_owner eq 1">
-                <a href="{:U('Order/go_audio')}?orderid={$order.orderid}">
+                <a href="{:U('Order/audit_party')}?orderid={$order.orderid}">
                     <span class="fr audit-fr">去审核</span>
                 </a>
             </if>
-            <elseif condition="$order.status eq 2" />
-            <if condition="$is_owner eq 0">
-                <a href="{:U('Order/hotelPay')}?orderid={$order.orderid}">
-                    <span class="fr audit-fr">去支付</span>
+        <elseif condition="$order.status eq 2" />
+          <if condition="$is_owner eq 0">
+              <a href="{:U('Order/partyPay')}?orderid={$order.orderid}">
+                  <span class="fr audit-fr">去支付</span>
+              </a>
+          </if>
+        <elseif condition="$order.status eq 4" />
+          <eq name="order.finished" value="1">
+            <if condition="$order.evaluate_status eq 0">
+                <a href="{:U('Party/review')}?orderid={$order.orderid}">
+                    <span class="fr">去评价</span>
                 </a>
             </if>
-            <elseif condition="$order.status eq 4" />
-            <eq name="order.finished" value="1">
-                <if condition="$order.evaluate_status eq 0">
-                    <a href="{:U('Order/hotelPay')}?orderid={$order.orderid}">
-                        <span class="fr">去评价</span>
-                    </a>
-                </if>
-                <else />
-                <eq name="order.refund_status" value="1">
-                    <if condition="$is_owner eq 1">
-                        <a href="{:U('Order/cancel_audit')}?orderid={$order.orderid}">
-                            <span class="fr audit-fr">去审核</span>
-                        </a>
-                    </if>
-                    <else />
-                    <if condition="$is_owner eq 0">
-                        <a class="cancel_order" href="javascript:;">
-                            <span class="fr cancel_order">取消订单</span>
-                        </a>
-                    </if>
-                </eq>
+          <else />
+            <eq name="order.refund_status" value="1">
+              <if condition="$is_owner eq 1">
+                  <a href="{:U('Order/audit_party')}?orderid={$order.orderid}">
+                      <span class="fr audit-fr">去审核</span>
+                  </a>
+              </if>
+              <else />
+              <if condition="$is_owner eq 0">
+                  <a class="cancel_order" href="javascript:;">
+                      <span class="fr cancel_order">取消订单</span>
+                  </a>
+              </if>
             </eq>
+            <eq name="$order.refund_status" value="3">
+              <a class="" href="javascript:;">
+                  <span class="fr cancel_order">退订失败</span>
+              </a>
+            </eq>
+          </eq>
         </if>
         <div class="ft10">订单号：{$order.orderid}</div>
     </div>
+    <notempty name="order.review_remark">
+      <div style="margin:8px 0;padding:5px">
+        <p>拒绝理由：{$order.review_remark}</p>
+      </div>
+    </notempty>
     <!-- 支付模块 -->
     <if condition="$order.status eq 2">
         <empty name="is_owner">
@@ -81,7 +92,7 @@
                 </div>
             </a>
             <div class="submit-head submit-heads qiandao-clear">
-                <a class="fl on" href="{:U('Order/editOrder')}?orderid={$order.orderid}">修改订单</a>
+                <a class="fl on" href="{:U('Order/editParty')}?orderid={$order.orderid}">修改订单</a>
                 <a class="fr cancel_order">取消订单</a>
             </div>
             <elseif condition="$order.status eq 5" />
@@ -110,7 +121,7 @@
             <span class="theme_color_blue f-span">活动时间：</span>
             <span>{$order.starttime|date='Y-m-d',###}-{$order.endtime|date='Y-m-d',###}</span>
         </p>
-        <p class="t-p">
+        <p class="t-p over_ellipsis">
             <span class="theme_color_blue f-span">参与人员：</span>
             <span id="use_discount">{$partners}</span>
         </p>
@@ -133,19 +144,19 @@
     </div>
     <div class="stayin-order theme_color_blue">参与人信息（共{$partnerNumber}人）</div>
     <volist name="partnerArr" id="partner">
-        <div class="stayin-main">
-            <p class="fou-p"><span class="f-span">{$partner.realname}</span>
-            </p>
-            <p class="fou-p qiandao-clear">手机号码 :<span class="fr">{$partner.phone}</span>
-            </p>
-            <p class="fou-p qiandao-clear">身份证号 :<span class="fr">{$partner.idcard}</span>
-            </p>
-        </div>
+      <div class="stayin-main">
+          <p class="fou-p"><span class="f-span">{$partner.realname}</span>
+          </p>
+          <p class="fou-p qiandao-clear">手机号码 :<span class="fr">{$partner.phone}</span>
+          </p>
+          <p class="fou-p qiandao-clear">身份证号 :<span class="fr">{$partner.idcard}</span>
+          </p>
+      </div>
     </volist>
-    <if condition="$partnerNumber gt 1">
-        <div class="stayin-more">显示全部 {$partnerNumber - 1} 个入住人
-            <img src="__IMG__/drop_f.jpg">
-        </div>
+    <if condition="$partnerNumber gt 2">
+      <div class="stayin-more">显示全部参与人
+          <img src="__IMG__/drop_f.jpg">
+      </div>
     </if>
     <a class="theme_color_blue stayin-details" href="{:U('Party/show')}?id={$order.aid}">活动详情</a>
     </div>
@@ -204,15 +215,11 @@
          $('.cancel_order').click(function(evt)
         {
             evt.preventDefault();
-            var cancel_status = {
-                $order.status
-            };
+            var cancel_status = {$order.status};
             if (cancel_status == 2 || cancel_status == 1)
             {
                 var con = confirm('确认取消订单？');
-                var uid = {
-                    $order.uid
-                };
+                var uid =  {$order.uid};
                 var orderid = '{$order.orderid}';
                 if (con)
                 {
